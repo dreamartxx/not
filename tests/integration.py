@@ -20,7 +20,9 @@ def run():
     with socket.socket() as s: s.bind(('127.0.0.1',0));port=s.getsockname()[1]
     key=secrets.token_hex(32); password=secrets.token_urlsafe(24)
     config=pathlib.Path(tmp)/'config.php'
-    config.write_text("<?php return ['dsn'=>'sqlite:"+tmp+"/test.sqlite','setup_key'=>'"+key+"','secure_cookie'=>false];")
+    if os.environ.get('NOT_TEST_MYSQL'):
+      config.write_text("<?php return ['dsn'=>'mysql:host=127.0.0.1;port=3306;dbname=not_test;charset=utf8mb4','db_user'=>'root','db_password'=>'test-only-password','setup_key'=>'"+key+"','secure_cookie'=>false];")
+    else: config.write_text("<?php return ['dsn'=>'sqlite:"+tmp+"/test.sqlite','setup_key'=>'"+key+"','secure_cookie'=>false];")
     log=open(pathlib.Path(tmp)/'server.log','w')
     env={**os.environ,'NOT_CONFIG':str(config)}
     proc=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(ROOT)],env=env,stdout=log,stderr=log)

@@ -5,6 +5,19 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: test-only-password
+          MYSQL_DATABASE: not_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -ptest-only-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     steps:
       - uses: actions/checkout@v4
       - name: PHP syntax
@@ -12,4 +25,8 @@ jobs:
       - name: JavaScript syntax
         run: node --check assets/app.js
       - name: HTTP integration tests
+        run: python3 tests/integration.py
+      - name: MySQL HTTP integration tests
+        env:
+          NOT_TEST_MYSQL: '1'
         run: python3 tests/integration.py
