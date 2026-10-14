@@ -6,7 +6,8 @@ header('X-Content-Type-Options: nosniff');
 function respond(array $data, int $status = 200): never { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 function fail(string $message, int $status = 400): never { respond(['error' => $message], $status); }
 set_exception_handler(function(Throwable $e) { error_log('Not API: '.$e->getMessage()); fail('Sunucu işlemi tamamlayamadı. Bağlantını kontrol edip tekrar dene.', 500); });
-$configPath = getenv('NOT_CONFIG') ?: __DIR__.'/private/config.php';
+$externalConfig = dirname(rtrim($_SERVER['DOCUMENT_ROOT'] ?? __DIR__, '/')).'/not-config.php';
+$configPath = getenv('NOT_CONFIG') ?: (is_file($externalConfig) ? $externalConfig : __DIR__.'/private/config.php');
 if (!is_file($configPath)) respond(['configured'=>false, 'error'=>'Sunucu ayarları henüz tamamlanmadı.'], 503);
 $config = require $configPath;
 $secure = $config['secure_cookie'] ?? true;
@@ -25,7 +26,8 @@ $db->exec('CREATE TABLE IF NOT EXISTS login_guard (id INTEGER PRIMARY KEY, attem
 $db->exec($sqlite ? 'INSERT OR IGNORE INTO login_guard VALUES (1,0,0)' : 'INSERT IGNORE INTO login_guard VALUES (1,0,0)');
 $action = $_GET['action'] ?? 'status';
 $method = $_SERVER['REQUEST_METHOD'];
-$owner = $db->query('SELECT id, username FROM owner WHERE id=1')->fetch();
+$owner = $db->query('SELECT id, username, password_hash FROM owner WHERE id=1')->fetch();
+if (isset($_SESSION['owner']) && (!isset($_SESSION['fingerprint']) || !$owner || !hash_equals(hash('sha256',$owner['password_hash']), $_SESSION['fingerprint']))) unset($_SESSION['owner']);
 if ($method === 'GET' && $action === 'status') respond(['configured'=>true,'setup'=>!$owner,'authenticated'=>isset($_SESSION['owner']),'username'=>isset($_SESSION['owner'])?$owner['username']:null,'csrf'=>$_SESSION['csrf']]);
 if ($method === 'POST') {
     if (!hash_equals($_SESSION['csrf'], $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '')) fail('Oturum doğrulanamadı. Sayfayı yenile.',403);
@@ -51,10 +53,18 @@ if (in_array($action,['setup','login'],true) && $method==='POST') {
         if (!$record || !hash_equals($record['username'],$username) || !password_verify($password,$record['password_hash'])) fail('Kullanıcı adı veya şifre yanlış.',401);
     }
     $db->exec('UPDATE login_guard SET attempts=0 WHERE id=1');
+    $_SESSION['fingerprint']=hash('sha256',(string)$db->query('SELECT password_hash FROM owner WHERE id=1')->fetchColumn());
     session_regenerate_id(true); $_SESSION['owner']=1; $_SESSION['csrf']=bin2hex(random_bytes(32));
     respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if (!isset($_SESSION['owner'])) fail('Devam etmek için giriş yap.',401);
+if ($action==='password' && $method==='POST') {
+    $current=(string)($input['current_password']??'');$next=(string)($input['new_password']??'');
+    if(!password_verify($current,$owner['password_hash'])) fail('Mevcut şifre yanlış.',403);
+    if(strlen($next)<12||strlen($next)>128) fail('Yeni şifre 12–128 karakter olmalı.');
+    $hash=password_hash($next,PASSWORD_DEFAULT);$stmt=$db->prepare('UPDATE owner SET password_hash=? WHERE id=1');$stmt->execute([$hash]);
+    session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
+}
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
 function allPages(PDO $db): array { return $db->query('SELECT * FROM pages ORDER BY created_at,id')->fetchAll(); }
 function decodePage(array $p): array { $p['blocks']=json_decode($p['blocks'],true); $p['favorite']=(bool)$p['favorite']; $p['version']=(int)$p['version']; return $p; }

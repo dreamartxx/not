@@ -56,11 +56,15 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
+      a.call('password',{'current_password':'wrong','new_password':'ChangedPassword2026!'},403)
+      changed=a.call('password',{'current_password':password,'new_password':'ChangedPassword2026!'})
+      a.csrf=changed['csrf'];password='ChangedPassword2026!'
+      b.call('pages',code=401)
       a.call('logout',{});a.call('pages',code=401)
       c=Client(a.base);c.status()
       for _ in range(15): c.call('login',{'username':'Test','password':'bad'},401)
       c.call('login',{'username':'Test','password':password},429)
-      print('PASS: authentication, CSRF, single-owner setup, CRUD, Unicode, optimistic concurrency, tree-cycle prevention, block validation, recursive trash/restore/purge, atomic backup import, logout, rate limiting')
+      print('PASS: authentication, CSRF, single-owner setup, CRUD, Unicode, optimistic concurrency, tree-cycle prevention, block validation, recursive trash/restore/purge, atomic backup import, password change and session revocation, logout, rate limiting')
     finally:
       proc.terminate();proc.wait();log.close()
 if __name__=='__main__':run()
