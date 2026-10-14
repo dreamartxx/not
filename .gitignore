@@ -1,0 +1,7 @@
+/private/*
+!/private/.htaccess
+!/private/config.example.php
+*.sqlite*
+.DS_Store
+node_modules/
+/test-results/
