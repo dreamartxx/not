@@ -51,8 +51,35 @@ Entegrasyon testleri geçici SQLite dosyası ve izole localhost sunucusu kullan�
 
 ## Yedek ve kullanım sınırları
 
-Ayarlar → tüm sayfaları JSON olarak indir. İçe aktarma mevcut notları değiştirmez; kimlikleri yenilenmiş kopyalar ekler ve tek işlemde tamamlanır. Bir içe aktarmada en fazla 500 sayfa ve 4 MB; bir sayfada en fazla 2.000 blok. Kalıcı silme geri alınamaz. Hostinger veritabanı yedeği de düzenli tutulmalıdır.
+Ayarlar → tüm sayfaları JSON olarak indir. İçe aktarma mevcut notları değiştirmez; kimlikleri yenilenmiş kopyalar ekler ve tek işlemde tamamlanır. Bir içe aktarmada en fazla 500 sayfa ve 5 MB sayfa verisi; bir sayfada en fazla 2.000 blok. Kalıcı silme geri alınamaz. Hostinger veritabanı yedeği de düzenli tutulmalıdır.
 
-Kaydedilmeyen düzenlemeler sekmede tutulur; kayıt hatasında uyarı gösterilir ve JSON taslak indirilebilir. Çevrimdışı çalışma/senkronizasyon sunulmaz. Sekmeyi kapatmadan önce kayıt durumunu kontrol edin. Notlar şifreli HTTPS üzerinden taşınır; veritabanında uçtan uca şifreleme yoktur. Dosya yükleme ve çok kullanıcılı paylaşım bu sürüme dahil değildir.
+Kaydedilmeyen düzenlemeler sekmede tutulur; kayıt hatasında uyarı gösterilir ve JSON taslak indirilebilir. Çevrimdışı çalışma/senkronizasyon sunulmaz. Sekmeyi kapatmadan önce kayıt durumunu kontrol edin. Notlar şifreli HTTPS üzerinden taşınır; veritabanında uçtan uca şifreleme yoktur. Çok kullanıcılı paylaşım bu sürüme dahil değildir.
 
 Hesap şifresi Ayarlar → Şifremi değiştir üzerinden değiştirilebilir. Şifre değişikliği diğer oturumları geçersiz kılar.
+
+## Studio editörü
+
+Editörün üstündeki **+ Ekle** düğmesi 21 blok türünü açar. Bir bloğu seçip araç çubuğundan ekleme yaptığında yeni içerik o bloğun altına gelir. Her bloğun solundaki tutamaçla sürükleyip sıralayabilir; blok menüsünden yarım satır seçerek iki bloğu yan yana koyabilir, renk ve hizalama ayarlayabilirsin.
+
+- **Tablo:** hücre düzenleme, satır/sütun ekleme ve silme, başlık satırı, Excel/Sheets'ten sekmeyle ayrılmış hücre yapıştırma, CSV dışa aktarma.
+- **Çizim / diyagram:** kalem, silgi, metin, dikdörtgen, elips, karar şekli, çizgi ve ok; şekilleri taşıma ve boyutlandırma; iki düğümü bağlayan ve taşınırken takip eden oklar; fotoğraf ekleme; geri/ileri alma ve PNG indirme.
+- **Fotoğraf:** dosya yükleme, ekran görüntüsü yapıştırma, sürükleyip bırakma, özel kütüphaneden seçim veya HTTPS bağlantısı; genişlik, hizalama ve açıklama.
+- **Video:** YouTube (zaman damgası dahil), Vimeo, doğrudan MP4/WebM bağlantısı veya MP4 dosyası. Uzak oynatıcı tıklanınca yüklenir. Kaynağın gömmeye izin vermesi gerekir.
+- **Ses / PDF:** dosya veya HTTPS bağlantısı, yerinde ses oynatma ve dosya indirme.
+- **Bağlantı kartı, açılır not, numaralı liste, içindekiler, üç sütunlu görev panosu**, odak modu, editör geri/ileri alma.
+- Ana sayfada görsel düşünce, proje, ilham ve toplantı şablonları.
+
+### Dosyalar ve taşınabilir yedek
+
+Dosyalar MySQL'deki media tablosunda tutulur ve yalnızca giriş yapılmış oturumlara sunulur. Sunucu dosya türünü doğrular; SVG/HTML/çalıştırılabilir dosyalar kabul edilmez. Sınırlar dosya başına 8 MB ve toplam 150 MB'dir. .user.ini PHP yükleme sınırını ayarlar; Hostinger'ın bu ayarı uygulaması birkaç dakika sürebilir. Kullanılmayan dosyalar kütüphaneden yönetilebilir; herhangi bir notta (çöp kutusu dahil) kullanılan dosya silinemez.
+
+JSON v2 yedeği notların yanında kullanılan yüklenmiş dosyaların baytlarını da içerir; içe aktarırken dosya kimlikleri yeniden eşlenir. Eski v1 metin yedekleri desteklenir. Uzak bağlantıların içeriği yedeğe indirilmez. Markdown dışa aktarmadaki özel dosya bağlantıları giriş gerektirir; taşınabilir tam yedek için JSON kullan. İçe aktarılacak sayfa verisinin toplamı API'nin 5 MB istek sınırına, ayrı yüklenen medya ise dosya sınırlarına tabidir.
+
+Editörün geri alma geçmişi ve kapatılan çizim taslakları açık oturum belleğinde tutulur; sayfa yenilenince sıfırlanır. Çizim stüdyosunda **Çizimi sayfaya ekle** ile kaydet. Başka cihazda aynı notun değişmesi durumunda mevcut sürüm çakışması koruması geçerlidir. Metin blokları düz metindir; tablo formülleri, dosya OCR'ı ve çevrimdışı eşitleme bu sürümde yoktur.
+
+### Ek doğrulamalar
+
+    node tests/studio.mjs
+    python3 tests/integration.py
+
+Testler yeni blokların kalıcılığını, hatalı içerik reddini, özel dosya erişimini, dosya türü ve CSRF doğrulamasını, kullanılan dosyaların silinmeye karşı korunmasını ve görsellerin yedekle taşınmasını kapsar. GitHub Actions aynı HTTP testlerini hem SQLite hem MySQL üzerinde çalıştırır.

@@ -56,6 +56,8 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
+      from studio_integration import run_studio
+      run_studio(a,Client)
       a.call('password',{'current_password':'wrong','new_password':'ChangedPassword2026!'},403)
       changed=a.call('password',{'current_password':password,'new_password':'ChangedPassword2026!'})
       a.csrf=changed['csrf'];password='ChangedPassword2026!'

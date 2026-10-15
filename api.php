@@ -29,14 +29,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $owner = $db->query('SELECT id, username, password_hash FROM owner WHERE id=1')->fetch();
 if (isset($_SESSION['owner']) && (!isset($_SESSION['fingerprint']) || !$owner || !hash_equals(hash('sha256',$owner['password_hash']), $_SESSION['fingerprint']))) unset($_SESSION['owner']);
 if ($method === 'GET' && $action === 'status') respond(['configured'=>true,'setup'=>!$owner,'authenticated'=>isset($_SESSION['owner']),'username'=>isset($_SESSION['owner'])?$owner['username']:null,'csrf'=>$_SESSION['csrf']]);
-if ($method === 'POST') {
+if ($method === 'POST' && $action !== 'upload') {
     if (!hash_equals($_SESSION['csrf'], $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '')) fail('Oturum doğrulanamadı. Sayfayı yenile.',403);
     if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0)>5_000_000) fail('İçerik çok büyük.',413);
     $raw=file_get_contents('php://input',false,null,0,5_000_001);
     if (strlen($raw)>5_000_000) fail('İçerik çok büyük.',413);
     $input=json_decode($raw,true);
     if (!is_array($input)) fail('Geçersiz istek.');
-} elseif ($method !== 'GET') fail('Desteklenmeyen yöntem.',405);
+} elseif ($method !== 'GET' && $action !== 'upload') fail('Desteklenmeyen yöntem.',405);
 if (in_array($action,['setup','login'],true) && $method==='POST') {
     $now=time();
     $stmt=$db->prepare('UPDATE login_guard SET attempts=0, window_start=? WHERE id=1 AND window_start<?'); $stmt->execute([$now,$now-900]);
@@ -69,24 +69,15 @@ if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); r
 function allPages(PDO $db): array { return $db->query('SELECT * FROM pages ORDER BY created_at,id')->fetchAll(); }
 function decodePage(array $p): array { $p['blocks']=json_decode($p['blocks'],true); $p['favorite']=(bool)$p['favorite']; $p['version']=(int)$p['version']; return $p; }
 function findPage(PDO $db,string $id): array { $s=$db->prepare('SELECT * FROM pages WHERE id=?');$s->execute([$id]);$p=$s->fetch();if(!$p) fail('Sayfa bulunamadı.',404);return $p; }
-function validBlocks(mixed $blocks): array {
-    if (!is_array($blocks) || !array_is_list($blocks) || count($blocks)>2000) fail('Geçersiz blok listesi.');
-    $out=[];$ids=[];
-    foreach($blocks as $b) {
-        if (!is_array($b) || !in_array($b['type']??'', ['text','h1','h2','bullet','todo','quote','code','divider','callout'],true)) fail('Geçersiz blok.');
-        $id=(string)($b['id']??'');$text=$b['text']??'';
-        if (!preg_match('/^[a-zA-Z0-9_-]{1,60}$/',$id) || isset($ids[$id]) || !is_string($text) || strlen($text)>100000) fail('Geçersiz blok içeriği.');
-        $ids[$id]=true;$out[]=['id'=>$id,'type'=>$b['type'],'text'=>$text,'checked'=>(bool)($b['checked']??false)];
-    }
-    return $out;
-}
+require __DIR__.'/lib/blocks.php';
+require __DIR__.'/lib/media.php';
 function validParent(PDO $db,?string $parent,string $id): void {
     $seen=[$id=>true];
     while($parent) { if(isset($seen[$parent])) fail('Bir sayfa kendi altına taşınamaz.');$seen[$parent]=true;$p=findPage($db,$parent);if($p['deleted_at']) fail('Çöp kutusundaki sayfaya eklenemez.');$parent=$p['parent_id']; }
 }
 if ($action==='pages' && $method==='GET') respond(['pages'=>array_map('decodePage',allPages($db))]);
 if ($method!=='POST') fail('İşlem bulunamadı.',404);
-if ($action==='import') {
+if (in_array($action,['import','validate-import'],true)) {
     $items=$input['pages']??null;
     if(!is_array($items)||!array_is_list($items)||count($items)>500) fail('Bir defada en fazla 500 sayfa içe aktarılabilir.');
     $map=[];$clean=[];
@@ -102,6 +93,7 @@ if ($action==='import') {
         $seen=[$id=>true];$parent=$item['parent_id']??null;
         while($parent && isset($clean[$parent])) {if(isset($seen[$parent])) fail('Yedekte döngüsel sayfa ilişkisi var.');$seen[$parent]=true;$parent=$clean[$parent]['parent_id']??null;}
     }
+    if($action==='validate-import') respond(['ok'=>true]);
     $db->beginTransaction();$now=gmdate('c');
     $stmt=$db->prepare('INSERT INTO pages (id,parent_id,title,icon,cover,blocks,favorite,deleted_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)');
     foreach($clean as $id=>$item) {

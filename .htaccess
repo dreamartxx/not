@@ -1,11 +1,11 @@
 Options -Indexes
 DirectoryIndex index.php
-<FilesMatch "^(README\.md|.*\.sql|.*\.sqlite.*|.*\.json|.*\.lock|.*\.yml)$">
+<FilesMatch "^(\.user\.ini|README\.md|.*\.sql|.*\.sqlite.*|.*\.json|.*\.lock|.*\.yml)$">
   Require all denied
 </FilesMatch>
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteRule ^(?:private|tests|\.git|\.github)(?:/|$) - [F,L]
+  RewriteRule ^(?:private|lib|tests|\.git|\.github)(?:/|$) - [F,L]
 </IfModule>
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
