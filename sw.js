@@ -1,7 +1,7 @@
 // Public offline resources only. Never store authenticated HTML, API responses or media.
-const CACHE = 'not-public-pwa-v1';
+const CACHE = 'not-public-pwa-v2';
 const BASE = new URL('./', self.location.href);
-const PUBLIC_FILES = ['offline.html', 'assets/offline.css', 'assets/offline.js', 'assets/icon-192.png'];
+const PUBLIC_FILES = ['offline.html', 'assets/offline.css', 'assets/offline.js', 'assets/icon-3d-192.png'];
 const publicURLs = new Set(PUBLIC_FILES.map(path => new URL(path, BASE).href));
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll([...publicURLs])));
