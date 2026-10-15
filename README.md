@@ -83,3 +83,13 @@ Editörün geri alma geçmişi ve kapatılan çizim taslakları açık oturum be
     python3 tests/integration.py
 
 Testler yeni blokların kalıcılığını, hatalı içerik reddini, özel dosya erişimini, dosya türü ve CSRF doğrulamasını, kullanılan dosyaların silinmeye karşı korunmasını ve görsellerin yedekle taşınmasını kapsar. GitHub Actions aynı HTTP testlerini hem SQLite hem MySQL üzerinde çalıştırır.
+
+## PWA · Ana ekrana kurulum
+
+Uygulama HTTPS üzerinde `manifest.webmanifest`, 192/512 px simgeler, ayrı maskable simge ve Apple dokunmatik simgesiyle kurulabilir. Menüdeki **Uygulama olarak kullan** ekranı destekleyen tarayıcılarda yükleme düğmesini, diğerlerinde cihazına uygun yönergeleri gösterir. Kurulunca bağımsız pencerede açılır. Mobil güvenli alanlar ve dokunmatik hedefler desteklenir.
+
+`sw.js` yalnızca herkese açık çevrimdışı karşılama sayfasını, onun CSS/JS dosyalarını ve uygulama simgesini önbelleğe alır. Giriş yapılmış HTML, API yanıtları, notlar ve dosyalar Cache Storage’a **yazılmaz**. İnternet olmadan yeniden açılışta notlara erişilemez. Açık sekmedeki değişiklikler bellekte bekler ve bağlantı geri geldiğinde kaydetme yeniden denenir; pencere kapanırsa kaydedilmemiş çalışma kaybolabilir. Kaydetme hatasındaki taslak indirme seçeneğini kullan.
+
+Yeni worker sürümleri bekleme durumuna geçer ve güncelleme bildirimi gösterir. Güncelleme ancak aktif çizim/yükleme ve bekleyen kayıt yokken uygulanır; hiçbir sekme kendiliğinden yenilenmez. Bir sonraki açılış güncel uygulamayı yükler. Çevrimdışı varlıklarda değişiklik yaparken `sw.js` içindeki `CACHE` sürümünü artır. Temizlik sadece `not-public-pwa-` önekli eski önbellekleri siler.
+
+`npm test` manifest/simge doğrulamalarını ve worker testlerini içerir: kök/alt dizin kurulumu, API ve özel medya atlama, çevrimdışı açılış, kapsamlı olmayan önbellek temizliği ve açık güncelleme onayı. Yerel önizleme için HTTPS veya localhost gerekir.

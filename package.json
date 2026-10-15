@@ -1,1 +1,8 @@
-{"name":"not-personal-workspace","private":true,"type":"module","scripts":{"test":"node tests/studio.mjs"}}
+{
+  "name": "not-personal-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/studio.mjs && node tests/pwa.mjs"
+  }
+}

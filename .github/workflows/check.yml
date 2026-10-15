@@ -23,7 +23,7 @@ jobs:
       - name: PHP syntax
         run: php -l api.php && php -l index.php && php -l lib/blocks.php && php -l lib/media.php
       - name: JavaScript syntax
-        run: node --check assets/app.js && node --check assets/studio.js && node --check assets/canvas.js && node tests/studio.mjs
+        run: node --check assets/app.js && node --check assets/studio.js && node --check assets/canvas.js && node --check assets/pwa.js && node --check sw.js && npm test
       - name: HTTP integration tests
         run: python3 tests/integration.py
       - name: MySQL HTTP integration tests
