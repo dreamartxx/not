@@ -10,3 +10,25 @@ for(const expr of ['0d20','99d6','1d7','eval(1)','1d20+9999'])assert.throws(()=>
 const spells=JSON.parse(readFileSync(new URL('../assets/data/dnd-spells-2014.json',import.meta.url))).spells;assert.equal(spells.length,319);assert.equal(new Set(spells.map(x=>x.id)).size,319);assert.equal(spells.find(x=>x.id==='fireball').level,3);assert.ok(spells.every(x=>x.level>=0&&x.level<=9&&x.description));
 console.log('PASS: 2014 modifiers, proficiency, expertise, spell DC, temporary HP, death saves, rest recovery, dice bounds and 319 SRD spells.');
 c.concentration='Bless';rest(c,false);assert.equal(c.concentration,'Bless');rest(c,true);assert.equal(c.concentration,'');
+
+const {selectSpells}=await import('../assets/dnd-model.js');
+const book={known:['fireball','detect-magic','shield'],prepared:['detect-magic','mage-hand']};
+assert.deepEqual(new Set(selectSpells(spells,book).map(x=>x.id)),new Set([...book.known,...book.prepared]));
+assert.deepEqual(selectSpells(spells,book,{level:3}).map(x=>x.id),['fireball']);
+assert.deepEqual(selectSpells(spells,book,{collection:'prepared',feature:'ritual'}).map(x=>x.id),['detect-magic']);
+assert.deepEqual(selectSpells(spells,book,{feature:'reaction'}).map(x=>x.id),['shield']);
+assert.deepEqual(selectSpells(spells,book,{school:'Evocation',query:'ATEŞ'}).map(x=>x.id),['fireball']);
+assert.equal(selectSpells(spells,{known:[],prepared:[]}).length,0);
+assert.equal(selectSpells(spells,book,{collection:'all'}).length,319);
+const archive=selectSpells(spells,book,{collection:'all',className:'Wizard',feature:'concentration',level:2});
+assert.ok(archive.length>0&&archive.every(s=>s.classes.includes('Wizard')&&s.concentration&&s.level===2));
+const selected=selectSpells(spells,book);assert.ok(selected.every((s,i)=>i===0||selected[i-1].level<=s.level));
+console.log('PASS: selected/prepared spellbooks, level/school/property filters, Turkish search, bounded archive source and level ordering.');
+assert.ok(spells.every(s=>typeof s.description_tr==='string'&&s.description_tr.length>0&&!s.description_tr.includes('{@')));
+assert.ok(spells.every(s=>!s.higher||s.higher_tr));
+assert.ok(spells.find(s=>s.id==='fireball').description_tr.includes('8d6'));
+assert.ok(spells.find(s=>s.id==='teleport').description_tr.includes('Hedef Dışı'));
+assert.equal(spells.find(s=>s.id==='mass-cure-wounds').school,'Evocation');
+assert.equal(spells.find(s=>s.id==='mass-heal').school,'Evocation');
+assert.equal(spells.find(s=>s.id==='revivify').school,'Necromancy');
+console.log('PASS: all 319 Turkish descriptions, higher-level text, dice/table preservation and 2014 errata schools.');

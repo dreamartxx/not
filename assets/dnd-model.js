@@ -2,6 +2,16 @@ export const abilities=[['str','Güç','STR'],['dex','Çeviklik','DEX'],['con','
 export const skills=[['Akrobasi',1],['Hayvan İdaresi',4],['Arcana',3],['Atletizm',0],['Aldatma',5],['Tarih',3],['Sezgi',4],['Gözdağı',5],['Araştırma',3],['Tıp',4],['Doğa',3],['Algı',4],['Performans',5],['İkna',5],['Din',3],['El Çabukluğu',1],['Gizlenme',1],['Hayatta Kalma',4]];
 export const classes=['Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger','Rogue','Sorcerer','Warlock','Wizard'];
 export const conditions=['Kör','Büyülenmiş','Sağır','Korkmuş','Kavranmış','Etkisiz','Görünmez','Felçli','Taşlaşmış','Zehirlenmiş','Yerde','Kısıtlanmış','Sersemlemiş','Bilinçsiz'];
+export function selectSpells(spells,character,{query='',level='all',school='all',feature='all',className='all',collection='selected'}={}) {
+ const normalize=s=>String(s||'').toLocaleLowerCase('tr').replaceAll('ı','i');
+ const q=normalize(query),known=new Set([...(character.known||[]),...(character.prepared||[])]),prepared=new Set(character.prepared||[]);
+ return spells.filter(s=>(collection==='all'||(collection==='prepared'?prepared.has(s.id):known.has(s.id)))
+  &&normalize(s.name+' '+(s.tr||'')+' '+(s.translation_name||'')).includes(q)&&(level==='all'||s.level===Number(level))
+  &&(school==='all'||s.school===school)&&(className==='all'||s.classes?.includes(className))
+  &&(feature==='all'||feature==='ritual'&&s.ritual||feature==='concentration'&&s.concentration||feature==='no-concentration'&&!s.concentration
+   ||feature==='action'&&s.casting==='1 action'||feature==='bonus'&&s.casting==='1 bonus action'||feature==='reaction'&&s.casting?.startsWith('1 reaction')))
+  .sort((a,b)=>a.level-b.level||a.name.localeCompare(b.name,'en'));
+}
 export const mod=n=>Math.floor((Number(n)-10)/2);
 export const prof=level=>2+Math.floor((level-1)/4);
 export const signed=n=>n>=0?'+'+n:String(n);
