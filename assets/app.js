@@ -204,6 +204,6 @@ function stepHistory(direction){const p=page(),h=historyFor(p),from=direction<0?
 function selectedIndex(){const i=page().blocks.findIndex(b=>b.id===selectedBlock);return i<0?page().blocks.length-1:i;}
 const studio=createStudio({esc,uid,getPage:page,dirty,renderBlocks,modal,toast,api,download,flush,csrf:()=>state.csrf,pages:()=>state.pages});
 document.addEventListener('keydown',e=>{if(dialog.open||state.view!=='page'||!page())return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'&&!e.target.closest('input,textarea,[contenteditable]')){e.preventDefault();stepHistory(e.shiftKey?1:-1);}if(e.key==='Escape')document.body.classList.remove('focus-mode');});
-const football=createFootball({api,esc,modal,toast,render,active:()=>state.view==='football'});
+const football=createFootball({api,esc,modal,toast,render,uploadFile:file=>studio.uploadFile(file),active:()=>state.view==='football'});
 const pwa=initPWA({modal,toast,flush,busy:()=>studio.busy()||state.dirty.size>0});
 start();

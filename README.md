@@ -100,10 +100,17 @@ Yeni worker sürümleri bekleme durumuna geçer ve güncelleme bildirimi göster
 
 Kök adres / PWA açılışı boş bir not sayfasına gider. Kullanılmamış boş sayfa varsa tekrar kullanılır; mevcut notlar silinmez. Sayfa bağlantıları doğrudan ilgili notu, `#football` futbol alanını açar.
 
-Futbol alanı Barcelona, Real Madrid, Bayern Münih, PSG, Manchester City, Manchester United ve Beşiktaş'ın tüm kulvarlardaki fikstürlerini birleştirir. ESPN'in herkese açık takım fikstürü kaynağı sunucuda okunur; Türkiye yayınları S Sport ve beIN SPORTS'un resmi akışından takım çifti ve saatle eşleştirilir. Açıklanmayan saat ve kanallar tahmin edilmez. Tüm saatler Europe/Istanbul olarak gösterilir.
+Futbol alanı Barcelona, Real Madrid, Bayern Münih, PSG, Manchester City, Manchester United Beşiktaş ve Türkiye millî takımının tüm kulvarlardaki fikstürlerini birleştirir. ESPN'in herkese açık takım fikstürü kaynağı sunucuda okunur; Türkiye yayınları S Sport ve beIN SPORTS'un resmi akışından takım çifti ve saatle eşleştirilir. Açıklanmayan saat ve kanallar tahmin edilmez. Tüm saatler Europe/Istanbul olarak gösterilir.
 
 - Kaynaklar sayfa açıldığında en fazla 30 dakikada bir, Yenile ile en fazla dakikada bir kontrol edilir. Başarısız kaynaklarda önceki kayıt ve güncellik uyarısı gösterilir.
 - `football_cache` ve `football_videos` tabloları ilk kullanımda otomatik oluşturulur (MySQL/SQLite). PHP cURL ve DOM uzantıları gerekir. `lib/football-seed.json` ilk erişim için tarihli, doğrulanmış bir fikstür görüntüsüdür; canlı kaynağın yerini sürekli tutmaz.
 - Her maçın **••• → YouTube videosu ekle** menüsü isteğe bağlı bağlantıyı veritabanında saklar. Video maç altında görünür; kaldırmak için bağlantı boş kaydedilir. Video ekli geçmiş maçlar kaynak güncellemelerinde korunur.
 - Mevcut JSON not yedeği yalnızca notlar ve medyayı kapsar; futbol bağlantıları veritabanı yedeğine dahildir.
 - Fikstür kaynakları değişirse uyarlama gerekebilir. Lig yayın haklarından maç kanalı türetilmez; resmi akış eşleşmesi yoksa kanal açıklanmadı gösterilir.
+
+### Futbol arşivi, puan durumu ve kapak
+
+- Fikstürde **Geçmiş maçlar / Tüm tarihler** seçimiyle sezon (2000’den bugüne), başlangıç ve bitiş tarihi seçilebilir. Kaynakta olmayan sezonlar boş veya erişilemiyor olarak gösterilir. Şampiyonlar Ligi filtresi, takip edilen takımların bu turnuvadaki maçlarını ayırır; Türkiye filtresi millî takım fikstürünü gösterir.
+- **Puan durumu** sekmesi beş ulusal lig, Şampiyonlar Ligi ve Uluslar Ligi tablolarını gösterir. Sıralama sağlayıcının resmi sıra alanına göredir; takip edilen takımlar vurgulanır. Tablo 15 dakika, geçmiş sezonlar 12 saat, devam eden sezon arşivi 30 dakika önbelleğe alınır.
+- Futbol görünürken canlı durum dakikada bir yenilenir. Son 60 dakikada sarı ışık; yalnızca sağlayıcı `state=in` bildirdiğinde ve veri 3 dakikadan yeniyken kırmızı canlı dalga gösterilir. Başlama saati tek başına canlı kabul edilmez. Biten maçlarda skor gösterilir. Azaltılmış hareket tercihinde animasyonlar durur. Canlı güncelleme video iframe’lerini yeniden oluşturmaz.
+- Üst bölümdeki **•••** menüsünden kapak yüklenir veya özel medya kütüphanesinden seçilir. Dikey konum ayarlanabilir; kapak kaldırılabilir. Kullanılan kapak görseli kütüphaneden yanlışlıkla silinemez. Kapak ayarı `football_settings`, harici veriler `football_extra_cache` tablosunda saklanır. Futbol ayarları/arşivi notların JSON yedeğine dahil değildir; veritabanı yedeği gerekir.

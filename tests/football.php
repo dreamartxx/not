@@ -12,3 +12,10 @@ $guide[0]['name']='Valencia – Barcelona';check(footballChannels($m,$guide)[0][
 $body="PREMIER LEAGUE - (6. HAFTA)\n17.10.2026 CUMARTESİ\n17:00 | MANCHESTER CITY - IPSWICH TOWN | beIN SPORTS 3\nTÜRKİYE SİGORTA BASKETBOL SÜPER LİGİ - (4. HAFTA)\n17.10.2026 CUMARTESİ\n20:00 | BEŞİKTAŞ - GALATASARAY | beIN SPORTS 5";
 $parsed=footballBein('<script type="application/ld+json">'.json_encode(['articleBody'=>$body]).'</script>','https://www.beinsports.com.tr/');check(count($parsed)===1);
 echo "PASS: football normalization, YouTube validation, broadcast team/date matching and sport separation.\n";
+require __DIR__.'/../lib/football-extra.php';
+check(footballScore(['displayValue'=>'3'])==='3'&&footballScore('0')==='0'&&footballScore('<img>')===null);
+$event['season']['year']=2026;$event['league']=['slug'=>'uefa.champions'];$event['competitions'][0]['status']=['type'=>['state'=>'post','name'=>'STATUS_FULL_TIME'],'displayClock'=>"90'"];$event['competitions'][0]['competitors'][0]['score']=['displayValue'=>'1'];$event['competitions'][0]['competitors'][1]['score']='4';
+$m=footballNormalize(['events'=>[$event]])[0];check($m['home_score']==='1'&&$m['away_score']==='4'&&$m['state']==='post'&&$m['competition']==='uefa.champions'&&$m['season']===2026);
+$tables=footballTables(['children'=>[['name'=>'League A','children'=>[['name'=>'Group 1','standings'=>['entries'=>[['team'=>['id'=>'465','displayName'=>'Turkey'],'stats'=>[['name'=>'points','displayValue'=>'6'],['name'=>'rank','value'=>2]]]]]]]]]]);
+check($tables[0]['name']==='League A · 1 Grubu'&&$tables[0]['rows'][0]['name']==='Türkiye'&&$tables[0]['rows'][0]['points']==='6'&&$tables[0]['rows'][0]['gamesPlayed']==='—');
+echo "PASS: scores, competition identity, final match state, nested standings and missing statistics.\n";

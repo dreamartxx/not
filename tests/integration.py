@@ -59,7 +59,7 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
-      fixtures=a.call('football');assert len(fixtures['teams'])==7 and len(fixtures['matches'])>100
+      fixtures=a.call('football');assert len(fixtures['teams'])==8 and len(fixtures['matches'])>100
       match=fixtures['matches'][0]['id']
       a.call('football-video',{'match_id':match,'url':'https://youtu.be/dQw4w9WgXcQ'},403,csrf='wrong')
       a.call('football-video',{'match_id':match,'url':'https://youtube.com.evil.test/watch?v=dQw4w9WgXcQ'},400)
@@ -71,6 +71,29 @@ def run():
       assert any(v['match_id']==match and v['url']==video['url'] for v in a.call('football')['videos'])
       a.call('football-video',{'match_id':match,'url':''})
       assert not any(v['match_id']==match and v['url'] for v in a.call('football')['videos'])
+      a.call('football-history&season=1999',code=400)
+      a.call('football-standings&league=../../etc',code=400)
+      a.call('football-live');a.call('football-history');a.call('football-standings')
+      a.call('football-cover',{'media_id':'','position':50},403,csrf='bad')
+      a.call('football-cover',{'media_id':'a'*32,'position':50},400)
+      a.call('football-cover',{'media_id':'','position':101},400)
+      # A video attached to an archive-only match survives the next application load.
+      archived={**fixtures['matches'][0],'id':'900000000000001','date':'2025-01-01T18:00:00+00:00','state':'post'}
+      archive_file=pathlib.Path(tmp)/'archive.json';archive_file.write_text(json.dumps({'matches':[archived]}))
+      seed_code="$c=require $argv[1];$d=new PDO($c['dsn'],$c['db_user']??null,$c['db_password']??null);$s=$d->prepare('INSERT INTO football_extra_cache VALUES(?,?,?,?)');$s->execute(['history-test',file_get_contents($argv[2]),time(),time()]);"
+      subprocess.run(['php','-r',seed_code,str(config),str(archive_file)],check=True)
+      a.call('football-video',{'match_id':archived['id'],'url':'https://youtu.be/dQw4w9WgXcQ'})
+      assert any(m['id']==archived['id'] for m in b.call('football')['matches'])
+      a.call('football-video',{'match_id':archived['id'],'url':''})
+      from studio_integration import upload
+      cover=upload(a)['media']
+      a.call('football-cover',{'media_id':cover['id'],'position':25})
+      assert b.call('football')['cover']=={'media_id':cover['id'],'position':25}
+      assert next(m for m in a.call('library')['media'] if m['id']==cover['id'])['used']
+      a.call('remove-media',{'id':cover['id']},409)
+      a.call('football-cover',{'media_id':'','position':50})
+      a.call('remove-media',{'id':cover['id']})
+      print('PASS: football archive/standings validation, CSRF, cover persistence and in-use image protection.')
       from studio_integration import run_studio
       run_studio(a,Client)
       a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
