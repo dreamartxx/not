@@ -59,7 +59,7 @@ Hesap şifresi Ayarlar → Şifremi değiştir üzerinden değiştirilebilir. Ş
 
 ## Studio editörü
 
-Editörün üstündeki **+ Ekle** düğmesi 21 blok türünü açar. Bir bloğu seçip araç çubuğundan ekleme yaptığında yeni içerik o bloğun altına gelir. Her bloğun solundaki tutamaçla sürükleyip sıralayabilir; blok menüsünden yarım satır seçerek iki bloğu yan yana koyabilir, renk ve hizalama ayarlayabilirsin.
+Boş sayfa yalnızca başlık ve yazı alanıyla açılır. Üst çubuktaki **Ekle** menüsü 21 blok türünü açar; bir bloğa dokunup menüden eklediğinde yeni içerik o bloğun altına gelir. Boş metin satırında `/` de bu menüyü açar. Geri al/ileri al, odak modu, kapak, simge, taşıma ve alt sayfa işlemleri sağ üstteki **•••** menüsündedir. Her bloğun solundaki tutamaçla sürükleyip sıralayabilir; blok menüsünden yarım satır seçerek iki bloğu yan yana koyabilir, renk ve hizalama ayarlayabilirsin.
 
 - **Tablo:** hücre düzenleme, satır/sütun ekleme ve silme, başlık satırı, Excel/Sheets'ten sekmeyle ayrılmış hücre yapıştırma, CSV dışa aktarma.
 - **Çizim / diyagram:** kalem, silgi, metin, dikdörtgen, elips, karar şekli, çizgi ve ok; şekilleri taşıma ve boyutlandırma; iki düğümü bağlayan ve taşınırken takip eden oklar; fotoğraf ekleme; geri/ileri alma ve PNG indirme.
@@ -67,7 +67,9 @@ Editörün üstündeki **+ Ekle** düğmesi 21 blok türünü açar. Bir bloğu 
 - **Video:** YouTube (zaman damgası dahil), Vimeo, doğrudan MP4/WebM bağlantısı veya MP4 dosyası. Uzak oynatıcı tıklanınca yüklenir. Kaynağın gömmeye izin vermesi gerekir.
 - **Ses / PDF:** dosya veya HTTPS bağlantısı, yerinde ses oynatma ve dosya indirme.
 - **Bağlantı kartı, açılır not, numaralı liste, içindekiler, üç sütunlu görev panosu**, odak modu, editör geri/ileri alma.
-- Ana sayfada görsel düşünce, proje, ilham ve toplantı şablonları.
+- Yan menüde **SAYFALAR → •••** üzerinden boş sayfa ve günlük, proje, okuma, görsel düşünce, ilham ve toplantı şablonları.
+- Tablo satır/sütun işlemleri ve CSV dışa aktarımı **Tablo menüsü** içinde.
+- Açık temada kırık beyaz, koyu temada grafit yüzeyler; nötr kapaklar ve ölçülü mavi vurgular.
 
 ### Dosyalar ve taşınabilir yedek
 

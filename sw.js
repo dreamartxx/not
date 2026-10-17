@@ -1,5 +1,5 @@
 // Public offline resources only. Never store authenticated HTML, API responses or media.
-const CACHE = 'not-public-pwa-v3';
+const CACHE = 'not-public-pwa-v4';
 const BASE = new URL('./', self.location.href);
 const PUBLIC_FILES = ['offline.html', 'assets/offline.css', 'assets/offline.js', 'assets/icon-3d-192.png'];
 const publicURLs = new Set(PUBLIC_FILES.map(path => new URL(path, BASE).href));
