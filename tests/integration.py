@@ -61,6 +61,8 @@ def run():
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
       # D&D uses its own versioned private document; rejects malformed backups atomically.
       Client(a.base).call('dnd',code=401)
+      Client(a.base).call('dnd-spells',code=401)
+      assert len(a.call('dnd-spells')['spells'])==319
       dnd=a.call('dnd');assert dnd['data']['characters']==[]
       char=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {newCharacter} from './assets/dnd-model.js'; console.log(JSON.stringify(newCharacter('test-character')));"],cwd=ROOT))
       dnd['data']['characters']=[char];dnd['data']['selected']=char['id']

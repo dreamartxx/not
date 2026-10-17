@@ -28,6 +28,7 @@ function dndClean($input): array {
  if(strlen(json_encode($d))>2_500_000)throw new InvalidArgumentException('D&D yedeği en fazla 2,5 MB olabilir.');return $d;
 }
 function dndAPI(PDO $db,string $action,string $method,array $input): never {
+ if($action==='dnd-spells'&&$method==='GET')respond(json_decode(file_get_contents(__DIR__.'/../assets/data/dnd-spells-2014.json'),true,512,JSON_THROW_ON_ERROR));
  $db->exec('CREATE TABLE IF NOT EXISTS dnd_workspace (id INTEGER PRIMARY KEY, payload MEDIUMTEXT NOT NULL, version INTEGER NOT NULL, updated_at VARCHAR(30) NOT NULL)');
  $q=$db->prepare($db->getAttribute(PDO::ATTR_DRIVER_NAME)==='sqlite'?'INSERT OR IGNORE INTO dnd_workspace VALUES(1,?,1,?)':'INSERT IGNORE INTO dnd_workspace VALUES(1,?,1,?)');$q->execute([json_encode(dndBlank()),gmdate('c')]);
  if($action==='dnd'&&$method==='GET'){$r=$db->query('SELECT * FROM dnd_workspace WHERE id=1')->fetch();respond(['data'=>json_decode($r['payload'],true),'version'=>(int)$r['version'],'updated_at'=>$r['updated_at']]);}
