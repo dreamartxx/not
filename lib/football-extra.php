@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-function footballLeagues(): array {return ['esp.1'=>'LaLiga','eng.1'=>'Premier League','ger.1'=>'Bundesliga','fra.1'=>'Ligue 1','tur.1'=>'Süper Lig','uefa.champions'=>'Şampiyonlar Ligi','uefa.nations'=>'Uluslar Ligi'];}
+function footballLeagues(): array {return ['esp.1'=>'LaLiga','eng.1'=>'Premier League','ger.1'=>'Bundesliga','fra.1'=>'Ligue 1','tur.1'=>'Süper Lig','tur.2'=>'1. Lig','uefa.champions'=>'Şampiyonlar Ligi','uefa.nations'=>'Uluslar Ligi'];}
 function footballSeason(): int {return (int)date('Y')-((int)date('n')<7?1:0);}
 function footballTables(array $data): array {
  $tables=[];
@@ -38,10 +38,12 @@ function footballKnownMatch(PDO $db,string $id,array $matches): bool {
  foreach($db->query('SELECT payload FROM football_extra_cache')->fetchAll(PDO::FETCH_COLUMN) as $payload){$d=json_decode($payload,true);if(in_array($id,array_map('strval',array_column($d['matches']??[],'id')),true))return true;}return false;
 }
 function footballHistory(PDO $db,int $year,bool $offline): array {
- return footballExtraCache($db,'history-v2-'.$year,$year===footballSeason()?1800:43200,$offline,function()use($year){
+ return footballExtraCache($db,'history-v3-'.$year,$year===footballSeason()?1800:43200,$offline,function()use($year){
   $urls=[];foreach(footballTeams() as $id=>$team)$urls[$id]='https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/'.$id.'/schedule?season='.$year;
+  $urls['bursa']='https://www.bursaspor.org.tr/fikstur';
   $raw=footballFetch($urls);$matches=[];$failed=[];
   foreach(footballTeams() as $id=>$team){try{$d=json_decode($raw[$id]??'',true,512,JSON_THROW_ON_ERROR);if((string)($d['team']['id']??'')!==(string)$id)throw new RuntimeException();foreach(footballNormalize($d) as $m){if((string)$id==='465'?(int)substr($m['date'],0,4)!==$year:$m['season']!==$year)continue;$matches[$m['id']]=$m;}}catch(Throwable $e){$failed[]=(string)$id;}}
+  try{foreach(footballBursa($raw['bursa']??'') as $m)if($m['season']===$year)$matches[$m['id']]=$m;$failed=array_values(array_diff($failed,['810']));}catch(Throwable $e){if(!isset($raw[810])&&!in_array('810',$failed,true))$failed[]='810';}
   if(count($failed)===count(footballTeams()))throw new RuntimeException('History unavailable');
   return ['matches'=>array_values($matches),'failed_teams'=>$failed,'season'=>$year];
  });

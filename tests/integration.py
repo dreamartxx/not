@@ -59,7 +59,7 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
-      fixtures=a.call('football');assert len(fixtures['teams'])==8 and len(fixtures['matches'])>100
+      fixtures=a.call('football');assert len(fixtures['teams'])==9 and fixtures['teams']['810']['name']=='Bursaspor' and len(fixtures['matches'])>100
       match=fixtures['matches'][0]['id']
       a.call('football-video',{'match_id':match,'url':'https://youtu.be/dQw4w9WgXcQ'},403,csrf='wrong')
       a.call('football-video',{'match_id':match,'url':'https://youtube.com.evil.test/watch?v=dQw4w9WgXcQ'},400)

@@ -19,3 +19,13 @@ $m=footballNormalize(['events'=>[$event]])[0];check($m['home_score']==='1'&&$m['
 $tables=footballTables(['children'=>[['name'=>'League A','children'=>[['name'=>'Group 1','standings'=>['entries'=>[['team'=>['id'=>'465','displayName'=>'Turkey'],'stats'=>[['name'=>'points','displayValue'=>'6'],['name'=>'rank','value'=>2]]]]]]]]]]);
 check($tables[0]['name']==='League A · 1 Grubu'&&$tables[0]['rows'][0]['name']==='Türkiye'&&$tables[0]['rows'][0]['points']==='6'&&$tables[0]['rows'][0]['gamesPlayed']==='—');
 echo "PASS: scores, competition identity, final match state, nested standings and missing statistics.\n";
+
+function bursaFixture(string $date,string $time,string $scores=''): string {
+ return '<div class="fikstur-item"><div class="fikstur-date">'.$date.'</div><div class="fikstur-time">'.$time.'</div><div class="fikstur-team-title">Bursaspor</div><div class="fikstur-team-title">Rakip FK</div>'.$scores.'</div>';
+}
+$sample=bursaFixture('19 Ekim 2026','20:00');$b=footballBursa($sample.$sample);check(count($b)===1&&$b[0]['home_id']==='810'&&$b[0]['date']==='2026-10-19T17:00:00+00:00');
+$changed=footballBursa(bursaFixture('21 Ekim 2026','18:00'))[0];check($changed['id']===$b[0]['id']);
+$unknown=footballBursa(bursaFixture('29 Kasım 2026','00:00'))[0];check(!$unknown['time_confirmed']&&$unknown['state']==='pre'&&$unknown['home_score']===null);
+$past=footballBursa(bursaFixture('01 Eylül 2020','20:00','<div class="score">0</div><div class="score">3</div>'))[0];check($past['state']==='post'&&$past['home_score']==='0'&&$past['away_score']==='3'&&$past['season']===2020);
+foreach(['<html>Unavailable</html>',bursaFixture('31 Şubat 2026','20:00')] as $bad){try{footballBursa($bad);throw new LogicException('Malformed club fixture accepted');}catch(RuntimeException $e){}}
+echo "PASS: Bursaspor official fixtures, duplicates, stable video IDs, unknown kickoff, scores and malformed source.\n";

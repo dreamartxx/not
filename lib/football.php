@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/football-bursa.php';
 function footballTeams(): array {return [
  '83'=>['name'=>'Barcelona','short'=>'BAR'], '86'=>['name'=>'Real Madrid','short'=>'RMA'],
  '132'=>['name'=>'Bayern Münih','short'=>'BAY'], '160'=>['name'=>'Paris Saint-Germain','short'=>'PSG'],
  '382'=>['name'=>'Manchester City','short'=>'MCI'], '360'=>['name'=>'Manchester United','short'=>'MUN'],
- '1895'=>['name'=>'Beşiktaş','short'=>'BJK'], '465'=>['name'=>'Türkiye','short'=>'TUR']];}
+ '1895'=>['name'=>'Beşiktaş','short'=>'BJK'], '810'=>['name'=>'Bursaspor','short'=>'BUR'], '465'=>['name'=>'Türkiye','short'=>'TUR']];}
 function footballScore($score): ?string {if(is_array($score))$score=$score['displayValue']??$score['value']??null;return is_scalar($score)&&preg_match('/^\d{1,3}$/D',(string)$score)?(string)$score:null;}
 function footballYouTube(string $url): string {
  if($url==='')return '';
@@ -40,7 +41,7 @@ function footballNormalize(array $data): array {
 }
 function footballFold(string $s): string {return preg_replace('/[^a-z0-9]/','',strtr(mb_strtolower($s),['ı'=>'i','ş'=>'s','ğ'=>'g','ü'=>'u','ö'=>'o','ç'=>'c','é'=>'e','è'=>'e','í'=>'i','á'=>'a','ñ'=>'n']));}
 function footballTeamIn(string $name,string $id): bool {
- $aliases=['83'=>['barcelona'],'86'=>['realmadrid'],'132'=>['bayernmunih','bayernmunich','bayernmunchen'],'160'=>['parissaintgermain','psg'],'382'=>['manchestercity'],'360'=>['manchesterunited'],'1895'=>['besiktas'],'465'=>['turkiye','turkey']];
+ $aliases=['83'=>['barcelona'],'86'=>['realmadrid'],'132'=>['bayernmunih','bayernmunich','bayernmunchen'],'160'=>['parissaintgermain','psg'],'382'=>['manchestercity'],'360'=>['manchesterunited'],'1895'=>['besiktas'],'810'=>['bursaspor'],'465'=>['turkiye','turkey']];
  foreach($aliases[$id]??[] as $alias)if(str_contains(footballFold($name),$alias))return true;return false;
 }
 function footballSSport(string $html): array {
@@ -84,7 +85,7 @@ function footballChannels(array $matches,array $guide): array {
 // Fixed public provider hosts only; no user URL is ever fetched by the server.
 function footballFetch(array $urls): array {
  if(!function_exists('curl_multi_init'))return [];$multi=curl_multi_init();$handles=[];$bodies=[];
- foreach($urls as $key=>$url){if(!in_array(parse_url($url,PHP_URL_HOST),['site.api.espn.com','www.ssportplus.com','www.beinsports.com.tr'],true))continue;
+ foreach($urls as $key=>$url){if(!in_array(parse_url($url,PHP_URL_HOST),['site.api.espn.com','www.ssportplus.com','www.beinsports.com.tr','www.bursaspor.org.tr'],true))continue;
   $bodies[$key]='';$h=curl_init($url);curl_setopt_array($h,[CURLOPT_CONNECTTIMEOUT=>4,CURLOPT_TIMEOUT=>12,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_USERAGENT=>'NotPersonalWorkspace/1.0',CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_ENCODING=>'',CURLOPT_WRITEFUNCTION=>function($ch,$data)use(&$bodies,$key){if(strlen($bodies[$key])+strlen($data)>8_000_000)return 0;$bodies[$key].=$data;return strlen($data);}]);curl_multi_add_handle($multi,$h);$handles[$key]=$h;
  }
  do{$code=curl_multi_exec($multi,$running);if($running)curl_multi_select($multi,1);}while($running&&$code===CURLM_OK);
@@ -93,12 +94,12 @@ function footballFetch(array $urls): array {
 function footballData(PDO $db,bool $refresh=false,bool $offline=false): array {
  $db->exec('CREATE TABLE IF NOT EXISTS football_cache (id INTEGER PRIMARY KEY, payload MEDIUMTEXT NOT NULL, updated_at BIGINT NOT NULL, attempted_at BIGINT NOT NULL)');
  $seed=json_decode(file_get_contents(__DIR__.'/football-seed.json'),true);$row=$db->query('SELECT * FROM football_cache WHERE id=1')->fetch();$data=$row?json_decode($row['payload'],true):$seed;$now=time();
- if(!$offline&&(!$row||(($data['schema']??0)<2&&$now-(int)$row['attempted_at']>60)||$now-(int)$row['attempted_at']>($refresh?60:1800))){
+ if(!$offline&&(!$row||(($data['schema']??0)<3&&$now-(int)$row['attempted_at']>60)||$now-(int)$row['attempted_at']>($refresh?60:1800))){
   // Reserve a refresh window before external I/O so other tabs reuse the cached snapshot.
   $stmt=$db->prepare($db->getAttribute(PDO::ATTR_DRIVER_NAME)==='sqlite'?'INSERT INTO football_cache VALUES(1,?,?,?) ON CONFLICT(id) DO UPDATE SET attempted_at=excluded.attempted_at':'INSERT INTO football_cache VALUES(1,?,?,?) ON DUPLICATE KEY UPDATE attempted_at=VALUES(attempted_at)');$stmt->execute([json_encode($data),$row['updated_at']??0,$now]);
-  $urls=['ssport'=>'https://www.ssportplus.com/yayin-akisi/','bein-home'=>'https://www.beinsports.com.tr/'];foreach(footballTeams() as $id=>$team)$urls['team-'.$id]='https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/'.$id.'/schedule?fixture=true';
+  $urls=['ssport'=>'https://www.ssportplus.com/yayin-akisi/','bein-home'=>'https://www.beinsports.com.tr/'];foreach(footballTeams() as $id=>$team)$urls['team-'.$id]=(string)$id==='810'?'https://www.bursaspor.org.tr/fikstur':'https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/'.$id.'/schedule?fixture=true';
   $raw=footballFetch($urls);$fresh=[];$failed=[];$success=[];
-  foreach(footballTeams() as $id=>$team){try{$parsed=json_decode($raw['team-'.$id]??'',true,512,JSON_THROW_ON_ERROR);if((string)($parsed['team']['id']??'')!==(string)$id)throw new RuntimeException('Wrong team');$events=footballNormalize($parsed);$success[]=(string)$id;foreach($events as $e)$fresh[$e['id']]=$e;}catch(Throwable $e){$failed[]=(string)$id;}}
+  foreach(footballTeams() as $id=>$team){try{if((string)$id==='810'){$events=footballBursa($raw['team-'.$id]??'');}else{$parsed=json_decode($raw['team-'.$id]??'',true,512,JSON_THROW_ON_ERROR);if((string)($parsed['team']['id']??'')!==(string)$id)throw new RuntimeException('Wrong team');$events=footballNormalize($parsed);}$success[]=(string)$id;foreach($events as $e)$fresh[$e['id']]=$e;}catch(Throwable $e){$failed[]=(string)$id;}}
   // Keep previously seen matches for video attachments and recent history, but mark failed feeds.
   $videoIds=array_flip($db->query("SELECT match_id FROM football_videos WHERE url<>''")->fetchAll(PDO::FETCH_COLUMN));
   $all=[];foreach($data['matches']??[] as $m){if(strtotime($m['date'])>$now-90*86400||isset($videoIds[$m['id']])){if(strtotime($m['date'])>$now&&!isset($fresh[$m['id']])&&(in_array($m['home_id'],$success,true)||in_array($m['away_id'],$success,true))){$m['time_confirmed']=false;$m['status']='STATUS_UNCONFIRMED';$m['channel']='';$m['channel_source']='';}$all[$m['id']]=$m;}}
@@ -107,7 +108,7 @@ function footballData(PDO $db,bool $refresh=false,bool $offline=false): array {
   if(preg_match('~href="(/haber/bu-hafta-hangi-mac-hangi-kanalda(?:-\d+)?)"~',$raw['bein-home']??'',$m)){
    $url='https://www.beinsports.com.tr'.$m[1].'?amp=1';$article=footballFetch(['bein'=>$url]);$be=footballBein($article['bein']??'',$url);if($be){$guide=array_merge($guide,$be);$sources[]='beIN SPORTS';}
   }
-  if($success){$data=['schema'=>2,'updated_at'=>gmdate('c'),'matches'=>footballChannels(array_values($all),$guide),'failed_teams'=>$failed,'channel_sources'=>$sources];$stmt=$db->prepare('UPDATE football_cache SET payload=?,updated_at=? WHERE id=1');$stmt->execute([json_encode($data,JSON_UNESCAPED_UNICODE),$now]);}else{$data['failed_teams']=array_map('strval',array_keys(footballTeams()));$db->prepare('UPDATE football_cache SET payload=? WHERE id=1')->execute([json_encode($data,JSON_UNESCAPED_UNICODE)]);}
+  if($success){$data=['schema'=>3,'updated_at'=>gmdate('c'),'matches'=>footballChannels(array_values($all),$guide),'failed_teams'=>$failed,'channel_sources'=>$sources];$stmt=$db->prepare('UPDATE football_cache SET payload=?,updated_at=? WHERE id=1');$stmt->execute([json_encode($data,JSON_UNESCAPED_UNICODE),$now]);}else{$data['failed_teams']=array_map('strval',array_keys(footballTeams()));$db->prepare('UPDATE football_cache SET payload=? WHERE id=1')->execute([json_encode($data,JSON_UNESCAPED_UNICODE)]);}
  }
  $data['stale']=!empty($data['failed_teams'])||$now-strtotime($data['updated_at']??'1970-01-01')>7200;
  $data['cover']=$db->query('SELECT media_id,position FROM football_settings WHERE id=1')->fetch()?:['media_id'=>'','position'=>50];$data['teams']=footballTeams();$data['videos']=$db->query('SELECT match_id,url FROM football_videos')->fetchAll();
