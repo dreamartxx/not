@@ -11,7 +11,7 @@ for(const base of ['https://not.test/','https://not.test/notes/']){
  const handlers={},stored=new Map(),deleted=[];let claimed=false,skip=false,offline=false,fetches=[];
  const cache={addAll:async urls=>{for(const url of urls)stored.set(url,new Response(url.endsWith('offline.html')?'OFFLINE':'PUBLIC'));},match:async request=>stored.get(typeof request==='string'?request:request.url)?.clone()};
  const self={location:{href:base+'sw.js'},clients:{claim:async()=>{claimed=true;}},skipWaiting:async()=>{skip=true;},addEventListener:(name,fn)=>handlers[name]=fn};
- vm.runInNewContext(source,{self,URL,Set,caches:{open:async()=>cache,keys:async()=>['not-public-pwa-old','other-app-cache','not-public-pwa-v2'],delete:async k=>deleted.push(k)},fetch:async request=>{fetches.push(request.url);if(offline)throw new Error('offline');return new Response('NETWORK');}});
+ vm.runInNewContext(source,{self,URL,Set,caches:{open:async()=>cache,keys:async()=>['not-public-pwa-old','other-app-cache','not-public-pwa-v3'],delete:async k=>deleted.push(k)},fetch:async request=>{fetches.push(request.url);if(offline)throw new Error('offline');return new Response('NETWORK');}});
  async function life(name,data){let promise;handlers[name]({data,waitUntil:p=>promise=p});await promise;}
  await life('install');assert.equal(stored.size,4);assert(!skip,'install must not force update');
  await life('activate');assert(claimed);assert.deepEqual(deleted,['not-public-pwa-old']);
