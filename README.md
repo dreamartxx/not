@@ -10,6 +10,8 @@ Notion'dan esinlenen, Türkçe ve tek kullanıcılı bir not uygulaması. PHP 8.
 - Otomatik kayıt ve sürüm denetimi: başka sekmedeki değişikliklerin sessizce üzerine yazılmaz
 - Başlık ve içerikte Türkçe arama (`Cmd/Ctrl + K`)
 - Renkli kapaklar, simgeler, açık/koyu tema, mobil görünüm
+- Her not/alt sayfa, Tüm sayfalar, Favoriler, Çöp kutusu, D&D ve Futbol için bağımsız fotoğraf kapağı. Sağ üst `•••` menüsünden dosya yükleme veya özel kütüphaneden seçme, dikey kadraj ve kaldırma; kapaksız sayfalarda ek bir alan görünmez.
+- Kapaklar özel medya deposunda ve veritabanında saklanır; kullanılan kapak dosyaları silinmeye karşı korunur. Tam JSON yedeği kapak görsellerini de içerir. İçe aktarım sayfa kapaklarını yeni kopyalara taşır, mevcut alan kapaklarının üzerine yazmaz.
 - Günlük, proje ve okuma şablonları
 - Alt sayfalarla birlikte çöp kutusu ve geri yükleme
 - Markdown dışa aktarma, JSON yedekleme ve atomik JSON içe aktarma

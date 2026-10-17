@@ -114,6 +114,8 @@ def run():
       print('PASS: football archive/standings validation, CSRF, cover persistence and in-use image protection.')
       from studio_integration import run_studio
       run_studio(a,Client)
+      from covers_integration import run_covers
+      run_covers(a,Client)
       a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
       a.call('password',{'current_password':password,'new_password':'Abc12!'},400)
       a.call('password',{'current_password':password,'new_password':'şşşşşş'},400)

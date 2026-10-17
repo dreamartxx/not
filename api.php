@@ -66,11 +66,13 @@ if ($action==='password' && $method==='POST') {
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
-function allPages(PDO $db): array { return $db->query('SELECT * FROM pages ORDER BY created_at,id')->fetchAll(); }
+function allPages(PDO $db): array { $pages=$db->query('SELECT * FROM pages ORDER BY created_at,id')->fetchAll();$covers=allCovers($db);foreach($pages as &$p)$p['cover_photo']=$covers['page:'.$p['id']]??['media_id'=>'','position'=>50];unset($p);return $pages; }
 function decodePage(array $p): array { $p['blocks']=json_decode($p['blocks'],true); $p['favorite']=(bool)$p['favorite']; $p['version']=(int)$p['version']; return $p; }
 function findPage(PDO $db,string $id): array { $s=$db->prepare('SELECT * FROM pages WHERE id=?');$s->execute([$id]);$p=$s->fetch();if(!$p) fail('Sayfa bulunamadı.',404);return $p; }
 require __DIR__.'/lib/blocks.php';
+require __DIR__.'/lib/covers.php';
 require __DIR__.'/lib/media.php';
+if(in_array($action,['covers','cover-save'],true))coversAPI($db,$action,$method,$input??[]);
 function validParent(PDO $db,?string $parent,string $id): void {
     $seen=[$id=>true];
     while($parent) { if(isset($seen[$parent])) fail('Bir sayfa kendi altına taşınamaz.');$seen[$parent]=true;$p=findPage($db,$parent);if($p['deleted_at']) fail('Çöp kutusundaki sayfaya eklenemez.');$parent=$p['parent_id']; }
@@ -89,18 +91,24 @@ if (in_array($action,['import','validate-import'],true)) {
         $title=$item['title']??'';$icon=$item['icon']??'📄';$cover=$item['cover']??'none';
         if(!is_string($title)||mb_strlen($title)>255||!is_string($icon)||mb_strlen($icon)>8||!in_array($cover,['none','sage','sand','lavender','blue','rose'],true)) fail('Geçersiz sayfa bilgileri.');
         $parent=$item['parent_id']??null;if($parent!==null&&!is_string($parent)) fail('Geçersiz üst sayfa.');
-        $item['blocks']=validBlocks($item['blocks']??null);$clean[$item['id']]=$item;
+        $item['blocks']=validBlocks($item['blocks']??null);if(isset($item['cover_photo']))$item['cover_photo']=validCover($item['cover_photo']);$clean[$item['id']]=$item;
     }
     foreach($clean as $id=>$item) {
         $seen=[$id=>true];$parent=$item['parent_id']??null;
         while($parent && isset($clean[$parent])) {if(isset($seen[$parent])) fail('Yedekte döngüsel sayfa ilişkisi var.');$seen[$parent]=true;$parent=$clean[$parent]['parent_id']??null;}
     }
+    $workspaceCovers=$input['covers']??[];if(!is_array($workspaceCovers)||count($workspaceCovers)>5)fail('Geçersiz alan kapakları.');
+    foreach($workspaceCovers as $scope=>$cover){if(!in_array($scope,['home','favorites','trash','dnd','football'],true))fail('Geçersiz çalışma alanı.');$workspaceCovers[$scope]=validCover($cover);}
     if($action==='validate-import') respond(['ok'=>true]);
+    foreach($clean as $item)if(isset($item['cover_photo']))coverImageExists($db,$item['cover_photo']);
+    foreach($workspaceCovers as $cover)coverImageExists($db,$cover);
     $db->beginTransaction();$now=gmdate('c');
     $stmt=$db->prepare('INSERT INTO pages (id,parent_id,title,icon,cover,blocks,favorite,deleted_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)');
     foreach($clean as $id=>$item) {
         $stmt->execute([$map[$id],$map[$item['parent_id']??'']??null,$item['title']??'',$item['icon']??'📄',$item['cover']??'none',json_encode($item['blocks'],JSON_UNESCAPED_UNICODE),(int)(bool)($item['favorite']??false),empty($item['deleted_at'])?null:$now,$now,$now]);
     }
+    foreach($clean as $id=>$item)if(isset($item['cover_photo']))saveCover($db,'page:'.$map[$id],$item['cover_photo']);
+    $existingCovers=allCovers($db);foreach($workspaceCovers as $scope=>$cover)if(empty($existingCovers[$scope]['media_id']))saveCover($db,$scope,$cover);
     $db->commit();respond(['ok'=>true,'count'=>count($clean)],201);
 }
 if ($action==='create') {
@@ -128,7 +136,7 @@ if (in_array($action,['trash','restore','purge'],true)) {
     $db->beginTransaction();
     if ($action==='restore') { $s=$db->prepare('UPDATE pages SET parent_id=NULL WHERE id=?');$s->execute([$id]); }
     foreach($ids as $pid) {
-        if($action==='purge') {$s=$db->prepare('DELETE FROM pages WHERE id=?');$s->execute([$pid]);}
+        if($action==='purge') {$s=$db->prepare('DELETE FROM pages WHERE id=?');$s->execute([$pid]);$db->prepare('DELETE FROM workspace_covers WHERE scope=?')->execute(['page:'.$pid]);}
         else {$s=$db->prepare('UPDATE pages SET deleted_at=?,version=version+1,updated_at=? WHERE id=?');$s->execute([$action==='trash'?gmdate('c'):null,gmdate('c'),$pid]);}
     }
     $db->commit();respond(['ok'=>true]);

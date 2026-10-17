@@ -10,12 +10,14 @@ if($action==='library' && $method==='GET'){
  $list=$db->query('SELECT id,name,mime,bytes,created_at FROM media ORDER BY created_at DESC')->fetchAll();
  $content=implode(' ',array_column($db->query('SELECT blocks FROM pages')->fetchAll(),'blocks'));
  $content.=' '.implode(' ',array_column($db->query('SELECT media_id FROM football_settings')->fetchAll(),'media_id'));
+ $content.=' '.implode(' ',array_column($db->query('SELECT media_id FROM workspace_covers')->fetchAll(),'media_id'));
  foreach($list as &$item)$item['used']=str_contains($content,$item['id']);unset($item);respond(['media'=>$list]);
 }
 if($action==='remove-media' && $method==='POST'){
  $id=mediaId($input['id']??'');if(!$id)fail('Dosya gerekli.');
  $q=$db->prepare('SELECT COUNT(*) FROM pages WHERE blocks LIKE ?');$q->execute(['%'.$id.'%']);if((int)$q->fetchColumn())fail('Dosya bir notta kullanılıyor. Çöp kutusundaki notlar da korunur.',409);
  $q=$db->prepare('SELECT COUNT(*) FROM football_settings WHERE media_id=?');$q->execute([$id]);if((int)$q->fetchColumn())fail('Dosya futbol kapağında kullanılıyor. Önce kapağı değiştir veya kaldır.',409);
+ $q=$db->prepare('SELECT COUNT(*) FROM workspace_covers WHERE media_id=?');$q->execute([$id]);if((int)$q->fetchColumn())fail('Dosya bir çalışma alanının kapağında kullanılıyor. Önce kapağı değiştir veya kaldır.',409);
  $q=$db->prepare('DELETE FROM media WHERE id=?');$q->execute([$id]);respond(['ok'=>true]);
 }
 if($action==='upload' && $method==='POST'){
