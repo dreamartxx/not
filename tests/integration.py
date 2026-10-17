@@ -62,15 +62,18 @@ def run():
       # D&D uses its own versioned private document; rejects malformed backups atomically.
       Client(a.base).call('dnd',code=401)
       Client(a.base).call('dnd-spells',code=401)
-      assert len(a.call('dnd-spells')['spells'])==319
+      assert len(a.call('dnd-spells')['spells'])==460
       dnd=a.call('dnd');assert dnd['data']['characters']==[]
       char=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {newCharacter} from './assets/dnd-model.js'; console.log(JSON.stringify(newCharacter('test-character')));"],cwd=ROOT))
+      char['known']=['fireball','booming-blade','absorb-elements'];char['prepared']=['booming-blade']
       dnd['data']['characters']=[char];dnd['data']['selected']=char['id']
       dnd['data']['journal']=[{'id':'test-journal','title':'Oturum <script>','date':'2026-10-17','campaign':'Özel sefer','text':'Gizli notlar 🐉','tags':'#ipucu'}]
       a.call('dnd-save',{'data':dnd['data'],'version':dnd['version']},code=403,csrf='bad')
       saved=a.call('dnd-save',{'data':dnd['data'],'version':dnd['version']});assert saved['version']==dnd['version']+1
       a.call('dnd-save',{'data':dnd['data'],'version':dnd['version']},code=409)
       assert a.call('dnd')['data']['journal'][0]['text']=='Gizli notlar 🐉'
+      assert a.call('dnd')['data']['characters'][0]['known']==['fireball','booming-blade','absorb-elements']
+      assert a.call('dnd')['data']['characters'][0]['prepared']==['booming-blade']
       char['abilities'][0]=31;a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);char['abilities'][0]=10
       char['hp']=999;a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);char['hp']=10
       char['slots'][0]={'current':2,'max':1};a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);char['slots'][0]={'current':0,'max':0}
