@@ -95,3 +95,15 @@ Uygulama HTTPS üzerinde `manifest.webmanifest`, 192/512 px simgeler, ayrı mask
 Yeni worker sürümleri bekleme durumuna geçer ve güncelleme bildirimi gösterir. Güncelleme ancak aktif çizim/yükleme ve bekleyen kayıt yokken uygulanır; hiçbir sekme kendiliğinden yenilenmez. Bir sonraki açılış güncel uygulamayı yükler. Çevrimdışı varlıklarda değişiklik yaparken `sw.js` içindeki `CACHE` sürümünü artır. Temizlik sadece `not-public-pwa-` önekli eski önbellekleri siler.
 
 `npm test` manifest/simge doğrulamalarını ve worker testlerini içerir: kök/alt dizin kurulumu, API ve özel medya atlama, çevrimdışı açılış, kapsamlı olmayan önbellek temizliği ve açık güncelleme onayı. Yerel önizleme için HTTPS veya localhost gerekir.
+
+## Boş çalışma alanı ve Futbol
+
+Kök adres / PWA açılışı boş bir not sayfasına gider. Kullanılmamış boş sayfa varsa tekrar kullanılır; mevcut notlar silinmez. Sayfa bağlantıları doğrudan ilgili notu, `#football` futbol alanını açar.
+
+Futbol alanı Barcelona, Real Madrid, Bayern Münih, PSG, Manchester City, Manchester United ve Beşiktaş'ın tüm kulvarlardaki fikstürlerini birleştirir. ESPN'in herkese açık takım fikstürü kaynağı sunucuda okunur; Türkiye yayınları S Sport ve beIN SPORTS'un resmi akışından takım çifti ve saatle eşleştirilir. Açıklanmayan saat ve kanallar tahmin edilmez. Tüm saatler Europe/Istanbul olarak gösterilir.
+
+- Kaynaklar sayfa açıldığında en fazla 30 dakikada bir, Yenile ile en fazla dakikada bir kontrol edilir. Başarısız kaynaklarda önceki kayıt ve güncellik uyarısı gösterilir.
+- `football_cache` ve `football_videos` tabloları ilk kullanımda otomatik oluşturulur (MySQL/SQLite). PHP cURL ve DOM uzantıları gerekir. `lib/football-seed.json` ilk erişim için tarihli, doğrulanmış bir fikstür görüntüsüdür; canlı kaynağın yerini sürekli tutmaz.
+- Her maçın **••• → YouTube videosu ekle** menüsü isteğe bağlı bağlantıyı veritabanında saklar. Video maç altında görünür; kaldırmak için bağlantı boş kaydedilir. Video ekli geçmiş maçlar kaynak güncellemelerinde korunur.
+- Mevcut JSON not yedeği yalnızca notlar ve medyayı kapsar; futbol bağlantıları veritabanı yedeğine dahildir.
+- Fikstür kaynakları değişirse uyarlama gerekebilir. Lig yayın haklarından maç kanalı türetilmez; resmi akış eşleşmesi yoksa kanal açıklanmadı gösterilir.

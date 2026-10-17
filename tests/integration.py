@@ -21,8 +21,8 @@ def run():
     key=secrets.token_hex(32); password='Abc123!'
     config=pathlib.Path(tmp)/'config.php'
     if os.environ.get('NOT_TEST_MYSQL'):
-      config.write_text("<?php return ['dsn'=>'mysql:host=127.0.0.1;port=3306;dbname=not_test;charset=utf8mb4','db_user'=>'root','db_password'=>'test-only-password','setup_key'=>'"+key+"','secure_cookie'=>false];")
-    else: config.write_text("<?php return ['dsn'=>'sqlite:"+tmp+"/test.sqlite','setup_key'=>'"+key+"','secure_cookie'=>false];")
+      config.write_text("<?php return ['dsn'=>'mysql:host=127.0.0.1;port=3306;dbname=not_test;charset=utf8mb4','db_user'=>'root','db_password'=>'test-only-password','setup_key'=>'"+key+"','secure_cookie'=>false,'football_offline'=>true];")
+    else: config.write_text("<?php return ['dsn'=>'sqlite:"+tmp+"/test.sqlite','setup_key'=>'"+key+"','secure_cookie'=>false,'football_offline'=>true];")
     log=open(pathlib.Path(tmp)/'server.log','w')
     env={**os.environ,'NOT_CONFIG':str(config)}
     proc=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(ROOT)],env=env,stdout=log,stderr=log)
@@ -33,6 +33,7 @@ def run():
         except urllib.error.URLError: time.sleep(.1)
       assert a.status()['setup']
       a.call('pages',code=401)
+      a.call('football',code=401)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403,csrf='bad')
       a.call('setup',{'username':'Test','password':password,'setup_key':'wrong'},code=403)
       a.call('setup',{'username':'Test','password':'Abc12!','setup_key':key},code=400)
@@ -58,6 +59,18 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
+      fixtures=a.call('football');assert len(fixtures['teams'])==7 and len(fixtures['matches'])>100
+      match=fixtures['matches'][0]['id']
+      a.call('football-video',{'match_id':match,'url':'https://youtu.be/dQw4w9WgXcQ'},403,csrf='wrong')
+      a.call('football-video',{'match_id':match,'url':'https://youtube.com.evil.test/watch?v=dQw4w9WgXcQ'},400)
+      a.call('football-video',{'match_id':'99999999999999999999','url':'https://youtu.be/dQw4w9WgXcQ'},404)
+      video=a.call('football-video',{'match_id':match,'url':'https://youtu.be/dQw4w9WgXcQ'})
+      assert video['url']=='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+      assert any(v['match_id']==match and v['url']==video['url'] for v in b.call('football')['videos'])
+      a.call('football-refresh',{})
+      assert any(v['match_id']==match and v['url']==video['url'] for v in a.call('football')['videos'])
+      a.call('football-video',{'match_id':match,'url':''})
+      assert not any(v['match_id']==match and v['url'] for v in a.call('football')['videos'])
       from studio_integration import run_studio
       run_studio(a,Client)
       a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
