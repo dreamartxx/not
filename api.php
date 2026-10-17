@@ -46,7 +46,7 @@ if (in_array($action,['setup','login'],true) && $method==='POST') {
     if ($action==='setup') {
         if ($owner) fail('Hesap zaten oluşturuldu.',403);
         if (str_starts_with($config['setup_key']??'', 'BURAYA_') || strlen($config['setup_key']??'')<32 || !hash_equals($config['setup_key'],(string)($input['setup_key']??''))) fail('Kurulum anahtarı geçersiz.',403);
-        if (mb_strlen($username)<2 || mb_strlen($username)>100 || strlen($password)<12 || strlen($password)>128) fail('Kullanıcı adı 2–100, şifre 12–128 karakter olmalı.');
+        if (mb_strlen($username)<2 || mb_strlen($username)>100 || mb_strlen($password)<7 || strlen($password)>128) fail('Kullanıcı adı 2–100, şifre 7–128 karakter olmalı.');
         $stmt=$db->prepare('INSERT INTO owner (id,username,password_hash) VALUES (1,?,?)'); $stmt->execute([$username,password_hash($password,PASSWORD_DEFAULT)]);
     } else {
         $record=$db->query('SELECT * FROM owner WHERE id=1')->fetch();
@@ -61,7 +61,7 @@ if (!isset($_SESSION['owner'])) fail('Devam etmek için giriş yap.',401);
 if ($action==='password' && $method==='POST') {
     $current=(string)($input['current_password']??'');$next=(string)($input['new_password']??'');
     if(!password_verify($current,$owner['password_hash'])) fail('Mevcut şifre yanlış.',403);
-    if(strlen($next)<12||strlen($next)>128) fail('Yeni şifre 12–128 karakter olmalı.');
+    if(mb_strlen($next)<7||strlen($next)>128) fail('Yeni şifre 7–128 karakter olmalı.');
     $hash=password_hash($next,PASSWORD_DEFAULT);$stmt=$db->prepare('UPDATE owner SET password_hash=? WHERE id=1');$stmt->execute([$hash]);
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }

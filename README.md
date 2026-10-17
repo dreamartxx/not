@@ -17,13 +17,13 @@ Notion'dan esinlenen, Türkçe ve tek kullanıcılı bir not uygulaması. PHP 8.
 
 ## Hostinger kurulumu
 
-Hedef: https://beige-ibex-609908.hostingersite.com/
+Hedef: https://n4me.com.tr/
 
 1. hPanel → Veritabanları → Yönetici bölümünde bu uygulamaya özel MySQL veritabanını ve kullanıcısını oluşturun.
 2. hPanel → Gelişmiş → GIT bölümünden `https://github.com/dreamartxx/not` reposunun `main` dalını web köküne (`public_html`) dağıtın. Başka bir siteyi içeren dizinin üzerine kurmayın.
 3. Dosya Yöneticisi ile `private/config.example.php` örneğini kullanarak `public_html` klasörünün bir üstünde `not-config.php` oluşturun. Bu konum dağıtımlardan bağımsızdır. Alternatif olarak `private/config.php` de desteklenir. DSN, veritabanı kullanıcı adı ve şifresini girin. `setup_key` değerini en az 32 karakterlik rastgele bir değerle değiştirin. Örnek anahtar kabul edilmez.
 4. HTTPS'in etkin olduğundan emin olun; `secure_cookie` canlıda `true` kalmalıdır. PHP 8.2+ ve `pdo_mysql`, `mbstring` uzantılarını etkinleştirin.
-5. Siteyi açın. Kurulum anahtarını girip kendi kullanıcı adı ve en az 12 karakterlik parolanızla tek hesabı oluşturun. Sonraki ziyaretçiler yalnızca giriş ekranını görür; yeni hesap açılamaz.
+5. Siteyi açın. Kurulum anahtarını girip kendi kullanıcı adı ve en az 7 karakterlik parolanızla tek hesabı oluşturun. Sonraki ziyaretçiler yalnızca giriş ekranını görür; yeni hesap açılamaz.
 6. Kurulumdan sonra `setup_key` değerini boşaltabilirsiniz. Mevcut hesap bundan etkilenmez.
 
 Notlar MySQL'de, kod GitHub'da tutulur. `not-config.php` web kökünün dışında tutulur; `private/config.php` Git'e gönderilmez. `.htaccess`, özel klasörleri ve Git metadata'sını dış erişime kapatır. Dağıtımda bu dosyayı silmeyin; mevcut veritabanını sıfırlamayın. Hostinger PHP/HTML dağıtımı için kaynak: https://www.hostinger.com/support/1583302-how-to-deploy-a-git-repository-in-hostinger/

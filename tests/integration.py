@@ -18,7 +18,7 @@ class Client:
 def run():
   with tempfile.TemporaryDirectory(prefix='not-test-') as tmp:
     with socket.socket() as s: s.bind(('127.0.0.1',0));port=s.getsockname()[1]
-    key=secrets.token_hex(32); password=secrets.token_urlsafe(24)
+    key=secrets.token_hex(32); password='Abc123!'
     config=pathlib.Path(tmp)/'config.php'
     if os.environ.get('NOT_TEST_MYSQL'):
       config.write_text("<?php return ['dsn'=>'mysql:host=127.0.0.1;port=3306;dbname=not_test;charset=utf8mb4','db_user'=>'root','db_password'=>'test-only-password','setup_key'=>'"+key+"','secure_cookie'=>false];")
@@ -35,6 +35,8 @@ def run():
       a.call('pages',code=401)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403,csrf='bad')
       a.call('setup',{'username':'Test','password':password,'setup_key':'wrong'},code=403)
+      a.call('setup',{'username':'Test','password':'Abc12!','setup_key':key},code=400)
+      a.call('setup',{'username':'Test','password':'şşşşşş','setup_key':key},code=400)
       result=a.call('setup',{'username':'Test','password':password,'setup_key':key});a.csrf=result['csrf']
       assert a.status()['authenticated']
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403)
@@ -58,9 +60,11 @@ def run():
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
       from studio_integration import run_studio
       run_studio(a,Client)
-      a.call('password',{'current_password':'wrong','new_password':'ChangedPassword2026!'},403)
-      changed=a.call('password',{'current_password':password,'new_password':'ChangedPassword2026!'})
-      a.csrf=changed['csrf'];password='ChangedPassword2026!'
+      a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
+      a.call('password',{'current_password':password,'new_password':'Abc12!'},400)
+      a.call('password',{'current_password':password,'new_password':'şşşşşş'},400)
+      changed=a.call('password',{'current_password':password,'new_password':'New123!'})
+      a.csrf=changed['csrf'];password='New123!'
       b.call('pages',code=401)
       a.call('logout',{});a.call('pages',code=401)
       c=Client(a.base);c.status()
