@@ -59,6 +59,22 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
+      # D&D uses its own versioned private document; rejects malformed backups atomically.
+      Client(a.base).call('dnd',code=401)
+      dnd=a.call('dnd');assert dnd['data']['characters']==[]
+      char=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {newCharacter} from './assets/dnd-model.js'; console.log(JSON.stringify(newCharacter('test-character')));"],cwd=ROOT))
+      dnd['data']['characters']=[char];dnd['data']['selected']=char['id']
+      dnd['data']['journal']=[{'id':'test-journal','title':'Oturum <script>','date':'2026-10-17','campaign':'Özel sefer','text':'Gizli notlar 🐉','tags':'#ipucu'}]
+      a.call('dnd-save',{'data':dnd['data'],'version':dnd['version']},code=403,csrf='bad')
+      saved=a.call('dnd-save',{'data':dnd['data'],'version':dnd['version']});assert saved['version']==dnd['version']+1
+      a.call('dnd-save',{'data':dnd['data'],'version':dnd['version']},code=409)
+      assert a.call('dnd')['data']['journal'][0]['text']=='Gizli notlar 🐉'
+      char['abilities'][0]=31;a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);char['abilities'][0]=10
+      char['hp']=999;a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);char['hp']=10
+      char['slots'][0]={'current':2,'max':1};a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);char['slots'][0]={'current':0,'max':0}
+      dnd['data']['characters'].append(char);a.call('dnd-save',{'data':dnd['data'],'version':saved['version']},code=400);dnd['data']['characters'].pop()
+      assert a.call('dnd')['version']==saved['version']
+      print('PASS: private D&D persistence, Unicode journal, CSRF, version conflict and atomic rejection of invalid stats/HP/slots/duplicate IDs.')
       fixtures=a.call('football');assert len(fixtures['teams'])==9 and fixtures['teams']['810']['name']=='Bursaspor' and len(fixtures['matches'])>100
       match=fixtures['matches'][0]['id']
       a.call('football-video',{'match_id':match,'url':'https://youtu.be/dQw4w9WgXcQ'},403,csrf='wrong')

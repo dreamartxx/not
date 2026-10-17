@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {newCharacter,mod,prof,skillBonus,spellBonus,changeHP,rest,rollDice} from '../assets/dnd-model.js';
+assert.equal(mod(9),-1);assert.equal(mod(20),5);assert.equal(prof(1),2);assert.equal(prof(5),3);assert.equal(prof(20),6);
+const c=newCharacter('test-character');c.level=5;c.abilities=[8,14,12,18,10,10];c.skills[2]=2;c.spellAbility='int';assert.equal(skillBonus(c,2),10);assert.equal(spellBonus(c),7);
+c.hp=10;c.tempHp=5;changeHP(c,-8);assert.equal(c.hp,7);assert.equal(c.tempHp,0);changeHP(c,-100);assert.equal(c.hp,0);c.deathFailure=2;changeHP(c,100);assert.equal(c.hp,10);assert.equal(c.deathFailure,0);
+c.hitDice=0;c.exhaustion=2;c.slots[0]={max:4,current:0};c.resources=[{current:0,max:3,reset:'short'},{current:0,max:2,reset:'long'},{current:0,max:1,reset:'manual'}];rest(c,false);assert.deepEqual(c.resources.map(x=>x.current),[3,0,0]);assert.equal(c.slots[0].current,0);rest(c,true,true);assert.equal(c.hitDice,2);assert.equal(c.exhaustion,1);assert.equal(c.slots[0].current,4);assert.deepEqual(c.resources.map(x=>x.current),[3,2,0]);
+assert.equal(rollDice('2d6+3','normal',()=>4).total,11);let seq=[2,18];assert.equal(rollDice('1d20+5','advantage',()=>seq.shift()).total,23);seq=[2,18];assert.equal(rollDice('1d20-1','disadvantage',()=>seq.shift()).total,1);
+for(const expr of ['0d20','99d6','1d7','eval(1)','1d20+9999'])assert.throws(()=>rollDice(expr));assert.throws(()=>rollDice('2d6','advantage'));
+const spells=JSON.parse(readFileSync(new URL('../assets/data/dnd-spells-2014.json',import.meta.url))).spells;assert.equal(spells.length,319);assert.equal(new Set(spells.map(x=>x.id)).size,319);assert.equal(spells.find(x=>x.id==='fireball').level,3);assert.ok(spells.every(x=>x.level>=0&&x.level<=9&&x.description));
+console.log('PASS: 2014 modifiers, proficiency, expertise, spell DC, temporary HP, death saves, rest recovery, dice bounds and 319 SRD spells.');
+c.concentration='Bless';rest(c,false);assert.equal(c.concentration,'Bless');rest(c,true);assert.equal(c.concentration,'');

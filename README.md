@@ -116,3 +116,15 @@ Futbol alanı Barcelona, Real Madrid, Bayern Münih, PSG, Manchester City, Manch
 - Üst bölümdeki **•••** menüsünden kapak yüklenir veya özel medya kütüphanesinden seçilir. Dikey konum ayarlanabilir; kapak kaldırılabilir. Kullanılan kapak görseli kütüphaneden yanlışlıkla silinemez. Kapak ayarı `football_settings`, harici veriler `football_extra_cache` tablosunda saklanır. Futbol ayarları/arşivi notların JSON yedeğine dahil değildir; veritabanı yedeği gerekir.
 
 Bursaspor için ESPN güncel maç sunmadığından resmî kulüp fikstürü kullanılır. Kulübün gösterdiği sezonun maçları arşive de katılır; 00:00 yer tutucu saatler açıklanmamış sayılır. Bu kaynak canlı durum veya puan tablosu sunmaz; bunlar tahmin edilmez. Maç kimliği sezon ve takım çiftinden türetilir, saat değişince video bağlantısı korunur.
+
+### D&D alanı · 2014
+
+Yan menüde D&D veya `#dnd` bağlantısı açılır. İlk kullanım boş başlar; örnek karakterler canlı veritabanına yazılmaz. En fazla 12 karakter, özellik puanları, yeterlilik/uzmanlık, kurtarışlar, can/geçici can, ölüm kurtarışları, ilham, bitkinlik, can zarları, sınıf kaynakları, saldırılar, envanter ve paralar yönetilir. 2014 değiştirici/yeterlilik/AC dışı bonus hesapları ve kısa/uzun dinlenme işlemleri uygulanır. Sınıf/ırk/ekipman bonusları ile özel kural istisnaları otomatik uygulanmaz; karakter kâğıdı değerleri girilir. Warlock büyü yuvaları kısa dinlenmeden sonra elle yenilenir.
+
+319 SRD 5.1 büyüsü yerel JSON arşivinde aranır, sınıf/seviye ile filtrelenir, bilinen/hazırlanan listelerine eklenir. Kullanımda seçilen seviyenin yuvası harcanır; kanttrip ve uygun ritüeller yuva harcamaz. Konsantrasyon takip edilir. Açıklamalar özgün İngilizce, seçili adların Türkçe karşılıkları arama içindir. PHB 2014 içeriğinin tamamı dahil değildir; kişisel/ek büyüler yazılabilir. Türkçe başvuru bağlantıları kullanıcının önerdiği 5eTürkçe sitesine gider.
+
+Oturum günlüğü (başlık, tarih, sefer, etiketler, serbest not), görevler, NPC'ler ve 80 atışlık zar geçmişi aynı özel alanda tutulur. `dnd_workspace` tablosu oturum doğrulamasından sonra oluşturulur. JSON belge 2,5 MB ile sınırlıdır; sunucu bütün alanları doğrular ve sürüm çakışmasında 409 döndürür. CSRF, otomatik kayıt, kaydetmeden ayrılma uyarısı ve taslak indirme bulunur. D&D menüsünden ayrı JSON yedeği indirilir; içe aktarma onaydan sonra mevcut D&D belgesini değiştirir. Not sayfalarının yedeği D&D verisini içermez; tam veritabanı yedeği ikisini de kapsar. PWA özel D&D verilerini servis çalışanı önbelleğine almaz; kayıt için bağlantı gerekir.
+
+Büyü kaynağı: https://github.com/open5e/open5e-api/tree/master/data/WOTC_5e_SRD_v5.1 (2026-10-17). Yalnızca SRD 5.1 büyüleri alınmıştır. JSON alan adları/sunum biçimi değiştirilmiş ve bazı Türkçe arama adları eklenmiştir.
+
+This work includes material taken from the System Reference Document 5.1 (“SRD 5.1”) by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.
