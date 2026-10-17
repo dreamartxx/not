@@ -143,3 +143,33 @@ dialog{border-radius:14px;padding:25px;border-color:var(--line)}dialog::backdrop
 @media(prefers-reduced-motion:reduce){.kickoff-light,.live-wave b{animation:none!important}}
 @media(max-width:760px){.football-hero.has-cover{padding:25px 20px;min-height:230px}.football-tools{margin-top:13px}.football-tools .subtle-button{font-size:10px}.football-hero.has-cover .football-heading{display:block}.football-hero.has-cover .football-tools{position:absolute;right:0;top:-55px;margin:0}.football-heading p{max-width:230px;font-size:11px;line-height:1.7}.fixture-filters.expanded{flex-direction:row;gap:12px}.fixture-filters.expanded label{max-width:100%;flex:1 1 140px}.fixture-filters.expanded select,.fixture-filters.expanded input{width:100%;min-width:0}.match-signal{font-size:8px;gap:4px}.match-score{font-size:16px}.standings-toolbar{align-items:start;flex-direction:column}.standings-table th,.standings-table td{padding:12px 9px}.standings-table{font-size:11px}.standings-table tbody th{max-width:150px;overflow:hidden;text-overflow:ellipsis}.football-tabs{gap:22px}.football-footer{margin-top:24px}}
 .football-hero:not(.has-cover){overflow:visible}
+
+/* Vivid match cards retain the same white-on-colour contrast in both themes. */
+.fixture-card{
+ --text:#fff;--muted:#e9edff;--line:#ffffff30;
+ color:#fff;background:linear-gradient(115deg,#2059cf 0%,#5343c5 58%,#7637bc 100%);
+ border-color:#ffffff24;border-radius:14px;
+ box-shadow:0 6px 18px #3730a31a,inset 0 1px #ffffff1f;
+}
+.fixture-card[data-signal=live]{
+ background:linear-gradient(115deg,#a81648 0%,#c52a53 55%,#a52b91 100%);
+ border-color:#f8789c80;box-shadow:0 6px 22px #dc27552b,inset 3px 0 #ffb8cc,inset 0 1px #ffffff26;
+}
+.fixture-card[data-signal=soon]{
+ background:linear-gradient(115deg,#b34608 0%,#b64116 55%,#ad2e60 100%);
+ border-color:#ffc47775;box-shadow:0 6px 20px #c5631724,inset 0 1px #ffffff26;
+}
+.fixture-card .fixture-clock strong,.fixture-card .fixture-teams,.fixture-card .fixture-channel a,.fixture-card .fixture-menu{color:#fff}
+.fixture-card .fixture-clock small,.fixture-card .fixture-label,.fixture-card .channel-pending,.fixture-card .match-score span,.fixture-card .fixture-video>a{color:#e9edff}
+.fixture-card .match-signal,.fixture-card .match-signal.soon,.fixture-card .match-signal.live{color:#fff}
+.fixture-card .match-signal{padding:4px 7px;border-radius:6px;background:#11152c38}
+.fixture-card .kickoff-light{background:#ffe69a;box-shadow:0 0 9px #ffe69aaa}
+.fixture-card .club-dot{box-shadow:0 0 0 1px #ffffff80}
+.fixture-card .fixture-menu:hover,.fixture-card .fixture-menu:focus-visible{background:#ffffff26;color:#fff}
+.fixture-card .fixture-menu:focus-visible,.fixture-card a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.fixture-card .fixture-video{background:#10132924;border-color:#ffffff30}
+[data-theme=dark] .fixture-card{box-shadow:0 6px 22px #0003,inset 0 1px #ffffff26}
+[data-theme=dark] .fixture-card[data-signal=live]{box-shadow:0 6px 24px #dc275526,inset 3px 0 #ffb8cc,inset 0 1px #ffffff26}
+.fixture-team-name{min-width:0;overflow-wrap:anywhere}
+.fixture-teams .match-score{margin-left:auto;min-width:24px;padding-left:14px;text-align:right;letter-spacing:0;flex-shrink:0;color:#fff;font-size:18px;line-height:1.2}
+@media(max-width:760px){.fixture-teams .match-score{font-size:16px;min-width:20px;padding-left:8px}}
