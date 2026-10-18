@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/studio.mjs && node tests/pwa.mjs && node tests/football.mjs && node tests/dnd.mjs"
+    "test": "node tests/studio.mjs && node tests/pwa.mjs && node tests/football.mjs && node tests/dnd.mjs && node tests/rich-reminders.mjs"
   }
 }

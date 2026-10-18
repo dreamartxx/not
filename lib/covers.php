@@ -34,6 +34,6 @@ function coversAPI(PDO $db,string $action,string $method,array $input): void {
  if(!is_string($scope))fail('Geçersiz çalışma alanı.');
  if(preg_match('/^page:([a-f0-9]{32})$/D',$scope,$m)){
   $p=findPage($db,$m[1]);if($p['deleted_at'])fail('Bu sayfa çöp kutusunda.',409);
- }elseif(!in_array($scope,['home','favorites','trash','dnd','football'],true))fail('Geçersiz çalışma alanı.');
+ }elseif(!in_array($scope,['home','favorites','trash','dnd','football','reminders'],true))fail('Geçersiz çalışma alanı.');
  $cover=validCover($input);coverImageExists($db,$cover);saveCover($db,$scope,$cover);respond(['cover'=>$cover]);
 }

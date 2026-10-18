@@ -34,3 +34,13 @@ self.addEventListener('fetch', event => {
     })());
   }
 });
+
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ const target=new URL(event.notification.data?.url||BASE.href,BASE);
+ if(target.origin!==BASE.origin)return;
+ event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(async windows=>{
+  for(const client of windows)if(client.url===target.href)return client.focus();
+  return clients.openWindow(target.href);
+ }));
+});

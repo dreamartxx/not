@@ -59,6 +59,8 @@ def run():
       count=len(a.call('pages')['pages']);bad=[{**backup[0],'parent_id':backup[0]['id']}]
       a.call('import',{'pages':bad},400);assert len(a.call('pages')['pages'])==count
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
+      from rich_reminders_integration import run_rich_reminders
+      run_rich_reminders(a)
       # D&D uses its own versioned private document; rejects malformed backups atomically.
       Client(a.base).call('dnd',code=401)
       Client(a.base).call('dnd-spells',code=401)

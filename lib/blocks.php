@@ -5,6 +5,23 @@ function choice(mixed $v,array $choices): mixed {if(!in_array($v,$choices,true))
 function number(mixed $v,float $min,float $max): float {if(!is_numeric($v)||!is_finite((float)$v)||$v<$min||$v>$max)fail('Geçersiz boyut.');return (float)$v;}
 function safeLink(mixed $v): string { $v=shortText($v,2048);if($v!=='' && (!filter_var($v,FILTER_VALIDATE_URL)||strtolower((string)parse_url($v,PHP_URL_SCHEME))!=='https'||parse_url($v,PHP_URL_USER)||parse_url($v,PHP_URL_PASS)))fail('Geçerli bir HTTPS bağlantısı kullan.');return $v; }
 function mediaId(mixed $v): string {if(!is_string($v)||($v!==''&&!preg_match('/^[a-f0-9]{32}$/D',$v)))fail('Geçersiz dosya.');return $v;}
+function validRuns(mixed $runs,string $text): array {
+ if(!is_array($runs)||!array_is_list($runs)||count($runs)>4000)fail('Geçersiz metin biçimi.');
+ $out=[];$plain='';
+ foreach($runs as $run){
+  if(!is_array($run)||array_diff(array_keys($run),['text','bold','italic','underline','strike','code','color','highlight','font','size','script','link']))fail('Geçersiz metin özelliği.');
+  $r=['text'=>shortText($run['text']??null,100000)];$plain.=$r['text'];
+  foreach(['bold','italic','underline','strike','code'] as $key)if(isset($run[$key])){if(!is_bool($run[$key]))fail('Geçersiz metin biçimi.');if($run[$key])$r[$key]=true;}
+  foreach(['color','highlight'] as $key)if(isset($run[$key])){if(!is_string($run[$key])||!preg_match('/^#[a-fA-F0-9]{6}$/D',$run[$key]))fail('Geçersiz metin rengi.');$r[$key]=strtolower($run[$key]);}
+  if(isset($run['font']))$r['font']=choice($run['font'],['sans','serif','mono']);
+  if(isset($run['size']))$r['size']=choice($run['size'],[12,14,16,18,20,24,28,32]);
+  if(isset($run['script']))$r['script']=choice($run['script'],['sub','sup']);
+  if(isset($run['link']))$r['link']=safeLink($run['link']);
+  $out[]=$r;
+ }
+ if($plain!==$text)fail('Biçimlendirilmiş metin eşleşmiyor.');
+ return $out;
+}
 function validBlocks(mixed $blocks): array {
  if(!is_array($blocks)||!array_is_list($blocks)||count($blocks)>2000)fail('Geçersiz blok listesi.');
  $out=[];$ids=[];
@@ -13,6 +30,7 @@ function validBlocks(mixed $blocks): array {
   $type=choice($b['type']??'', ['text','h1','h2','bullet','number','todo','quote','code','divider','callout','toggle','table','image','video','audio','file','bookmark','drawing','diagram','board','toc']);
   $id=$b['id']??'';if(!is_string($id)||!preg_match('/^[a-zA-Z0-9_-]{1,60}$/D',$id)||isset($ids[$id]))fail('Geçersiz blok kimliği.');$ids[$id]=true;
   $r=['id'=>$id,'type'=>$type,'text'=>shortText($b['text']??'',100000),'checked'=>(bool)($b['checked']??false), 'width'=>choice($b['width']??'full',['full','half']), 'align'=>choice($b['align']??'left',['left','center','right']), 'tone'=>choice($b['tone']??'default',['default','sage','sand','lavender','blue','rose'])];
+  if(isset($b['runs'])&&in_array($type,['text','h1','h2','bullet','number','todo','quote','callout','toggle'],true))$r['runs']=validRuns($b['runs'],$r['text']);
   if($type==='toggle')$r['details']=shortText($b['details']??'',100000);
   if($type==='code')$r['language']=shortText($b['language']??'Metin',30);
   if($type==='table'){
