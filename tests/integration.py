@@ -61,6 +61,8 @@ def run():
       a.call('trash',{'id':p['id']});a.call('purge',{'id':p['id']});assert len(a.call('pages')['pages'])==2
       from education_integration import run_education
       run_education(a,Client)
+      from education_guest_integration import run_education_guest
+      run_education_guest(a,Client)
       from rich_reminders_integration import run_rich_reminders
       run_rich_reminders(a)
       # D&D uses its own versioned private document; rejects malformed backups atomically.

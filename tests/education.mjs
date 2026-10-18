@@ -56,3 +56,15 @@ const figures=new Set(outline.nodes.flatMap(n=>n.figurePages));assert.deepEqual(
 for(const p of figures){const bytes=fs.readFileSync(new URL('figures/page-'+p+'.jpg',root));assert.equal(bytes[0],255);assert.equal(bytes[1],216);}
 assert.equal(Object.keys(educationVisuals).length,9);for(const [key,v]of Object.entries(educationVisuals)){assert.ok(educationVisual(key,s=>String(s),'').includes('aria-pressed="true"'));for(const node of v.nodes)assert.ok(book.pages[node[4]-1]);}
 console.log('PASS: all 2299 source paragraphs covered exactly once, 135 TOC mappings, 244 nested headings, 42 original images and 9 teaching diagrams.');
+
+const {createBookCourse}=await import('../assets/education-book-course.js');
+book.course={...course,outline,guides,tutorials:{units:tutorials}};
+const guestData={learning:{selected:'yargilama',completed:[],answers:{},book:{current:'book-12-3',visited:[],notes:{}}}};
+const args={book:()=>book,data:()=>guestData,esc:s=>String(s),paint:()=>{},changed:()=>{},source:()=>{}};
+assert.ok(createBookCourse(args).view('yargilama').includes('id="book-lesson-note"'));
+assert.ok(!createBookCourse({...args,guest:true,figureApi:'guest-api.php'}).view('yargilama').includes('<textarea'));
+guestData.learning.book.current='book-251-4';guestData.learning.selected='uyap';
+const guestSource=createBookCourse({...args,guest:true,figureApi:'guest-api.php'}).view('uyap');
+assert.ok(guestSource.includes('src="guest-api.php?action=education-figure'));
+assert.ok(!guestSource.includes('src="api.php?action=education-figure'));
+console.log('PASS: owner study notes retained, guest writing controls absent and guest figures use isolated endpoint.');

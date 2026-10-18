@@ -21,9 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: PHP syntax
-        run: php -l api.php && php -l index.php && php -l lib/blocks.php && php -l lib/media.php && php -l lib/football.php && php -l lib/football-extra.php && php tests/football.php && php -l lib/dnd.php && php -l lib/covers.php && php -l lib/education.php
+        run: php -l api.php && php -l guest-api.php && php -l egitim.php && php -l lib/education-guest.php && php -l index.php && php -l lib/blocks.php && php -l lib/media.php && php -l lib/football.php && php -l lib/football-extra.php && php tests/football.php && php -l lib/dnd.php && php -l lib/covers.php && php -l lib/education.php
       - name: JavaScript syntax
-        run: node --check assets/voice-model.js && node --check assets/voice.js && node --check assets/education-book-course.js && node --check assets/education-outline-model.js && node --check assets/education-visuals.js && node --check assets/education-tutorial.js && node --check assets/education-course.js && node --check assets/education.js && node --check assets/education-model.js && node --check assets/covers.js && node --check assets/app.js && node --check assets/studio.js && node --check assets/canvas.js && node --check assets/pwa.js && node --check assets/dnd.js && node --check assets/dnd-model.js && node --check assets/football.js && node --check sw.js && npm test
+        run: node --check assets/education-guest.js && node --check assets/voice-model.js && node --check assets/voice.js && node --check assets/education-book-course.js && node --check assets/education-outline-model.js && node --check assets/education-visuals.js && node --check assets/education-tutorial.js && node --check assets/education-course.js && node --check assets/education.js && node --check assets/education-model.js && node --check assets/covers.js && node --check assets/app.js && node --check assets/studio.js && node --check assets/canvas.js && node --check assets/pwa.js && node --check assets/dnd.js && node --check assets/dnd-model.js && node --check assets/football.js && node --check sw.js && npm test
       - name: HTTP integration tests
         run: python3 tests/integration.py
       - name: MySQL HTTP integration tests

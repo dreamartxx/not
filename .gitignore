@@ -1,6 +1,7 @@
 /private/*
 !/private/.htaccess
 !/private/config.example.php
+!/private/education-guest-seed.php
 *.sqlite*
 .DS_Store
 node_modules/
