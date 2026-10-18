@@ -18,3 +18,22 @@ assert.equal(course.lessons.length,5);const questionIds=new Set();
 for(const lesson of course.lessons){assert.ok(book.chapters.some(c=>c.id===lesson.id));assert.equal(lesson.concepts.length,3);assert.equal(lesson.steps.length,3);assert.equal(lesson.quiz.length,3);assert.ok(lesson.scenario.correct<lesson.scenario.options.length);for(const c of lesson.concepts)assert.ok(book.pages[c[3]-1].paragraphs.length);const answers={};for(const q of lesson.quiz){assert.ok(!questionIds.has(q.id));questionIds.add(q.id);assert.ok(q.correct>=0&&q.correct<q.options.length);assert.ok(q.page>=1&&q.page<=307);answers[q.id]=q.correct;}assert.equal(courseScore(lesson,{}),0);assert.equal(courseScore(lesson,answers),3);answers[lesson.quiz[0].id]=(lesson.quiz[0].correct+1)%3;assert.equal(courseScore(lesson,answers),2);}
 assert.equal(questionIds.size,15);
 console.log('PASS: five interactive lessons, valid source references, unique questions and correct scoring.');
+
+const {tutorialProgress}=await import('../assets/education-tutorial.js');
+const tutorials=JSON.parse(fs.readFileSync(new URL('tutorials.json',root))).units;
+assert.equal(tutorials.length,20);assert.equal(new Set(tutorials.map(u=>u.id)).size,20);
+for(const lesson of course.lessons)assert.equal(tutorials.filter(u=>u.lesson===lesson.id).length,4);
+for(const u of tutorials){
+ assert.ok(u.pages.length);for(const n of u.pages)assert.ok(book.pages[n-1]?.paragraphs.length);
+ assert.equal(u.sections.length,3);for(const s of u.sections){assert.ok(s.title);assert.ok(s.text.split(/\s+/).length>=30);}
+ assert.equal(u.steps.length,3);for(const s of u.steps){assert.ok(s.title);assert.ok(s.text.length>100);}
+ assert.ok(u.comparison.wrong&&u.comparison.right&&u.comparison.why);
+ assert.equal(u.check.options.length,3);assert.equal(u.check.feedback.length,3);assert.ok(u.check.correct>=0&&u.check.correct<3);
+ assert.ok(u.check.feedback.every(f=>f.length>40));assert.ok(u.reflection.prompt.length>40&&u.reflection.model.length>100);
+}
+assert.deepEqual(tutorialProgress(tutorials,{}),{done:0,total:20});
+const study={answers:Object.fromEntries(tutorials.map(u=>[u.id,u.check.correct]))};
+assert.deepEqual(tutorialProgress(tutorials,study),{done:20,total:20});
+study.answers[tutorials[0].id]=(tutorials[0].check.correct+1)%3;study.answers.unknown=0;
+assert.deepEqual(tutorialProgress(tutorials,study),{done:19,total:20});
+console.log('PASS: 20 detailed topics, 60 solution steps, source references, option-specific feedback and topic progress.');

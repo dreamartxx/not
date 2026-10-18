@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-function educationCourse(): array {return json_decode(file_get_contents(__DIR__.'/../assets/data/education/lessons.json'),true,512,JSON_THROW_ON_ERROR);}
+function educationCourse(): array {static $course=null;if($course===null){$root=__DIR__.'/../assets/data/education/';$course=json_decode(file_get_contents($root.'lessons.json'),true,512,JSON_THROW_ON_ERROR);$course['tutorials']=json_decode(file_get_contents($root.'tutorials.json'),true,512,JSON_THROW_ON_ERROR);}return $course;}
 function educationBlank(): array {return ['page'=>12,'read'=>[],'bookmarks'=>[],'notes'=>[],'cards'=>[],'font'=>18,'learning'=>['selected'=>'yargilama','completed'=>[],'answers'=>(object)[]]];}
 function educationClean($v): array {
  if(!is_array($v))throw new InvalidArgumentException('Eğitim verisi geçersiz.');
@@ -21,6 +21,15 @@ function educationClean($v): array {
   foreach($answers as $id=>$choice){if(!isset($questions[$id]))throw new InvalidArgumentException('Soru bulunamadı.');$integer($choice,0,count($questions[$id]['options'])-1);}
   foreach($lessons as $l)if(in_array($l['id'],$completed,true))foreach($l['quiz'] as $q)if(($answers[$q['id']]??null)!==$q['correct'])throw new InvalidArgumentException('Dersi tamamlamak için tüm soruları doğru yanıtla.');
   $out['learning']=['selected'=>$selected,'completed'=>$completed,'answers'=>(object)$answers];
+  if(array_key_exists('study',$learn)){
+   $study=$learn['study'];if(!is_array($study))throw new InvalidArgumentException('Konu çalışması geçersiz.');
+   $units=array_column(educationCourse()['tutorials']['units'],null,'id');$current=$study['current']??null;if(!is_string($current)||($current!==''&&!isset($units[$current])))throw new InvalidArgumentException('Konu bulunamadı.');
+   $responses=$study['answers']??null;$notes=$study['notes']??null;if(!is_array($responses)||count($responses)>count($units)||!is_array($notes)||count($notes)>count($units))throw new InvalidArgumentException('Konu kayıtları geçersiz.');
+   foreach($responses as $id=>$choice){if(!isset($units[$id]))throw new InvalidArgumentException('Konu sorusu bulunamadı.');$integer($choice,0,count($units[$id]['check']['options'])-1);}
+   foreach($notes as $id=>$note){if(!isset($units[$id]))throw new InvalidArgumentException('Çalışma konusu bulunamadı.');$str($note,6000);}
+   $out['learning']['study']=['current'=>$current,'answers'=>(object)$responses,'notes'=>(object)$notes];
+  }
+
  }
  if(strlen(json_encode($out,JSON_UNESCAPED_UNICODE))>2500000)throw new InvalidArgumentException('Eğitim yedeği en fazla 2,5 MB olabilir.');return $out;
 }
@@ -30,7 +39,7 @@ function educationAPI(PDO $db,string $action,string $method,array $input): never
  $q=$db->prepare($db->getAttribute(PDO::ATTR_DRIVER_NAME)==='sqlite'?'INSERT OR IGNORE INTO education_workspace VALUES(1,?,1,?)':'INSERT IGNORE INTO education_workspace VALUES(1,?,1,?)');$q->execute([json_encode(educationBlank()),gmdate('c')]);
  if($action==='education'&&$method==='GET'){$r=$db->query('SELECT * FROM education_workspace WHERE id=1')->fetch();respond(['data'=>json_decode($r['payload'],true),'version'=>(int)$r['version']]);}
  if($action==='education-save'&&$method==='POST'){
-  try{$data=educationClean($input['data']??null);if(!array_key_exists('learning',$data)){$old=json_decode($db->query('SELECT payload FROM education_workspace WHERE id=1')->fetchColumn(),true);if(isset($old['learning']))$data['learning']=$old['learning'];}}catch(InvalidArgumentException $e){fail($e->getMessage());}
+  try{$data=educationClean($input['data']??null);$old=json_decode($db->query('SELECT payload FROM education_workspace WHERE id=1')->fetchColumn(),true);if(!array_key_exists('learning',$data)){if(isset($old['learning']))$data['learning']=$old['learning'];}elseif(!array_key_exists('study',$data['learning'])&&isset($old['learning']['study'])){$data['learning']['study']=$old['learning']['study'];}}catch(InvalidArgumentException $e){fail($e->getMessage());}
   if(!is_int($input['version']??null))fail('Sürüm bilgisi eksik.');
   $q=$db->prepare('UPDATE education_workspace SET payload=?,version=version+1,updated_at=? WHERE id=1 AND version=?');$q->execute([json_encode($data,JSON_UNESCAPED_UNICODE),gmdate('c'),$input['version']]);
   if(!$q->rowCount())fail('Eğitim alanı başka bir sekmede değişti. Taslağını indirip sunucu kaydını aç.',409);respond(['version'=>$input['version']+1]);

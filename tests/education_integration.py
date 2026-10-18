@@ -23,6 +23,23 @@ def run_education(a,Client):
     r=a.call('education-save',{'data':ld,'version':r['version']});assert a.call('education')['data']['learning']==ld['learning']
     legacy={k:v for k,v in ld.items() if k!='learning'}
     r=a.call('education-save',{'data':legacy,'version':r['version']});assert a.call('education')['data']['learning']==ld['learning']
+    units=book['course']['tutorials']['units'];assert len(units)==20
+    topic=units[0];topic_id=topic['id'];ld=a.call('education')['data']
+    study={'current':topic_id,'answers':{topic_id:(topic['check']['correct']+1)%3},'notes':{topic_id:'Kendi gerekçem 🧠 <script>alert(1)</script>'}}
+    ld['learning']['study']=study
+    r=a.call('education-save',{'data':ld,'version':r['version']})
+    assert a.call('education')['data']['learning']['study']==study
+    for field,value in [('current','unknown'),('answers',{'unknown':0}),('answers',{topic_id:3}),('answers',{topic_id:True}),('notes',{'unknown':'x'}),('notes',{topic_id:'ş'*6001})]:
+        bad=deepcopy(ld);bad['learning']['study'][field]=value
+        a.call('education-save',{'data':bad,'version':r['version']},400)
+    assert a.call('education')['version']==r['version']
+    old_client=deepcopy(ld);del old_client['learning']['study']
+    r=a.call('education-save',{'data':old_client,'version':r['version']})
+    assert a.call('education')['data']['learning']['study']==study
+    study['answers'][topic_id]=topic['check']['correct']
+    stale=r['version'];r=a.call('education-save',{'data':ld,'version':stale})
+    a.call('education-save',{'data':old_client,'version':stale},409)
+    assert a.call('education')['data']['learning']['study']==study
     saved=r;d=a.call('education')['data']
     # Backup/import uses the same schema and optimistic concurrency, no partial write.
     imported=a.call('education-save',{'data':deepcopy(d),'version':saved['version']});assert a.call('education')['data']==d

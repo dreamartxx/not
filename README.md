@@ -160,9 +160,9 @@ Kaynak metin 8 JSON parçasında tutulur ve oturum korumalı `education-book` AP
 
 ### Etkileşimli eğitim stüdyosu
 
-Eğitim alanının varsayılanı artık kaynak metin okuyucusu yerine öğrenme panosudur. Beş ders; Keşfet (üç açılır kavram ve üç adımlı süreç), Uygula (seçimli örnek olay ve gerekçe), Pekiştir (üç açıklamalı soru) aşamalarına ayrılır. 15 soru ve özetler Mayıs 2025 kaynak kitabının belirtilen sayfalarından hazırlanmış kişisel çalışma içeriğidir; resmî sınav soruları değildir. Tam metin ayrı Kaynak kitap sekmesinde korunur.
+Eğitim alanı beş bölüm ve 20 ayrıntılı konu içerir. Her konu üç açıklamalı anlatım, sorunlu/geliştirilmiş yaklaşım karşılaştırması, üç adımlı çözümlü kurgusal vaka ve **Sen çöz** alanı sunar. Toplam 60 çözüm adımı, her seçenek için ayrı gerekçesi olan 20 konu sorusu ve 20 kişisel yazılı uygulama vardır. Örnek cevaplar isteğe bağlı açılır; serbest cevaplar otomatik puanlanmaz. Bölüm vakaları ve 15 soruluk bölüm testleri de korunur. İçerikler Mayıs 2025 kitabına dayalı kişisel öğrenme materyalidir; resmî sınav veya sertifikasyon değildir. Konuların kaynak sayfaları doğrudan açılabilir; kitabın 307 sayfası ayrı Kaynak kitap görünümündedir.
 
-Ders seçimi, soru yanıtları ve tamamlanan dersler `learning` alanında sürümlü eğitim kaydına/yedeğine dahildir. Ders tamamlama için üç doğru yanıt sunucuda da doğrulanır; eski istemciler bu alanı göndermediğinde mevcut öğrenme kaydı korunur. Sayfa okuma ve ders tamamlama ilerlemesi ayrıdır. Hareketi azalt tercihi animasyonları kapatır.
+Konu seçimi, doğru/yanlış yanıtlar ve kişisel uygulama metinleri `learning.study` alanında otomatik kaydedilir ve eğitim yedeğine dahildir. Konu pekiştirme, doğru kontrol cevabından hesaplanır. Bölüm testi tamamlama için üç doğru yanıt sunucuda doğrulanır. Eski istemciler yeni alanları göndermediğinde mevcut kayıtlar korunur. Bilinmeyen konu/soru, geçersiz cevap ve 6000 karakterden uzun uygulama metni sunucuda reddedilir. Sayfa okuma, konu pekiştirme ve bölüm testi ilerlemeleri ayrıdır. Açık/koyu tema, dar ekran ve hareketi azalt tercihi desteklenir.
 
 ### Ses araçları
 

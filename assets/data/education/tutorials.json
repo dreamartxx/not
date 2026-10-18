@@ -1,0 +1,1312 @@
+{
+  "edition": "Mayıs 2025",
+  "notice": "Kaynak kitaba dayalı öğretici anlatımlar ve kurgusal çalışma örnekleri. Resmî sınav veya güncel mevzuat danışmanlığı değildir.",
+  "units": [
+    {
+      "id": "yargi-roller",
+      "lesson": "yargilama",
+      "title": "Kim neyi yapar?",
+      "goal": "Karar verme, iddia ileri sürme ve teknik inceleme rollerini somut olayda ayır.",
+      "pages": [
+        12,
+        79,
+        80,
+        183
+      ],
+      "sections": [
+        {
+          "title": "Önce büyük resmi kur",
+          "text": "Bir uyuşmazlıkta aynı dosyaya bakan herkes aynı işi yapmaz. Taraflar bir olayın nasıl gerçekleştiğine ilişkin iddia ve savunmalarını ortaya koyar. Mahkeme uyuşmazlığı hukuken çözer. Bilirkişi ise özel veya teknik bilgi gerektiren bir noktayı aydınlatır. Bu ayrım, rapor yazarken hangi soruyu cevaplayabileceğini ve nerede duracağını belirler."
+        },
+        {
+          "title": "Bilirkişinin üç katkısı",
+          "text": "Kaynak, bilirkişinin işlevini yalnızca bir sonuç yazmaya indirgemez: uzmanlık bilgisini aktarabilir, uzmanlık gerektiren bir vakıayı tespit edebilir veya vakıayı teknik bilgiyle değerlendirip sonuç çıkarabilir. Bir parçanın ölçüsünü belirlemek tespit; bu ölçünün teknik toleransla ilişkisini açıklamak değerlendirmedir. İkisinin de yöntemi ve dayanağı görünür olmalıdır."
+        },
+        {
+          "title": "Rapor neden hüküm değildir?",
+          "text": "Teknik görüş yargısal kararı etkileyebilir; fakat kararın yerine geçmez. Kaynakta raporun diğer delillerle birlikte değerlendirileceği anlatılır. Bu nedenle “ben uzmanım, sonuç tartışılamaz” yaklaşımı uygun değildir. Okuyucu, görüşe hangi gözlem ve akıl yürütmeyle ulaşıldığını izleyebilmelidir. Uzmanın görevi taraflardan birine davayı kazandırmak değildir."
+        }
+      ],
+      "case": "Bir üretim makinesinin arızası nedeniyle iki şirket arasında uyuşmazlık var. Bilirkişiden arızanın teknik nedeninin incelenmesi isteniyor.",
+      "steps": [
+        {
+          "title": "İddiayı ayır",
+          "text": "“Bakım hiç yapılmadı” bir tarafın ileri sürdüğü olaydır. Bu cümle, sırf dilekçede yazdığı için teknik tespit haline gelmez."
+        },
+        {
+          "title": "Uzmanlık katkısını kur",
+          "text": "Bakım kayıtlarını ve parçadaki bulguları incele. Kullanılan yöntemi açıklayarak bulguların hangi teknik olasılığı desteklediğini değerlendir."
+        },
+        {
+          "title": "Karar sınırında dur",
+          "text": "Teknik nedeni ve sınırlarını bildir. Hangi tarafın hukuken sorumlu tutulacağına ve hükmün nasıl kurulacağına karar verme."
+        }
+      ],
+      "comparison": {
+        "wrong": "Davalı haksızdır; dava kabul edilmelidir.",
+        "right": "İncelenen parçada şu bulgular gözlenmiştir; kullanılan yöntem çerçevesinde şu teknik değerlendirmeye ulaşılmıştır.",
+        "why": "İlk cümle yargısal sonuç belirler. İkinci cümle inceleme alanında kalır; ancak bulguların ve yöntemin ayrıca açıklanması gerekir."
+      },
+      "check": {
+        "question": "Bir parçanın ölçüsünü teknik yöntemle belirlemek hangi işleve örnektir?",
+        "options": [
+          "Hukuki hüküm kurma",
+          "Uzmanlıkla vakıa tespiti",
+          "Taraf adına savunma hazırlama"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Ölçüm, uyuşmazlığın hukuki sonucunu belirlemez. Karar verme ile veri üretmeyi ayır.",
+          "Doğru. Burada önce bir maddi özellik tespit ediliyor. Bu ölçünün ne anlama geldiği ayrıca değerlendirilebilir.",
+          "Savunma bir tarafın usuli faaliyetiyle ilgilidir. Ölçüm ise teknik incelemeye katkı sağlar."
+        ]
+      },
+      "reflection": {
+        "prompt": "Kendi uzmanlık alanından bir tespit, bir teknik değerlendirme ve bir hukuki sonuç örneği yaz.",
+        "model": "Örnek: Ölçülen sıcaklık 80 °C → tespit. Bu değer ilgili teknik koşulla karşılaştırıldığında sınırı aşmaktadır → teknik değerlendirme. Bu nedenle dava kabul edilmelidir → hukuki sonuç. İlk iki ifade de ölçüm koşulları ve dayanaklarıyla açıklanmalıdır."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "vakia-delil",
+      "lesson": "yargilama",
+      "title": "Vakıa, delil ve çıkarım",
+      "goal": "Bir iddiayı ölçülebilir soruya dönüştür; delili sonuçla karıştırma.",
+      "pages": [
+        63,
+        65,
+        67,
+        70
+      ],
+      "sections": [
+        {
+          "title": "Vakıa neyi anlatır?",
+          "text": "Vakıa, gerçekleştiği veya gerçekleşmediği ileri sürülen olay ya da durumdur. Kaynaktaki olumlu ve olumsuz vakıa ayrımı iyi-kötü anlamına gelmez: “ödeme yapıldı” gerçekleştiği ileri sürülen, “ödeme yapılmadı” gerçekleşmediği ileri sürülen bir olaydır. İncelemede ilk iş, hangi olayın tartışıldığını açık bir cümleye dönüştürmektir."
+        },
+        {
+          "title": "Delil olayın kendisi değildir",
+          "text": "Bir bakım formu, fotoğraf veya kayıt bir olay hakkında bilgi sağlayabilir. Belgenin varlığı ile belgenin içeriğinden çıkarılacak sonuç farklıdır. İspat faaliyetinin odağı, uyuşmazlık bakımından önemli ve çekişmeli vakıalardır. Her ayrıntı aynı önemde değildir; üzerinde çekişme olmayan hususla gerçekten incelenmesi gereken hususu ayırmak çalışmayı odaklar."
+        },
+        {
+          "title": "Somutlaştır, sonra ilişkilendir",
+          "text": "“Cihaz sorunluydu” ifadesi zaman, yer ve arıza türü bakımından belirsizdir. Hangi cihaz, hangi tarih, hangi çalışma koşulu ve hangi belirti sorularını sorarak olay belirginleşir. Ardından her belgeyi hangi soruya katkı sunduğuyla eşleştir. Bir kaydın açıklamadığı döneme ilişkin boşluğu, varsayımla doldurmak yerine incelemenin sınırı olarak göster."
+        }
+      ],
+      "case": "Bir taraf “makine teslimden beri hiç çalışmadı” diyor. Dosyada teslim tutanağı ve teslimden üç ay sonraki servis kaydı var.",
+      "steps": [
+        {
+          "title": "İddiayı somutlaştır",
+          "text": "Teslim tarihi, makinenin kimliği, çalışmadığı ileri sürülen dönem ve belirtiler ayrıştırılır. “Hiç çalışmadı” ifadesinin kapsadığı zaman belirlenir."
+        },
+        {
+          "title": "Kayıtları soruyla eşleştir",
+          "text": "Teslim tutanağı teslim olgusuna; servis kaydı belirli bir tarihteki müdahaleye ilişkin bilgi sağlar. Her ikisinin aynı şeyi kanıtladığı varsayılmaz."
+        },
+        {
+          "title": "Boşluğu görünür yap",
+          "text": "Üç ay sonraki servis kaydı tek başına teslim anındaki tüm çalışma koşullarını göstermez. Eksik dönem hakkında hangi ek veriye ihtiyaç olduğu açıklanır."
+        }
+      ],
+      "comparison": {
+        "wrong": "Dosyada servis kaydı var; teslim anında da aynı arıza kesinlikle vardı.",
+        "right": "Servis kaydı şu tarihteki bulguyu gösteriyor. Teslim anına ilişkin değerlendirme için şu kayıtların incelenmesi gerekiyor.",
+        "why": "İkinci ifade belgenin kapsadığı zaman ile daha geniş iddiayı ayırır. Gerekçesiz zaman genellemesi yapmaz."
+      },
+      "check": {
+        "question": "Bir servis kaydıyla ilgili ilk doğru soru hangisidir?",
+        "options": [
+          "Bu kayıt hangi vakıa ve döneme ilişkin bilgi veriyor?",
+          "Bu belge varsa bütün iddialar kanıtlandı mı?",
+          "Belgenin sayfa sayısı yeterince fazla mı?"
+        ],
+        "correct": 0,
+        "feedback": [
+          "Doğru. Delilin neye ilişkin olduğunu belirlemek, onun hangi sonucu destekleyebileceğini tartışmanın başlangıcıdır.",
+          "Bir belgenin bulunması bütün vakıaları kendiliğinden doğrulamaz. Kapsam ve içerik ilişkisine dön.",
+          "Sayfa sayısı, belgenin çekişmeli olayla ilişkisini açıklamaz. Belgenin niteliğini ve kapsamını incele."
+        ]
+      },
+      "reflection": {
+        "prompt": "“Hizmet kötü verildi” iddiasını üç somut soruya dönüştür.",
+        "model": "Hangi hizmet, hangi tarihte ve hangi bölümünde eksik yerine getirildi? Dosyadaki hangi kayıt bu eksikliğe ilişkin bilgi sağlıyor? Bu kayıt hangi dönemi kapsıyor? Sorular teknik inceleme görevine göre ayrıca sınırlandırılmalıdır."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "yargilama-guvenceleri",
+      "lesson": "yargilama",
+      "title": "Görüşün tartışılabilir olmalı",
+      "goal": "Adil yargılama güvenceleriyle raporun açıklığı arasındaki ilişkiyi kur.",
+      "pages": [
+        36,
+        39,
+        218,
+        235,
+        241
+      ],
+      "sections": [
+        {
+          "title": "Usul, sonucun parçasıdır",
+          "text": "Kaynak kitap, yargılamaya egemen hak ve ilkelerin bilirkişilik faaliyetinden ayrı düşünülemeyeceğini belirtir. Doğru görünen bir teknik sonuca ulaşmak tek başına yeterli değildir; o görüşün hangi süreçte üretildiği ve nasıl sunulduğu da önem taşır. Bu nedenle usule ilişkin kurallar incelemenin dışındaki bir formalite olarak görülmemelidir."
+        },
+        {
+          "title": "Açıklama, denetime imkân verir",
+          "text": "Bir raporu okuyabilmek, ona etkili biçimde soru yöneltebilmenin ön koşuludur. Ölçüm koşullarını, kullanılan veriyi ve değerlendirme zincirini açıklamayan bir görüşün tartışılması güçleşir. Kısa ve açık yazmak, gerekli ayrıntıları silmek anlamına gelmez. Teknik terimleri anlaşılır hale getirmek uzmanlık bilgisinin yargılamada kullanılmasını kolaylaştırır."
+        },
+        {
+          "title": "İtirazı kişiselleştirme",
+          "text": "Kitap, rapora itirazı hukuki dinlenilme hakkıyla ilişkilendirir. İtirazın varlığı tek başına bilirkişinin başarısız olduğunu göstermez. İncelenecek şey, eleştirinin yöntem, veri, gerekçe veya kapsam bakımından somut bir eksikliğe işaret edip etmediğidir. Bilirkişi itirazı kişisel bir saldırı gibi karşılamak yerine teknik sorunun ne olduğunu ayırt etmelidir."
+        }
+      ],
+      "case": "Bir taraf rapordaki hesaplamayı yeniden yapamadığını, hangi birim fiyatın kullanıldığının yazılmadığını belirtiyor.",
+      "steps": [
+        {
+          "title": "Eleştirinin nesnesini bul",
+          "text": "İtiraz sonuçtan hoşlanmama biçiminde değil, hesaplamadaki girdinin belirsizliğine yöneliyor. Eksik unsur birim fiyat ve kaynağıdır."
+        },
+        {
+          "title": "İzlenebilirliği kontrol et",
+          "text": "Veri tablosunda fiyatın kaynağı, tarihi, birimi ve hesapta nerede kullanıldığı görünür mü? Okuyucunun aynı adımları izleyebilmesi değerlendirilir."
+        },
+        {
+          "title": "Teknik yanıt ver",
+          "text": "Görevlendiren merciin istediği açıklama çerçevesinde eksikliği gider. Tarafın kişiliğine ilişkin yorum, hesaplama sorununu çözmez."
+        }
+      ],
+      "comparison": {
+        "wrong": "İtiraz eden taraf teknik konuları anlamıyor.",
+        "right": "İtirazda işaret edilen birim fiyatın kaynağı ve hesaplamadaki kullanımı aşağıda açıklanmıştır.",
+        "why": "İlk ifade kişiyi hedef alır. İkinci ifade denetlenebilirliği artıran somut bir açıklama sunar."
+      },
+      "check": {
+        "question": "Raporun anlaşılır yazılması neden önemlidir?",
+        "options": [
+          "Sadece daha kısa görünmesi için",
+          "Teknik gerekçenin izlenebilmesi ve tartışılabilmesi için",
+          "Bilirkişinin görüşüne itiraz edilmesini engellemek için"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Kısalık bir amaç değil, anlaşılabilirliğe hizmet eden bir araçtır. Gerekli açıklamalar korunmalıdır.",
+          "Doğru. Veri ve gerekçeyi görünür kılmak, görüşün değerlendirilmesini ve somut sorular yöneltilmesini sağlar.",
+          "Amaç itirazı engellemek değildir. Kaynak, görüşe itiraz edilebilmesini yargılama güvenceleriyle ilişkilendirir."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir okuyucunun hesabını tekrar edebilmesi için raporunda hangi üç bilgiyi göstermelisin?",
+        "model": "Girdilerin kaynağı ve hangi döneme ait olduğu; kullanılan yöntem veya formül; girdilerin sonuca nasıl bağlandığını gösteren hesaplama adımları. Ayrıca varsa varsayımlar ve veri sınırlılıkları açıkça belirtilir."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "teknik-hukuki",
+      "lesson": "yargilama",
+      "title": "Teknik soru mu, hukuki sonuç mu?",
+      "goal": "Bir görevlendirmedeki teknik inceleme ihtiyacını ve sınır aşımını tanı.",
+      "pages": [
+        143,
+        183,
+        281,
+        282
+      ],
+      "sections": [
+        {
+          "title": "Sorunun fiiline bak",
+          "text": "“Ölç, karşılaştır, tespit et” gibi fiiller teknik çalışmaya işaret edebilir; ancak yalnızca fiil yeterli değildir. İncelenen hususun özel veya teknik bilgi gerektirip gerektirmediğine ve görevlendirme kapsamına bakılır. “Davayı kim kazanmalı?” sorusu ise ölçümden farklı olarak hukuki sonucun belirlenmesini ister."
+        },
+        {
+          "title": "Teknik değerlendirme yapabilirsin",
+          "text": "Hukuki nitelendirme yasağı, bilirkişinin verileri hiç değerlendiremeyeceği anlamına gelmez. Uzmanlık bilgisini kullanarak maddi olaya ilişkin teknik çıkarım yapabilir. Örneğin iki ölçüm arasındaki farkı yöntem ve tolerans çerçevesinde açıklamak teknik değerlendirmedir. Bu çıkarımdan hareketle tarafın hukuki sorumluluğunu ilan etmek başka bir işlemdir."
+        },
+        {
+          "title": "Tereddüdü kendi başına çözme",
+          "text": "Görev yazısında hukuki sonuç isteyen veya kapsamı belirsiz bir soru bulunması, bilirkişiye sınırsız yetki vermez. Kaynak, tereddüt halinde görevlendiren merciden açıklama istenmesini vurgular. Uygulama alıştırmalarında amacın bir hukuki hüküm yazmak değil, incelenebilir teknik hususu ve açıklığa kavuşturulması gereken sınırı ortaya çıkarmaktır."
+        }
+      ],
+      "case": "Görev yazısında “arızanın nedenini belirleyin ve davanın kabul edilip edilmeyeceğini açıklayın” ifadesi yer alıyor.",
+      "steps": [
+        {
+          "title": "Soruyu ikiye böl",
+          "text": "Arızanın teknik nedeni ile davanın sonucu iki farklı işlev talep eder. Tek cümlede bulunmaları onları aynı tür soru yapmaz."
+        },
+        {
+          "title": "Teknik incelemeyi tanımla",
+          "text": "Arıza bulguları, çalışma koşulları ve yöntem üzerinden incelenebilecek hususlar listelenir. İnceleme bu özel bilgi ihtiyacına bağlanır."
+        },
+        {
+          "title": "Sınırı açıklığa kavuştur",
+          "text": "Hukuki sonuca ilişkin bölümün kapsamı için görevlendiren merciden açıklama istenir; bilirkişi kendiliğinden hüküm kurmaz."
+        }
+      ],
+      "comparison": {
+        "wrong": "Mahkeme sorduğuna göre hukuki kararı da ben verebilirim.",
+        "right": "Teknik inceleme hususlarını belirler, görev sınırına ilişkin tereddüdün giderilmesini isterim.",
+        "why": "Görevlendirme, yargısal yetkinin devri olarak yorumlanmaz. Kapsamın açıklığı teknik çalışmanın da güvenilirliğini artırır."
+      },
+      "check": {
+        "question": "“Delilleri teknik yönden değerlendirmek” ile “hukuki sonucu belirlemek” aynı mıdır?",
+        "options": [
+          "Evet, her değerlendirme hukuki karardır",
+          "Hayır; özel bilgiyle teknik çıkarım, hukuki hükümden ayrıdır",
+          "Hayır; çünkü bilirkişi hiçbir veriyi değerlendiremez"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Teknik çıkarım ile normun uygulanarak hukuki sonuç belirlenmesi farklıdır. İncelemenin dayandığı bilgi türüne bak.",
+          "Doğru. Kaynak, teknik bilgiyle maddi olayı değerlendirmeyi kabul eder; hukuki nitelendirme sınırını ayrıca korur.",
+          "Bu da aşırı bir yorumdur. Bilirkişi uzmanlığı çerçevesinde teknik tespit ve değerlendirme yapabilir."
+        ]
+      },
+      "reflection": {
+        "prompt": "Kendi alanında hukuki sonuca kayan bir cümleyi teknik soru biçiminde yeniden yaz.",
+        "model": "“Davalı sorumludur” yerine, görev kapsamına göre “İncelenen üründeki arızanın teknik nedeni ve bu değerlendirmeyi destekleyen bulgular nelerdir?” diye sorulabilir. Hukuki sorumluluk değerlendirmesi bu teknik sorunun dışında kalır."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "etik-yetkinlik",
+      "lesson": "bilirkisilik",
+      "title": "Yetkinlik: unvandan göreve",
+      "goal": "Genel meslek bilgisi ile somut göreve uygun uzmanlığı ayır.",
+      "pages": [
+        79,
+        198,
+        279,
+        298
+      ],
+      "sections": [
+        {
+          "title": "Diploma başlangıçtır, tek ölçü değildir",
+          "text": "Bir kişinin meslek unvanı, önüne gelen her teknik soruyu cevaplayabileceğini göstermez. Kaynak, uzmanlık alanında bilgi ve beceriye, temel ve alt uzmanlık seçimine dikkat çeker. Bu nedenle görevi okurken “bu meslektenim” yerine “bu somut soru hangi bilgi, yöntem ve deneyimi gerektiriyor?” sorusuyla başlamak daha öğreticidir."
+        },
+        {
+          "title": "Üç uyumu birlikte kontrol et",
+          "text": "Önce konu ile uzmanlık alanının uyumunu değerlendir. Ardından inceleme için gereken araç, kayıt ve yöntemlere erişimin olup olmadığına bak. Son olarak görevin kapsamıyla zaman imkânını karşılaştır. Bir alanda uzman olmak, gerekli cihaz olmadan ölçüm yapabileceğin veya kapsamlı işi yetersiz sürede tamamlayabileceğin anlamına gelmez."
+        },
+        {
+          "title": "Eksikliği erken görünür kıl",
+          "text": "Kaynakta ön inceleme, uygun olmayan uzmanlık veya haklı mazeretlerin görevlendiren mercie bildirilmesiyle ilişkilendirilir. Başka uzmanlık ihtiyacı doğduğunda da izinsiz görev devri yerine merciye başvurmak esastır. Öğrenilecek davranış, eksikliği gizlemek değil; hangi sorunun hangi nedenle mevcut imkânlarla cevaplanamayacağını açıkça belirlemektir."
+        }
+      ],
+      "case": "Bir makine mühendisine, mekanik hasarın yanında özel yazılım kayıtlarının adli bilişim yönünden incelenmesi de soruluyor.",
+      "steps": [
+        {
+          "title": "Soruları uzmanlıklarına ayır",
+          "text": "Mekanik hasar ile dijital kayıtların güvenilirliği aynı uzmanlık değerlendirmesi olmayabilir. Görevdeki sorular ayrı ayrı ele alınır."
+        },
+        {
+          "title": "Kendi sınırını belirle",
+          "text": "Hangi soruları bilgi, deneyim ve araçlarınla inceleyebildiğini; hangilerinin başka uzmanlık gerektirdiğini gerekçelendir."
+        },
+        {
+          "title": "Usulüne uygun ihtiyaç bildir",
+          "text": "İhtiyaç duyulan başka uzmanlığın görevlendirmeye dahil edilmesi için merciye başvur. Dosyayı kendi seçtiğin bir kişiye devretme."
+        }
+      ],
+      "comparison": {
+        "wrong": "Mesleğimle biraz ilgili; tüm soruları cevaplarım.",
+        "right": "Her sorunun gerektirdiği uzmanlığı ve inceleme imkânını ayrı ayrı kontrol ederim.",
+        "why": "İkinci yaklaşım, unvan üzerinden genel kabul yerine somut göreve uygunluk değerlendirmesi yapar."
+      },
+      "check": {
+        "question": "Görevde başka bir uzmanlık gerektiğini fark ettin. İlk uygun yaklaşım hangisi?",
+        "options": [
+          "Dosyayı bir arkadaşa gönderip onun raporunu imzalamak",
+          "Eksik uzmanlığı hiç belirtmemek",
+          "İhtiyacı görevlendiren mercie bildirmek"
+        ],
+        "correct": 2,
+        "feedback": [
+          "Bu, görevi bizzat yerine getirme ve görevlendirme yetkisiyle bağdaşmaz. Yardım ihtiyacı usulüne uygun bildirilmelidir.",
+          "Eksikliği gizlemek incelemenin güvenilirliğini zedeler. Hangi sorunun neden cevaplanamadığını görünür kıl.",
+          "Doğru. Farklı uzmanlık ihtiyacı merciye sunulur; görevin kapsamı ve uzman görevlendirmesi bu kanaldan çözülür."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir görevi kabul etmeden önce kendine soracağın üç uygunluk sorusunu yaz.",
+        "model": "Bu soru temel ve alt uzmanlık alanıma giriyor mu? Gerekli veri, yöntem ve cihazlara erişebiliyor muyum? İncelemenin kapsamını verilen sürede yerine getirebilir miyim? Eksiklik varsa görevlendiren mercie somut olarak bildiririm."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "etik-tarafsizlik",
+      "lesson": "bilirkisilik",
+      "title": "Tarafsızlığı somut olayda koru",
+      "goal": "Çıkar çatışmasını yalnızca niyet üzerinden değil ilişki ve davranış üzerinden değerlendir.",
+      "pages": [
+        94,
+        98,
+        104,
+        280
+      ],
+      "sections": [
+        {
+          "title": "Bağımsızlık ve tarafsızlık birlikte çalışır",
+          "text": "Bağımsızlık, görüşün dış etkilerle şekillenmemesini; tarafsızlık ise taraflara eşit mesafeyi korumayı düşündürür. Kaynak bu ilkeleri dürüstlük ve objektiflikle birlikte ele alır. “Ben zaten adilim” demek yeterli bir kontrol değildir. Mevcut iş ilişkileri, yakınlıklar veya menfaatler somut olarak gözden geçirilmelidir."
+        },
+        {
+          "title": "İlişkinin görünürlüğü önemlidir",
+          "text": "Bir tarafla iş ilişkisi, rapora ilişkin özel görüşme veya taraf beklentisine uygun sonuç üretme baskısı tarafsızlık açısından sorun doğurabilir. Burada değerlendirilmesi gereken yalnızca gerçekten etkilenip etkilenmediğin değildir; incelemenin güvenilirliğini zedeleyen ilişkinin kendisi de önem taşır. Kaynak yasaklılık, ret ve çekinme konularını bu amaçla ilişkilendirir."
+        },
+        {
+          "title": "İletişim de incelemenin parçasıdır",
+          "text": "Rehber, dosyanın tarafı veya başka bir kişinin dosya hakkında iletişim kurması halinde bilgi vermekten kaçınmayı ve durumu görevlendiren mercie bildirmeyi ele alır. Bir tarafın bilgisine başvurma ihtiyacı da keyfi özel görüşme biçiminde yürütülmez. Görüşme ve bilgi edinme, görevlendiren merciin bilgisi ve usul çerçevesinde düşünülmelidir."
+        }
+      ],
+      "case": "Bilirkişilik görevi aldığın dosyanın taraflarından biri, düzenli danışmanlık verdiğin şirket çıkıyor. Şirket yetkilisi seni arayıp “zaten işi biliyorsun” diyor.",
+      "steps": [
+        {
+          "title": "İlişkiyi adlandır",
+          "text": "Düzenli danışmanlık, soyut bir tanışıklıktan farklı somut iş ilişkisidir. Sadece “etkilenmem” demek yeterli olmaz."
+        },
+        {
+          "title": "Özel iletişimi durdur",
+          "text": "Dosyanın teknik içeriğini tek tarafla özel biçimde tartışmaya devam etme. İlişkiyi ve teması gizlenecek ayrıntı olarak görme."
+        },
+        {
+          "title": "Merciye bildir",
+          "text": "Görevin yerine getirilmesini etkileyen durumu görevlendiren mercie bildir; uygulanacak usulün belirlenmesini bu kanalda ele al."
+        }
+      ],
+      "comparison": {
+        "wrong": "Tarafı tanıyorum ama sonuç adil olacağı için bildirmem gerekmiyor.",
+        "right": "İş ilişkisini ve dosyaya ilişkin teması görünür kılar, görev açısından değerlendirilmesini isterim.",
+        "why": "Kişisel özgüven, çıkar çatışması incelemesinin yerine geçmez. Somut ilişkinin açıklanması önemlidir."
+      },
+      "check": {
+        "question": "Çıkar çatışması kontrolü hangi soruyla başlar?",
+        "options": [
+          "Taraflardan biriyle görevimi etkileyebilecek ilişkim veya menfaatim var mı?",
+          "Hangi taraf sonucu daha çok beğenir?",
+          "Sonucu değiştirmeden ilişkimi saklayabilir miyim?"
+        ],
+        "correct": 0,
+        "feedback": [
+          "Doğru. İlişki ve menfaatleri somutlaştırmak, tarafsızlık değerlendirmesinin başlangıcıdır.",
+          "Tarafların memnuniyeti teknik ve tarafsız inceleme ölçütü değildir.",
+          "Gizleme yaklaşımı denetimi ortadan kaldırır. İlişkinin görev açısından değerlendirilmesi gerekir."
+        ]
+      },
+      "reflection": {
+        "prompt": "“Objektifim” demenin ötesinde tarafsızlığı nasıl gösterebilirsin?",
+        "model": "İlişkileri ve olası menfaatleri baştan kontrol etmek, taraf beklentilerinden bağımsız yöntem kullanmak, aynı tür veriye aynı ölçütü uygulamak ve usul dışı özel iletişimden kaçınmak. Her adımın somut davranış karşılığı vardır."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "etik-gizlilik",
+      "lesson": "bilirkisilik",
+      "title": "Bizzat incele, bilgiyi koru",
+      "goal": "Görev devri ile uzmanlık ihtiyacını; dosya erişimi ile paylaşım yetkisini ayır.",
+      "pages": [
+        94,
+        105,
+        106,
+        280,
+        299
+      ],
+      "sections": [
+        {
+          "title": "İmza tek başına bizzat ifa değildir",
+          "text": "Kaynak, görevin kısmen veya tamamen başkasına bırakılamayacağını açıklar. Raporun altına imza atmak, teknik incelemeyi gerçekte başkasının yapmış olmasını ortadan kaldırmaz. Heyet halinde çalışıldığında da her bilirkişinin kendi görevini yerine getirmesi gerekir. Bu ilke, görevlendirmenin kişinin uzmanlığı dikkate alınarak yapılmasıyla bağlantılıdır."
+        },
+        {
+          "title": "Yardım ihtiyacını doğru kanala taşı",
+          "text": "Bir sorunun başka uzmanlık gerektirmesi mümkündür. Bu durumda yapılacak şey dosyayı kişisel çevrenden birine devretmek değil, ihtiyaç duyulan uzmanlığın görevlendiren merciye bildirilmesidir. Böylece incelemeyi kimin, hangi kapsamda yaptığı belirsizleşmez. Kişisel bir yardım düzenlemesi ile usulüne uygun uzman görevlendirmesi aynı değildir."
+        },
+        {
+          "title": "Gizlilik görevin bitmesiyle sona ermez",
+          "text": "Dosyaya erişebilmek, içeriğini istediğin yerde paylaşabilme yetkisi vermez. Kaynaktaki kontrol listesi, öğrenilen sırların ve teslim edilen bilgilerin gizliliğinin görev sonrasında da korunacağını vurgular. Eğitim notu hazırlarken bile gerçek dosyanın kişileri ve belgeleriyle gereksiz paylaşım oluşturmak yerine kurgusal örnekler kullanmak bu ayrımı anlamayı kolaylaştırır."
+        }
+      ],
+      "case": "Yoğun olduğun için dosyayı meslektaşına gönderip raporu ona hazırlatmayı, sonra kendin imzalamayı düşünüyorsun.",
+      "steps": [
+        {
+          "title": "Gerçek işi kimin yaptığını sor",
+          "text": "Teknik tespit, analiz ve görüşü başkası oluşturuyorsa yalnızca son imzayı atmak bizzat ifa sorununu çözmez."
+        },
+        {
+          "title": "Bilgi paylaşımını değerlendir",
+          "text": "Dosyayı üçüncü kişiye göndermek ayrıca gizlilik ve yetkili erişim bakımından değerlendirilmelidir. Kolaylık, paylaşım yetkisi yaratmaz."
+        },
+        {
+          "title": "İhtiyacı bildir",
+          "text": "Süre, mazeret veya başka uzmanlık ihtiyacını görevlendiren merciye somutlaştırarak ilet; kişisel görev devriyle çözmeye çalışma."
+        }
+      ],
+      "comparison": {
+        "wrong": "Raporu ben imzalarsam kimin hazırladığı önemli değildir.",
+        "right": "İncelemeyi ve görüşü görevim kapsamında bizzat oluşturur, karşılayamadığım ihtiyacı merciye bildiririm.",
+        "why": "Bizzat ifa, yalnızca şekli imza değil incelemenin gerçekten yerine getirilmesiyle ilgilidir."
+      },
+      "check": {
+        "question": "Gizlilik yükümlülüğü açısından doğru ifade hangisidir?",
+        "options": [
+          "Rapor teslim edilince bütün dosya paylaşılabilir",
+          "Sadece dosya kapağı gizlidir",
+          "Görev bittikten sonra da öğrenilen sırların korunması gerekir"
+        ],
+        "correct": 2,
+        "feedback": [
+          "Teslim, gizlilik yükümlülüğünü kendiliğinden sona erdirmez.",
+          "Koruma yalnızca kapakla sınırlı değildir; görev nedeniyle edinilen bilgi ve sırları da kapsar.",
+          "Doğru. Kitabın teslim sonrası kontrolünde bu devamlılık özellikle belirtilir."
+        ]
+      },
+      "reflection": {
+        "prompt": "Başka uzmanlık ihtiyacı ile görevi devretme arasındaki farkı kendi cümlenle açıkla.",
+        "model": "Başka uzmanlık ihtiyacında eksik alanı görevlendiren mercie bildirir, usulüne uygun görevlendirme isterim. Görevi devretmede ise seçildiğim işi kendi kararımla başka birine yaptırırım. Bu iki yol aynı yetki ve sorumluluk yapısına sahip değildir."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "etik-sorumluluk",
+      "lesson": "bilirkisilik",
+      "title": "Sorumluluğun farklı katmanları",
+      "goal": "Disiplin, zarar ve ceza sorumluluğunu tek bir kavram gibi kullanma.",
+      "pages": [
+        108,
+        113,
+        132,
+        133,
+        134
+      ],
+      "sections": [
+        {
+          "title": "Güven, teknik yetkinliğin yanına eklenir",
+          "text": "Kaynak bilirkişinin saygınlığı ve güvenilirliğini, görevini kişisel menfaatlerin üzerinde tutmasıyla ilişkilendirir. Bu nedenle iyi teknik bilgiye sahip olmak tek başına yeterli değildir. Görevin yürütülüş biçimi, bilgiye yaklaşım ve rapordaki özen de değerlendirilir. Denetim, faaliyetin belirlenmiş kural ve ölçütlere uygunluğunun incelenmesini içerir."
+        },
+        {
+          "title": "Sorumluluk yollarını ayır",
+          "text": "Disiplin sorumluluğu, mesleki görev ve davranış kurallarıyla; hukuki sorumluluk, belirli koşullarda zararın giderilmesiyle; cezai sorumluluk ise suç olarak düzenlenen fiillerle ilgilidir. Aynı olay farklı yönlerden değerlendirilebilir. Bu kategorileri ayırmadan “rapor hatalıysa bütün sonuçlar otomatik doğar” demek, kitaptaki koşullu yapıyı gözden kaçırır."
+        },
+        {
+          "title": "Koşulların birlikte değerlendirilmesi",
+          "text": "Kitap, rapordan kaynaklanan hukuki sorumluluğu anlatırken kast veya ağır ihmal, gerçeğe aykırılık, raporun hükme esas alınması ve zarar gibi unsurları birlikte ele alır. Eğitimde amaç somut bir olay hakkında sorumluluk kararı vermek değil, değerlendirmede hangi soruların birbirinden ayrı olduğunu görmektir. Her yanlışlık aynı tür ve derecede sonuç üretmez."
+        }
+      ],
+      "case": "Bir raporda hesap hatası fark edildi. Bir kişi yalnızca bu hataya bakarak “bilirkişi kesinlikle suç işlemiştir” diyor.",
+      "steps": [
+        {
+          "title": "Olguyu belirle",
+          "text": "Önce hatanın ne olduğu ve nasıl oluştuğu teknik olarak anlaşılır. Hata tespiti ile hukuki sonuç aynı adım değildir."
+        },
+        {
+          "title": "Değerlendirme türlerini ayır",
+          "text": "Görev kurallarına uygunluk, zarar koşulları ve suçun unsurları farklı inceleme sorularıdır; biri diğerinin yerine kullanılmaz."
+        },
+        {
+          "title": "Otomatik hüküm kurma",
+          "text": "Tek veriyle bütün sorumluluk türleri hakkında kesin sonuç üretme. Bu dersin çıktısı kategori ve koşulları ayırabilmektir."
+        }
+      ],
+      "comparison": {
+        "wrong": "Her hatalı rapor kendiliğinden aynı cezayı gerektirir.",
+        "right": "Hatanın niteliği ile her sorumluluk türünün koşulları ayrı ayrı değerlendirilir.",
+        "why": "Kitap farklı sorumluluk yollarını ayrı başlıklarda ve koşullarla inceler; teknik hata ile hukuki sonucu özdeşleştirmez."
+      },
+      "check": {
+        "question": "Bir raporda hata bulunması neyi tek başına gösterir?",
+        "options": [
+          "Bütün sorumluluk türlerinin kesin doğduğunu",
+          "Hatanın incelenmesi gerektiğini; hukuki sonuçların ayrıca değerlendirilmesini",
+          "Raporun artık hiçbir şekilde tartışılamayacağını"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Bu otomatik sonuç yaklaşımı farklı koşulları atlar. Hata, kusur, etki ve zarar sorularını ayır.",
+          "Doğru. Teknik saptama yapılır; her sorumluluk yolunun kendi koşulları ayrıca değerlendirilir.",
+          "Hatanın tespiti tartışmayı kapatmaz; somut ve gerekçeli incelemeyi gerekli kılar."
+        ]
+      },
+      "reflection": {
+        "prompt": "Disiplin, hukuki ve cezai sorumluluk için birer anahtar soru yaz.",
+        "model": "Görev ve davranış kurallarına uygun hareket edildi mi? İlgili hukuki sorumluluk düzenlemesinin zarar ve diğer koşulları oluştu mu? Suç olarak düzenlenen bir fiilin unsurları var mı? Bunlar tek sorunun farklı adları değildir."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "inceleme-gorev",
+      "lesson": "inceleme",
+      "title": "Görevlendirmeyi inceleme planına çevir",
+      "goal": "Kapsam, sınır ve sorulardan uygulanabilir bir çalışma planı çıkar.",
+      "pages": [
+        183,
+        197,
+        200,
+        279
+      ],
+      "sections": [
+        {
+          "title": "Dosya teslimi görev tanımı değildir",
+          "text": "Kaynak, dosyanın ve eklerinin teslim edilmesinin görev alanını belirlemiş sayılmayacağını özellikle vurgular. İncelemenin konusu, sınırları ve cevaplanacak sorular görevlendirmede açıklığa kavuşmalıdır. “Dosyayı inceleyip rapor veriniz” gibi genel bir ifade, hangi maddi soruna hangi uzmanlık katkısının beklendiğini tek başına anlatmaz."
+        },
+        {
+          "title": "Her soruya bir çalışma karşılığı bul",
+          "text": "Bir inceleme planında soruyu, gerekli veriyi, uygulanacak teknik yaklaşımı ve beklenen çıktıyı yan yana düşün. “Hangi parçanın kırıldığı” sorusu ile “kırılmanın hangi mekanizmayla oluştuğu” sorusu aynı veri ve yöntemi gerektirmeyebilir. Bu eşleştirme, rapor sonunda bütün sorulara gerçekten cevap verilip verilmediğini kontrol etmeyi sağlar."
+        },
+        {
+          "title": "Belirsizliği kayıtlı biçimde gider",
+          "text": "Kapsamı belirsiz bir soruyu kendi varsayımınla genişletmek yerine görevlendiren merciden yazılı açıklama istemek, kaynakta belirtilen yoldur. İncelemenin teknik planını hazırlarken hukuki görev sınırlarını da gözet. Sorunun anlaşılır hale gelmesi, yalnızca işini kolaylaştırmaz; raporun hangi göreve cevap verdiğinin denetlenmesini de mümkün kılar."
+        }
+      ],
+      "case": "Görev yazısında “binadaki hasarı inceleyiniz” deniyor. Hangi bölüm, tarih ve teknik sorunun inceleneceği açık değil.",
+      "steps": [
+        {
+          "title": "Belirsizlikleri listele",
+          "text": "İnceleme konusu bölüm, değerlendirme tarihi ve cevaplanacak teknik sorular ayrı ayrı belirlenir. “Hasar” sözcüğünün tek başına kapsam yaratmadığı görülür."
+        },
+        {
+          "title": "Açıklama talebini somutlaştır",
+          "text": "“Görev belirsiz” demekle yetinmek yerine hangi sınırların açıklanmasına ihtiyaç duyulduğu yazılır. Örneğin, inceleme tarihinin hangi dönemle sınırlı olduğu ve hangi teknik sorulara cevap beklendiği tek tek belirtilir. Böylece açıklama talebi, incelemenin yapılmasını sağlayacak bir soruya dönüşür."
+        },
+        {
+          "title": "Açıklanan görevi plana bağla",
+          "text": "Her açık sorunun karşısına gerekli belge, inceleme yöntemi ve raporda verilecek teknik çıktı yerleştirilir."
+        }
+      ],
+      "comparison": {
+        "wrong": "Dosya geldiğine göre içindeki her konuda değerlendirme yapabilirim.",
+        "right": "Görevlendirmenin soruları ve sınırlarıyla ilgili hususları, gerekli verilere dayanarak incelerim.",
+        "why": "Erişim imkânı ile görev yetkisi aynı şey değildir. İnceleme kapsamı ayrıca belirlenmelidir."
+      },
+      "check": {
+        "question": "Görev kapsamı konusunda tereddüt varsa uygun ilk adım hangisidir?",
+        "options": [
+          "İncelemeyi mümkün olduğunca genişletmek",
+          "Görevlendiren merciden yazılı açıklama istemek",
+          "Soruyu raporda atlamak"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Genişletme, tereddüdü çözmez; görevin dışına çıkma riski yaratır.",
+          "Doğru. Kaynak kapsam ve sınır tereddüdünün görevlendiren merci aracılığıyla giderilmesini ister.",
+          "Soruyu atlamak, cevaplanması gereken hususu ortadan kaldırmaz. Önce açıklık sağlanmalıdır."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir teknik soru için “soru → veri → yöntem → çıktı” zinciri kur.",
+        "model": "Soru: Parçanın ölçüsü nedir? Veri: İncelenecek parçanın kimliği ve ölçüm koşulları. Yöntem: Göreve uygun ölçüm yaklaşımı. Çıktı: Ölçüm sonucu, koşulları ve sınırları. Zincirin her halkası aynı teknik soruya bağlı olmalıdır."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "inceleme-onkontrol",
+      "lesson": "inceleme",
+      "title": "İşe başlamadan önce dört kontrol",
+      "goal": "Uzmanlık, tarafsızlık, kaynaklar ve zaman açısından ön inceleme yap.",
+      "pages": [
+        198,
+        279,
+        298
+      ],
+      "sections": [
+        {
+          "title": "Ön inceleme bir karar noktasıdır",
+          "text": "Ön inceleme, raporu yazmaya başlamadan önce görevin yapılabilirliğini anlamaya yarar. Kaynaktaki sorular, uzmanlık alanına uygunluk ve görevi etkileyen mazeretlerle başlar. Bunları yalnızca formalite gibi işaretlemek yerine, her cevabın çalışma planında neyi değiştirdiğini düşün. Bir sorun varsa önce o sorunun görünür hale gelmesi gerekir."
+        },
+        {
+          "title": "Dört ekseni birlikte değerlendir",
+          "text": "Uzmanlık ekseni “soruyu gerçekten inceleyebilir miyim?” diye sorar. Tarafsızlık ekseni ilişki ve çıkar çatışmalarına bakar. Kaynak ekseni gerekli nesne, kayıt ve cihazları; zaman ekseni ise işin kapsamı ile mevcut süreyi karşılaştırır. Bir eksendeki olumlu cevap diğerindeki eksikliği otomatik gidermez."
+        },
+        {
+          "title": "Bildirim somut olmalı",
+          "text": "Eksikliği bildirirken hangi soruyu etkilediğini ve neye ihtiyaç duyulduğunu açıkla. Örneğin “belge eksik” yerine, ilgili dönem bakım kayıtlarının bulunmadığını ve teknik neden değerlendirmesi için gerekli olduğunu belirtmek daha işlevseldir. Kaynakta farklı usuller ve süreler açıklanır; bu alıştırma, bildirim ihtiyacını erken fark etme davranışına odaklanır."
+        }
+      ],
+      "case": "Uzmanlık alanına uygun bir dosya geldi, fakat ölçüm cihazına erişim yok ve gerekli kayıtların bir bölümü teslim edilmemiş.",
+      "steps": [
+        {
+          "title": "Olumlu ve eksik yönleri ayır",
+          "text": "Uzmanlık uygunluğu olumlu olabilir; buna rağmen araç ve veri eksiklikleri bağımsız olarak değerlendirilir."
+        },
+        {
+          "title": "Eksikliğin etkisini açıkla",
+          "text": "Cihaz olmadan hangi ölçümün, kayıt olmadan hangi zaman aralığının incelenemediği belirlenir. “Belge eksik” demek yerine eksik kaydın hangi soruyu cevapsız bıraktığını göster. İnceleme başka bir veriyle sürdürülebiliyorsa bunun aynı güvenilirliği sağlayıp sağlamadığını ayrıca değerlendir."
+        },
+        {
+          "title": "İhtiyaçları göreve bağla",
+          "text": "Gerekli imkân ve veriler merciye somut gerekçeleriyle bildirilir. Eksik unsurlar varmış gibi rapor hazırlanmaz."
+        }
+      ],
+      "comparison": {
+        "wrong": "Konuyu biliyorum; kayıt ve cihaz eksikliği önemli değil.",
+        "right": "Yetkinliğimin yanında verinin ve inceleme imkânlarının yeterliliğini de kontrol ederim.",
+        "why": "Bilgi, eksik ölçümün veya bulunmayan verinin yerine geçmez; ön inceleme bu farkı ortaya çıkarır."
+      },
+      "check": {
+        "question": "Uzmanlık alanın uygun ama gerekli kayıt yok. Ne sonuç çıkarırsın?",
+        "options": [
+          "İnceleme için başka kontrol kalmadı",
+          "Eksik kayıtlar varmış gibi varsayılabilir",
+          "Veri ihtiyacını ve hangi soruya etkisini ayrıca belirlemeliyim"
+        ],
+        "correct": 2,
+        "feedback": [
+          "Uzmanlık yalnızca bir eksendir. Veri, araç, tarafsızlık ve zaman da değerlendirilmelidir.",
+          "Varsayım ile elde edilmiş veri farklıdır. Eksiklik raporun dayanağı gibi sunulamaz.",
+          "Doğru. Hangi kaydın hangi soruya neden gerekli olduğunu açıklamak ön incelemeyi uygulanabilir hale getirir."
+        ]
+      },
+      "reflection": {
+        "prompt": "Kendi alanında sık eksik gelen bir belgeyi ve yokluğunun etkisini yaz.",
+        "model": "Örnek: Belirli dönemin bakım kaydı eksik. Bu yokluk, arıza öncesindeki bakım geçmişini değerlendirmeyi sınırlar. Kaydın hangi dönem için istendiği ve hangi teknik soruyla ilgili olduğu açıkça belirtilir."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "inceleme-materyal",
+      "lesson": "inceleme",
+      "title": "Belge ve materyalin izini sür",
+      "goal": "Teslim edilen nesneyi, kaydın kaynağını ve inceleme izini birbirine bağla.",
+      "pages": [
+        197,
+        198,
+        224,
+        299
+      ],
+      "sections": [
+        {
+          "title": "Neyi aldığını bilmeden incelemeye başlama",
+          "text": "Kitap, inceleme konusu şeylerin tesliminde liste, sayım ve kayıt düzeninin önemini anlatır. Bir dosyanın hacimli olması, ihtiyaç duyulan her belgenin içinde bulunduğunu göstermez. Teslim edilen materyalin kimliği, kapsamı ve göreve ilişkinliği belirlenmelidir. Fiziksel bir parça ile onun fotoğrafı veya fotokopisi aynı inceleme imkânını sunmayabilir."
+        },
+        {
+          "title": "Kaynak ile bulguyu ilişkilendir",
+          "text": "Raporda kullanılan bir belgenin ne olduğu ve nereden elde edildiği gösterilmelidir. Kaynak dosya eki mi, sonradan merci tarafından iletilen kayıt mı? Hangi tarih ve kimlik bilgisiyle ayırt ediliyor? Bu sorular, bir okuyucunun değerlendirmeyi hangi malzemenin taşıdığını görebilmesi için gereklidir."
+        },
+        {
+          "title": "İnceleme izi teslimle bitmez",
+          "text": "Çalışma boyunca kullanılan materyalin hangi bulguyla ilişkili olduğu korunmalıdır. İnceleme sonunda fiziksel olarak teslim edilen dosya ve eklerin iadesi de kontrol listesinde yer alır. Eğitim bakımından temel fikir şudur: teslim, kullanım ve iade birbirinden kopuk işlemler değil, aynı materyalin izlenebilir yaşam döngüsüdür."
+        }
+      ],
+      "case": "İncelemen için benzer görünümlü iki parça ve farklı tarihlerde çekilmiş üç fotoğraf teslim edildi.",
+      "steps": [
+        {
+          "title": "Kimlik ver",
+          "text": "Her parça ve fotoğrafı ayırt edecek mevcut kayıt bilgilerini kullan. Benzer görünümün aynı nesneye işaret ettiğini varsayma."
+        },
+        {
+          "title": "Bulguyu bağla",
+          "text": "Ölçüm ve gözlemin hangi parçaya, hangi koşul ve tarihe ait olduğunu not et. Fotoğrafın gösterdiği alanı gerçek incelemeden ayır."
+        },
+        {
+          "title": "Raporda izi koru",
+          "text": "Kullanılan materyali ve bulguyla ilişkisini açıkla; teslim sonrası iade ve gizlilik yükümlülüklerini ayrıca takip et."
+        }
+      ],
+      "comparison": {
+        "wrong": "Fotoğraflardaki parçalardan birinde hasar var.",
+        "right": "Dosyada A olarak tanımlanan parçanın şu tarihli fotoğrafında şu bölgede bulgu görülmektedir.",
+        "why": "İkinci ifade inceleme nesnesini ayırt eder. Hangi materyalin hangi değerlendirmeye dayanak olduğu anlaşılır."
+      },
+      "check": {
+        "question": "Bir belgenin raporda yalnızca “ekli kayıt” diye anılması neden yetersiz kalabilir?",
+        "options": [
+          "Belgenin kimliği, kaynağı ve ilgili dönemini belirsiz bıraktığı için",
+          "Her belgeye uzun bir övgü yazılması gerektiği için",
+          "Belge kullanmak tamamen yasak olduğu için"
+        ],
+        "correct": 0,
+        "feedback": [
+          "Doğru. Denetim için hangi kaydın kullanıldığı ve neyi gösterdiği anlaşılmalıdır.",
+          "Amaç uzunluk değil ayırt edilebilirliktir. Kısa ama açık kaynak bilgisi yeterli bir başlangıçtır.",
+          "Bilirkişi görevi için gerekli belgelerden yararlanır; sorun kullanmak değil izi belirsiz bırakmaktır."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir materyal takip kaydında tutacağın alanları yaz.",
+        "model": "Materyalin ayırt edici kimliği, teslim edilen biçimi, kaynağı ve tarihi, ilgili inceleme sorusu, hangi işlemde kullanıldığı ve iade durumu. Bu örnek çalışma düzeni, kaynakta vurgulanan izlenebilirliği uygulamaya dönüştürür."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "inceleme-yontem",
+      "lesson": "inceleme",
+      "title": "Yöntem, ölçüm ve sınırlar",
+      "goal": "Teknik yöntemin neden seçildiğini ve verinin sınırlarını açıklayabil.",
+      "pages": [
+        200,
+        280,
+        281,
+        282
+      ],
+      "sections": [
+        {
+          "title": "Sonuçtan önce yöntemi kur",
+          "text": "Bir sonucun bilimsel veya teknik olması, onu yalnızca uzman bir kişinin söylemesinden kaynaklanmaz. Kullanılan veriler, yöntem ve çıkarım ilişkisi açıklanmalıdır. Kaynak rehber ilkeler, raporun somut ve özel nedenlerini bilimsel verilere uygun göstermeyi ister. Bu, okuyucunun sonuca nasıl ulaşıldığını takip edebilmesi anlamına gelir."
+        },
+        {
+          "title": "Ölçümü bağlamından koparma",
+          "text": "Bir sayının anlamı, neyin hangi koşulda ve hangi birimle ölçüldüğüne bağlıdır. Rehber, gerekli ölçümlerin bizzat yapılmasını ve kullanılan fiyat veya kriterlerin açıklanmasını vurgular. Bir tarafın sunduğu değeri incelemeden kendi ölçümün gibi aktarmakla, o verinin niteliğini açıkça belirterek değerlendirmek aynı değildir."
+        },
+        {
+          "title": "Sınırları saklamak kesinlik sağlamaz",
+          "text": "Her veri bütün soruları cevaplamaz. Yöntemin hangi hususu değerlendirebildiğini, eksik verinin hangi sonucu sınırlandırdığını ve başka uzmanlık ihtiyacını açıklamak gerekir. İnceleme sırasında yetki kullanımı ve ek bilgi talepleri görevlendiren merci aracılığıyla düşünülür. Belirsizliği gizleyen güçlü bir cümle, gerekçeli bir teknik değerlendirme yerine geçmez."
+        }
+      ],
+      "case": "Bir taraf, hasarlı alanın 40 m² olduğunu bildiriyor. Raporunda bu değeri kullanmayı planlıyorsun.",
+      "steps": [
+        {
+          "title": "Verinin niteliğini belirle",
+          "text": "40 m² değeri taraf beyanı mı, mevcut bir kayıt mı, senin yaptığın ölçüm mü? Önce bunları birbirinden ayır."
+        },
+        {
+          "title": "İnceleme gereğini değerlendir",
+          "text": "Görevin ve gerekli yetkilendirmenin çerçevesinde ölçüm ihtiyacını belirle. Ölçüm yöntemi, alan sınırı ve birim açık olmalıdır."
+        },
+        {
+          "title": "Hesabı izlenebilir yaz",
+          "text": "Alan, birim değer ve hesaplama ilişkisini göster. Bir varsayım kullanıldıysa onu doğrulanmış ölçüm gibi sunma."
+        }
+      ],
+      "comparison": {
+        "wrong": "Taraf 40 m² dediği için alan 40 m² olarak ölçülmüştür.",
+        "right": "Tarafın bildirdiği değer ile incelemede elde edilen ölçümün kaynağını ayrı ayrı gösteririm.",
+        "why": "Beyan, belge ve bizzat yapılan ölçüm aynı veri türü değildir. Rapor bu ayrımı korumalıdır."
+      },
+      "check": {
+        "question": "Teknik yöntemi açıklamanın temel yararı nedir?",
+        "options": [
+          "Uzmanlık unvanını tekrar etmek",
+          "Veriden sonuca giden yolun denetlenmesini sağlamak",
+          "Her belirsizliği kendiliğinden ortadan kaldırmak"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Unvan, yöntemin yerine geçmez. İşlemin nasıl yapıldığı açıklanmalıdır.",
+          "Doğru. Yöntem, veri ile sonuç arasındaki akıl yürütmenin incelenebilmesini sağlar.",
+          "Açıklama belirsizliği sihirli biçimde yok etmez; hangi sınırların bulunduğunu görünür kılar."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir ölçüm için sonuçla birlikte hangi bağlamı rapora koyarsın?",
+        "model": "Ölçülen nesnenin kimliği, tarih ve koşullar, birim ve yöntem, kullanılan karşılaştırma ölçütü ve varsa sınırlılık. Okuyucunun sayının neyi temsil ettiğini anlayabilmesi gerekir."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "rapor-mimari",
+      "lesson": "rapor",
+      "title": "Raporun omurgasını kur",
+      "goal": "Soruları ve cevapları izlenebilir bir belge düzenine yerleştir.",
+      "pages": [
+        221,
+        224,
+        282,
+        285
+      ],
+      "sections": [
+        {
+          "title": "Önce soruları görünür kıl",
+          "text": "İyi bir raporun omurgası görevdeki somut sorulardır. Kaynak, soruların baştan belirtilmesinin sonuçları bu sorularla karşılaştırmayı kolaylaştırdığını açıklar. Raporun uzunluğu yerine her sorunun nerede ve hangi gerekçeyle cevaplandığına bak. Soruların listesi, teslim öncesi eksiklik denetiminin de kontrol çizelgesidir."
+        },
+        {
+          "title": "Bölümlerin görevlerini ayır",
+          "text": "Kapsam bölümü neyin incelendiğini; materyaller bölümü neyin kullanıldığını; yöntem bölümü işlemin nasıl yapıldığını; bulgular bölümü ne tespit edildiğini anlatır. Gerekçeli sonuç, bu unsurlardan hareketle soruya verilen cevaptır. Aynı cümleyi her başlıkta tekrarlamak yerine her bölümün ayrı işlevini korumak anlatımı güçlendirir."
+        },
+        {
+          "title": "Şekil ve içerik birlikte gerekir",
+          "text": "Kitap, taraflar, görevlendirilen hususlar, maddi vakıalar, gerekçe ve sonuç, görüş ayrılığının sebebi, tarih ve imza gibi asgari unsurları sayar. Güzel bir kapak veya düzenli başlıklar, eksik teknik gerekçeyi tamamlamaz. Aynı şekilde iyi bir analiz de kimlik, kapsam ve sonuç ilişkisi belirsiz bir belgede zor değerlendirilir."
+        }
+      ],
+      "case": "Görevlendirmede üç soru var. Taslak raporun sonuç bölümünde yalnızca ikinci soruya ilişkin bir paragraf bulunuyor.",
+      "steps": [
+        {
+          "title": "Soru envanteri çıkar",
+          "text": "Üç soruyu ayrı satırlara yaz; raporda her birine karşılık gelen bölüm ve sonuç cümlesini bul. Bir sorunun rapor içinde hiç karşılığı yoksa o boşluk görünür hâle gelir. Bu kontrol, başlıkların eksiksiz görünmesiyle görevin gerçekten cevaplanmasının aynı şey olmadığını öğretir."
+        },
+        {
+          "title": "Boş kalan yeri tespit et",
+          "text": "Birinci ve üçüncü soru cevaplanmamışsa, uzun bir ikinci cevap bu eksikliği gidermez. Cevap verilemiyorsa nedeni açıklanmalıdır."
+        },
+        {
+          "title": "Yapıyı düzelt",
+          "text": "Her soruyu ilgili veri, analiz ve sonuçla eşleştir. Son kontrolü başlıklara değil bu eşleşmeye göre yap."
+        }
+      ],
+      "comparison": {
+        "wrong": "Rapor 30 sayfa; yeterince ayrıntılıdır.",
+        "right": "Görevlendirmedeki her soru için veri, değerlendirme ve gerekçeli cevap bulunuyor mu?",
+        "why": "Tamlık sayfa sayısıyla ölçülmez. Soruların karşılanması ve cevabın dayanakları belirleyicidir."
+      },
+      "check": {
+        "question": "Raporun tamlığını kontrol etmek için hangi yöntem daha uygundur?",
+        "options": [
+          "Sayfa sayısını başka raporla karşılaştırmak",
+          "Kapaktaki başlığı büyütmek",
+          "Her görev sorusunu ilgili analiz ve sonuçla eşleştirmek"
+        ],
+        "correct": 2,
+        "feedback": [
+          "Uzunluk, soruların cevaplandığını göstermez. İçerik eşleştirmesi gerekir.",
+          "Görsel düzen yararlıdır ama eksik cevabın yerini tutmaz.",
+          "Doğru. Bu eşleştirme, cevapsız veya gerekçesiz kalan hususları görünür kılar."
+        ]
+      },
+      "reflection": {
+        "prompt": "Üç sorulu bir görev için rapor kontrol çizelgenin sütunlarını yaz.",
+        "model": "Soru numarası; gerekli veri; kullanılan yöntem; bulgunun yeri; gerekçeli sonucun yeri; eksik veya sınırlı kalan husus. Bu, resmi şablon yerine geçen bir belge değil kişisel hazırlık kontrolüdür."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "rapor-gerekce",
+      "lesson": "rapor",
+      "title": "Bulgudan gerekçeli sonuca",
+      "goal": "Gözlem, yorum ve sonucu birbirine karıştırmadan bağla.",
+      "pages": [
+        221,
+        224,
+        280,
+        281
+      ],
+      "sections": [
+        {
+          "title": "Üç katmanı ayrı yaz",
+          "text": "Gözlem ne gördüğünü veya ölçtüğünü belirtir. Teknik değerlendirme, bu bulgunun hangi bilgi veya ölçütle yorumlandığını açıklar. Sonuç ise görevlendirme sorusuna verilen gerekçeli cevaptır. Bu üç katmanı tek bir kesinlik cümlesine sıkıştırmak, okuyucunun hangi basamakta görüşüne katılıp katılmadığını anlamasını zorlaştırır."
+        },
+        {
+          "title": "Dayanak göster, yalnızca kaynak adı verme",
+          "text": "Bir teknik kaynağı listelemek, o kaynağın sonuca nasıl etki ettiğini açıklamakla aynı değildir. Hangi ölçütü kullandın, dosyadaki hangi veri bu ölçütle karşılaştırıldı, aradaki bağ nedir? Kaynak kitap bütün yararlanılan verilerin ve bunlara nasıl ulaşıldığının gösterilmesini ister. Gerekçeyi oluşturan şey bu ilişkinin kurulmasıdır."
+        },
+        {
+          "title": "Alternatif ve eksikliği fark et",
+          "text": "Birden fazla teknik açıklama mümkünse, eldeki verinin hangisini neden desteklediğini ve hangisini neden dışlayamadığını belirtmek gerekir. Eksik kaydı tamamlanmış gibi kabul etmek, sonucun gücünü artırmaz. Öğrenme alıştırmasında amaç “kesin” kelimesini çoğaltmak değil, her iddianın dayanağını ve sınırını açık hale getirmektir."
+        }
+      ],
+      "case": "Taslakta “parça uygunsuzdur” yazıyor. Hangi ölçümün, hangi teknik koşulla karşılaştırıldığı belirtilmemiş.",
+      "steps": [
+        {
+          "title": "Bulguyu yaz",
+          "text": "Parçanın incelenen özelliği ve tespit edilen değer, ölçüm koşullarıyla birlikte belirtilir. Örneğin yalnızca “aşınma var” demek yerine incelenen bölgeyi, kullanılan ölçümü ve gözlenen değeri belirt. Böylece sonraki yorumun hangi gözleme dayandığı okuyucu tarafından izlenebilir."
+        },
+        {
+          "title": "Ölçütü açıkla",
+          "text": "Karşılaştırmanın hangi teknik koşula dayandığı ve bu koşulun incelenen durum için neden kullanıldığı açıklanır."
+        },
+        {
+          "title": "Soruyu cevapla",
+          "text": "Bulgu ile ölçüt arasındaki ilişki üzerinden görev sorusuna cevap verilir; verinin desteklemediği hukuki sonuç eklenmez."
+        }
+      ],
+      "comparison": {
+        "wrong": "Yapılan incelemeler sonucunda uygunsuz olduğu kanaatine varılmıştır.",
+        "right": "Şu bulgu, açıklanan teknik ölçütle karşılaştırıldığında şu fark ortaya çıkmıştır; değerlendirme bu karşılaştırmaya dayanmaktadır.",
+        "why": "İkinci yapı okuyucunun akıl yürütmeyi izlemesini sağlar. Yalnızca kanaat bildirmek gerekçenin yerine geçmez."
+      },
+      "check": {
+        "question": "Bir kaynak listesinin bulunması tek başına gerekçe kurar mı?",
+        "options": [
+          "Evet; kaynak adı yazmak yeterlidir",
+          "Hayır; kaynağın veri ve sonuçla ilişkisi de açıklanmalıdır",
+          "Hayır; teknik kaynaklara hiç yer verilmemelidir"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Kaynak adı başlangıçtır. Hangi ölçütün nasıl kullanıldığını da göstermelisin.",
+          "Doğru. Gerekçe, dayanağın somut bulguya uygulanma biçimini görünür kılar.",
+          "Kaynaklar önemlidir; sorun onları kullanmak değil, somut değerlendirmeyle ilişkilerini kurmamaktır."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir sonuç cümleni “bulgu → ölçüt → çıkarım” şeklinde üç cümleye ayır.",
+        "model": "Bulgu: İncelemede X değeri elde edildi. Ölçüt: Bu özellik Y teknik koşuluyla karşılaştırıldı. Çıkarım: Karşılaştırmada Z farkı görüldü; değerlendirme belirtilen veri ve koşullarla sınırlıdır. Gerçek bir raporda X, Y ve Z açıkça doldurulur."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "rapor-dil",
+      "lesson": "rapor",
+      "title": "Uzmanlığını anlaşılır anlat",
+      "goal": "Teknik içeriği kaybetmeden kısa, açık ve tarafsız rapor dili kur.",
+      "pages": [
+        218,
+        221,
+        281,
+        282
+      ],
+      "sections": [
+        {
+          "title": "Kısalık, eksiklik değildir",
+          "text": "Kaynak raporun tam, kısa, açık ve uygun bir dille hazırlanmasını ister. Tamlık, soruların karşılanmasıdır; kısalık ise gerekli açıklamaların kaldırılması değil gereksiz tekrarların ayıklanmasıdır. Bir teknik terimi hiç açıklamamak metni kısaltabilir ama anlaşılır kılmaz. Her paragrafın hangi soruya veya bulguya hizmet ettiğini kontrol et."
+        },
+        {
+          "title": "Teknik terimin işlevini açıkla",
+          "text": "Rehber, mümkünse Türkçe karşılıkların kullanılmasını; teknik kavramın gereksiz ayrıntıya kaçmadan açıklanmasını önerir. Okuyucunun uzmanlık alanını bildiğini varsayma. Terimin sözlük tanımını uzatmak yerine bu dosyada neyi ölçtüğünü veya hangi ayrımı kurduğunu belirt. Birim ve kısaltmaları açık yazmak da bu açıklığın parçasıdır."
+        },
+        {
+          "title": "Kişiyi değil veriyi değerlendir",
+          "text": "Raporda tarafın karakteri, niyeti veya savunmasının değeri hakkında görevin dışına çıkan yorumlar teknik analizin yerini almamalıdır. “Açıkça kötü niyetli” gibi ifadeler yerine incelenen veri, görülen fark ve teknik gerekçe anlatılır. Çok sorunlu konularda ayrı başlıklar kullanmak, hem tekrarları hem çelişkili cümleleri görmeyi kolaylaştırır."
+        }
+      ],
+      "case": "Raporda “Sistem nominal parametrelerden sapmış olup bunun aşikâr olduğu değerlendirilmiştir” cümlesi bulunuyor.",
+      "steps": [
+        {
+          "title": "Belirsiz sözcükleri yakala",
+          "text": "Hangi sistem, hangi parametre ve hangi sapma olduğu belli değil. “Aşikâr” sözcüğü eksik veriyi tamamlamıyor."
+        },
+        {
+          "title": "Somut bilgiyi ekle",
+          "text": "İncelenen özelliği, tespit edilen değeri, birimi ve karşılaştırma koşulunu açıkça yaz. Teknik terimi ilk geçtiği yerde kısa bir açıklamayla tanıt. Bir sayıyı tek başına vermek yerine neyi ölçtüğünü ve değerlendirmede neden kullanıldığını söyle; okuyucu sonuca giden yolu görebilsin."
+        },
+        {
+          "title": "Gereksiz kalıbı çıkar",
+          "text": "“Değerlendirilmiştir” tekrarları yerine, gözlem ile teknik çıkarımı doğrudan ve ayrı cümlelerle anlat."
+        }
+      ],
+      "comparison": {
+        "wrong": "Tarafın haksız olduğu aşikârdır; sistem bozuktur.",
+        "right": "İncelenen bileşende şu bulgu tespit edilmiştir. Bu bulgunun teknik anlamı, şu dayanakla açıklanmıştır.",
+        "why": "İkinci yapı hem kişiye yönelik hukuki yargıyı kaldırır hem de teknik açıklamanın hangi unsurlarla kurulacağını gösterir."
+      },
+      "check": {
+        "question": "Bir teknik kısaltmayı ilk kez kullandığında ne yapmalısın?",
+        "options": [
+          "Okuyucunun zaten bildiğini varsaymak",
+          "Metni profesyonel göstermek için açıklamamak",
+          "Karşılığını ve inceleme bakımından gerekli anlamını açıklamak"
+        ],
+        "correct": 2,
+        "feedback": [
+          "Görevlendiren merci ve taraflar aynı uzmanlık bilgisine sahip olmayabilir.",
+          "Açıklanmayan jargon raporun denetlenmesini zorlaştırabilir; görünüm tek başına kalite değildir.",
+          "Doğru. Açıklama, kavramın bu incelemedeki işlevini anlaşılır kılmalıdır."
+        ]
+      },
+      "reflection": {
+        "prompt": "Kendi alanından bir jargon cümlesini uzman olmayan okuyucu için yeniden yaz.",
+        "model": "Önce kısaltmayı aç; ardından hangi özelliği ölçtüğünü söyle. Son olarak elde edilen değerin kullanılan teknik ölçütle ilişkisini açıkla. Okuyucu, terimi ezberlemek zorunda kalmadan incelemenin mantığını izleyebilmeli."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "rapor-itiraz",
+      "lesson": "rapor",
+      "title": "Teslim, itiraz ve yeniden değerlendirme",
+      "goal": "Rapor sonrası süreci kişisel savunma yerine teknik açıklama olarak ele al.",
+      "pages": [
+        231,
+        235,
+        241,
+        299
+      ],
+      "sections": [
+        {
+          "title": "Teslim bir kapanış kontrolü gerektirir",
+          "text": "Rapor tamamlandığında soruların yanıtlanması, dayanakların gösterilmesi ve gerekli eklerin ilişkilendirilmesi kontrol edilir. Kaynak ayrıca fiziken teslim edilen dosya ve eklerin iadesini ve gizlilik yükümlülüğünün sürmesini hatırlatır. Raporu göndermek, çalışma sürecindeki her sorumluluğun kendiliğinden sona erdiği anlamına gelmez."
+        },
+        {
+          "title": "İtirazın türünü belirle",
+          "text": "Bir itiraz eksik belgeye, hesap hatasına, yöntemin açıklanmamasına veya teknik sonuçla gerekçe arasındaki kopukluğa yönelebilir. Önce eleştirinin hangi bölüme ilişkin olduğunu anla. Kaynak, bilirkişinin itirazları kişiselleştirmemesi gerektiğini vurgular. Verilecek teknik açıklamanın konusu, tarafın üslubundan ziyade ortaya konan somut sorundur."
+        },
+        {
+          "title": "Farklı görüşü gerekçeyle tartış",
+          "text": "Kaynak, çelişen raporlar için görevlendirme halinde hangi tespit ve değerlendirmeye neden katılındığının veya farklı görüşün nedeninin açıklanmasını ister. Bir önceki raporu yalnızca “yanlış” diye nitelemek yeterli değildir. Görüşün diğer delillerle birlikte değerlendirileceğini bilmek, bilirkişinin raporunu tartışılmaz bir hüküm gibi sunmasını önler."
+        }
+      ],
+      "case": "İki rapor aynı hasar için farklı teknik nedenler bildiriyor. Çelişkiyi değerlendirmek üzere görevlendirildin.",
+      "steps": [
+        {
+          "title": "Verileri karşılaştır",
+          "text": "Raporlar aynı materyali, aynı tarihi ve aynı inceleme koşullarını mı esas almış? Önce dayanak farklılıklarını belirle."
+        },
+        {
+          "title": "Yöntemleri karşılaştır",
+          "text": "Farklı sonuçların hangi teknik yaklaşım veya varsayımdan doğduğunu açıkla. Yalnızca sonuç cümlelerini karşılaştırma."
+        },
+        {
+          "title": "Görüşünü gerekçelendir",
+          "text": "Katıldığın ve katılmadığın tespitleri nedenleriyle göster. Kendi değerlendirmenin veri ve yöntem sınırlarını da belirt."
+        }
+      ],
+      "comparison": {
+        "wrong": "Önceki bilirkişi yeterince uzman değil; benim raporum doğrudur.",
+        "right": "Önceki rapordaki şu teknik değerlendirmeye şu veri ve yöntem gerekçesiyle katılmıyorum.",
+        "why": "İkinci ifade kişisel niteleme yerine denetlenebilir teknik ayrılığı ortaya koyar."
+      },
+      "check": {
+        "question": "Çelişen raporları incelerken en yararlı başlangıç nedir?",
+        "options": [
+          "Veri, yöntem ve varsayımlarını karşılaştırmak",
+          "Daha uzun olanı doğru kabul etmek",
+          "Son yazılan raporu otomatik üstün görmek"
+        ],
+        "correct": 0,
+        "feedback": [
+          "Doğru. Sonuç farkının nereden doğduğunu anlamak için dayanak ve akıl yürütme karşılaştırılır.",
+          "Uzunluk teknik doğruluğun ölçütü değildir.",
+          "Tarih sırası tek başına teknik gerekçenin gücünü göstermez."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir rapora yöneltilen eleştiriye cevap vermeden önce hangi üç soruyu sorarsın?",
+        "model": "Eleştiri tam olarak hangi veri veya sonuca yöneliyor? İnceleme yönteminde ya da hesapta somut bir eksik gösteriyor mu? İstenen teknik açıklamayı hangi dayanaklarla verebilirim? Yanıtı kişiselleştirmek yerine teknik soruya bağlarım."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "uyap-isakisi",
+      "lesson": "uyap",
+      "title": "Dijital dosyada çalışma akışı",
+      "goal": "Portal erişimini, görev kapsamını ve belge inceleme sürecini birbirine bağla.",
+      "pages": [
+        248,
+        279,
+        298,
+        299
+      ],
+      "sections": [
+        {
+          "title": "Portalın amacını doğru konumlandır",
+          "text": "Kaynak UYAP Bilirkişi Portalını, görevlendirilen dosyalarla ilgili işlemleri elektronik ortamda yürütmeyi sağlayan bir hizmet olarak açıklar. Portal, teknik incelemeyi veya hukuki değerlendirmeyi senin yerine yapan bir sistem değildir. Dijital erişim işlem kolaylığı sağlar; bilirkişinin uzmanlık, özen ve gizlilik yükümlülüklerini ortadan kaldırmaz."
+        },
+        {
+          "title": "Erişim ile yeterlilik farklıdır",
+          "text": "Bir dosyayı ekranda görebilmek, gereken tüm materyalin bulunduğunu ya da görevin açık olduğunu göstermez. Önce görevlendirme sorularını, ardından ilgili kayıt ve ekleri kontrol et. Fiziksel inceleme gereken bir nesnenin görüntüsü, her teknik soruyu karşılamayabilir. Erişilebilen belgeler ile gereken inceleme imkânı ayrı ayrı değerlendirilmelidir."
+        },
+        {
+          "title": "İşlem zincirini görünür tut",
+          "text": "Bu derste portalın 2025 kitapta anlatılan işlevini öğreniyorsun; ekran düğmelerini ezberlemek yerine görev, belge, çalışma ve teslim ilişkisini kur. Hangi belgeyi kullandığını, raporun hangi soruya cevap verdiğini ve hangi eklerle ilişkilendiğini takip et. Gerçek işlemler yetkili resmi portalda yürütülür; buradaki alan kişisel eğitim ve hazırlık içindir."
+        }
+      ],
+      "case": "Dijital dosyaya erişim verildi. Görevde bir cihazın fiziksel durumunun değerlendirilmesi de isteniyor, fakat yalnızca genel fotoğraflar mevcut.",
+      "steps": [
+        {
+          "title": "Görevi oku",
+          "text": "Cihazın hangi özelliğinin inceleneceğini belirle. İnceleme ihtiyacını portalda görünen dosya sayısına göre değil soruya göre tanımla."
+        },
+        {
+          "title": "Erişilen veriyi değerlendir",
+          "text": "Fotoğrafların ilgili özelliği gösterip göstermediğini ve gerekli teknik ayrıntıyı içerip içermediğini kontrol et."
+        },
+        {
+          "title": "Eksik imkânı bildir",
+          "text": "Fotoğraflar yeterli değilse gereken materyal veya inceleme ihtiyacını görevlendiren merciye açıkla; görüntüyle yapılmayan ölçümü yapılmış gibi sunma."
+        }
+      ],
+      "comparison": {
+        "wrong": "Portalda dosya açıldığına göre inceleme için her şey hazırdır.",
+        "right": "Dijital erişimden sonra görev, belge ve teknik inceleme ihtiyacını ayrıca kontrol ederim.",
+        "why": "Portal erişimi bir araçtır. Verinin yeterliliği ve görevin yapılabilirliği ayrı değerlendirme gerektirir."
+      },
+      "check": {
+        "question": "Portalın temel işlevi hangisidir?",
+        "options": [
+          "Bilirkişinin teknik görüşünü otomatik üretmek",
+          "Görevlendirilen dosya işlemlerini elektronik ortamda yürütmeye imkân vermek",
+          "Her dosyayı herkese açık hale getirmek"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Teknik inceleme ve görüş sorumluluğu bilirkişidedir; portal bunun yerine geçmez.",
+          "Doğru. Kaynakta portal bu elektronik işlem ve erişim işleviyle tanımlanır.",
+          "Dijital erişim, genel paylaşım yetkisi anlamına gelmez. Yetki ve gizlilik korunur."
+        ]
+      },
+      "reflection": {
+        "prompt": "Dijital dosyayı açtığında ilk kontrol edeceğin dört şeyi sırala.",
+        "model": "Görevlendirme yazısı ve sorular; görev sınırları; gerekli belge ve materyalin varlığı; eksik kayıt veya fiziksel inceleme ihtiyacı. Bu kontrol, ekran erişimini gerçek inceleme hazırlığına dönüştürür."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "uyap-sablon",
+      "lesson": "uyap",
+      "title": "Rapor şablonunun içini anlamla doldur",
+      "goal": "Şablon başlıklarını görevleriyle ilişkilendir; başlıkları doldurmayı analizle karıştırma.",
+      "pages": [
+        284,
+        285,
+        286,
+        287,
+        288,
+        289
+      ],
+      "sections": [
+        {
+          "title": "Şablon bir düşünme düzenidir",
+          "text": "Kaynakta ceza, hukuk ve başka işlemler için örnek rapor şablonları bulunur. Bir şablon, unutulabilecek kimlik ve içerik alanlarını görünür kılar. Ancak başlıkların varlığı raporun gerekçeli olduğunu kanıtlamaz. Her alanın ne işe yaradığını anlamak, şablonu yalnızca biçimsel olarak doldurmaktan daha önemlidir."
+        },
+        {
+          "title": "Başlıkların ayrı soruları vardır",
+          "text": "Kapsam “neyi ve hangi sınırla inceliyorum?” sorusunu; maddi unsurlar “hangi somut nesne veya olguyu ele alıyorum?” sorusunu karşılar. Yöntem ve teknik dayanaklar işlemin nasıl ve hangi bilgiyle yapıldığını açıklar. Analiz bu dayanakları bulgulara uygular. Gerekçeli sonuç, görevlendirme sorularının cevabını bu zincire bağlar."
+        },
+        {
+          "title": "Ekler metinden kopuk olmamalı",
+          "text": "Fotoğraf, çizelge veya belgeyi eklemek yararlı olabilir; fakat okuyucu o ekin hangi tespiti desteklediğini anlamalıdır. Ana metinde ilgili ekle bağlantı kurulmadan çok sayıda dosya eklemek, gerekçe zincirini kendiliğinden güçlendirmez. Kaynak PDF’deki özgün şablon düzeniyle çalışmanı karşılaştır; bu uygulamadaki örnekler resmi rapor üretmez."
+        }
+      ],
+      "case": "Raporda beş fotoğraf eklenmiş, fakat metinde fotoğrafların hangi bulguya ait olduğu hiç belirtilmiyor.",
+      "steps": [
+        {
+          "title": "Ekleri ayırt et",
+          "text": "Fotoğrafları konu, tarih ve ilgili materyal bakımından anlaşılır biçimde tanımla. Sadece dosya adı, her zaman yeterli olmayabilir."
+        },
+        {
+          "title": "Bulguyla eşleştir",
+          "text": "Her fotoğrafın hangi gözlem veya açıklamayı desteklediğini belirle; gereksiz eklerle incelemenin odağını dağıtma."
+        },
+        {
+          "title": "Metin bağlantısını kur",
+          "text": "İlgili bulgunun anlatıldığı yerde karşılık gelen eki belirt. Ek ile değerlendirme arasında izlenebilir ilişki kur."
+        }
+      ],
+      "comparison": {
+        "wrong": "Tüm fotoğraflar eklerdedir; okuyucu sonucu kendisi çıkarabilir.",
+        "right": "Şu bulgunun görüldüğü alan, açıklanan kimlik ve tarih bilgileriyle Ek 2’de gösterilmiştir.",
+        "why": "Rapor, analiz yükünü belirsiz bir ek yığınına bırakmamalı; materyalin değerlendirmedeki yerini açıklamalıdır."
+      },
+      "check": {
+        "question": "“İnceleme yöntemi” başlığında öncelikle ne açıklanır?",
+        "options": [
+          "İşlemin nasıl yapıldığı ve hangi teknik dayanakla yürütüldüğü",
+          "Sadece tarafların adları",
+          "Dosyanın kapağının rengi"
+        ],
+        "correct": 0,
+        "feedback": [
+          "Doğru. Bu başlık okuyucunun işlemin yaklaşımını ve dayanağını izlemesini sağlar.",
+          "Kimlik bilgileri önemlidir ama yöntem açıklamasının yerine geçmez.",
+          "Görsel düzen teknik yöntemi açıklamaz. Başlığın işlevine dön."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir fotoğraf ekini ana metne bağlayan örnek cümle yaz.",
+        "model": "İncelenen A parçasının belirtilen bölgesinde gözlenen yüzey bulgusu, inceleme tarihli Ek 1 fotoğrafında gösterilmiştir. Fotoğraf tek başına neden belirlemiyorsa, teknik değerlendirme ayrıca açıklanmalıdır."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "uyap-kontrol",
+      "lesson": "uyap",
+      "title": "Kontrol listesini karar aracına çevir",
+      "goal": "Evet-hayır işaretlemek yerine her eksikliğin gerektirdiği sonraki adımı belirle.",
+      "pages": [
+        298,
+        299,
+        279,
+        282
+      ],
+      "sections": [
+        {
+          "title": "Bir işaret, bir gerekçe",
+          "text": "Kaynak kontrol listesi uzmanlık, başka bilirkişi ihtiyacı, tarafsızlık, donanım, zaman, kapsam ve belge ihtiyacını sorgular. Listenin değeri bütün kutuları aynı renge boyamakta değildir. Her cevabın somut dayanağını ve çalışma üzerindeki etkisini açıklayabilmek, kontrolü işe yarar hale getirir."
+        },
+        {
+          "title": "Eksiklikten eyleme geç",
+          "text": "“Belge eksik” saptamasının ardından hangi belgenin, hangi soruyu cevaplamak için istendiği belirlenmelidir. “Zaman yetersiz” değerlendirmesi işin kapsamıyla ilişkilendirilmelidir. Rehberde, raporu süresinde teslim edemeyecek bilirkişinin gerekçesini belirterek süre bitmeden ek süre istemesi ele alınır. Belirlenmemiş bir ihtiyaç üzerinde çalışmayı sürdürmek yerine ihtiyacı görünür kıl."
+        },
+        {
+          "title": "Kontrolü aşamalara böl",
+          "text": "Başlangıçta uygunluk ve kapsamı; analizde veri ve materyali; teslimde rapor ve ekleri; teslim sonrasında iade ve gizliliği düşün. Tek bir listeyi yalnızca ilk gün açıp kapatmak yerine, işin aşamasına göre yeniden değerlendirmek gerekir. Bu dersin kişisel not alanı, kendi kontrol sorularını bu dört aşamaya ayırman içindir."
+        }
+      ],
+      "case": "Görev uygundur ve belgeler tamamdır; fakat gerekli saha incelemesi planlanan sürede yapılamayacak gibi görünüyor.",
+      "steps": [
+        {
+          "title": "Sorunu doğru sınıflandır",
+          "text": "Bu durum veri eksikliğinden farklı bir zaman ve inceleme planı sorunudur. Diğer olumlu kontroller bunu ortadan kaldırmaz."
+        },
+        {
+          "title": "Gerekçeyi somutlaştır",
+          "text": "Hangi işlemin ne nedenle geciktiği ve bunun raporun hazırlanmasına etkisi açıkça belirlenir. Genel bir “iş yoğunluğu” ifadesi yerine eksik materyali, beklenen işlemi ve inceleme planındaki etkisini ayır. Böylece talebi okuyan kişi hangi aşamanın tamamlanamadığını anlayabilir."
+        },
+        {
+          "title": "Gerekli adımı belirle",
+          "text": "Kaynağın rehber yaklaşımında, süre dolmadan gerekçeli biçimde görevlendiren merciye başvurmak ele alınır; sessizce geciktirmek çözüm değildir."
+        }
+      ],
+      "comparison": {
+        "wrong": "Kontrol listesindeki çoğu madde olumlu; bir eksik önemli sayılmaz.",
+        "right": "Her kritik eksikliğin hangi soruya veya iş aşamasına etki ettiğini belirlerim.",
+        "why": "Bir kontrolün olumlu olması, başka bir temel ihtiyacı ortadan kaldırmaz. Liste ortalama puan almak için kullanılmaz."
+      },
+      "check": {
+        "question": "Kontrol listesinde “hayır” cevabı verdiğinde sonraki adım ne olmalı?",
+        "options": [
+          "Listeyi kapatmak",
+          "Eksikliğin etkisini ve gerekli işlemi somutlaştırmak",
+          "Cevabı olumluya çevirmek"
+        ],
+        "correct": 1,
+        "feedback": [
+          "Kontrolün değeri eksiklikle ilgili eylem üretmesidir; yalnızca işaret bırakmak yeterli değildir.",
+          "Doğru. Hangi ihtiyacın, hangi soruyu ve iş aşamasını etkilediğini açıklamalısın.",
+          "Cevabı değiştirmek gerçek ihtiyacı çözmez. Kontrol veriye dayanmalıdır."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bir kontrol maddesi seç; durum, gerekçe ve sonraki adım yaz.",
+        "model": "Durum: İlgili dönem kaydı yok. Gerekçe: Sorulan teknik neden bu dönemdeki kullanım koşullarına bağlı. Sonraki adım: Gerekli kaydı, dönemi ve soruyla ilişkisini belirterek görevlendiren merciden talep etmek."
+      },
+      "minutes": 6
+    },
+    {
+      "id": "uyap-butunlesik",
+      "lesson": "uyap",
+      "title": "Baştan sona bir dosyayı düşün",
+      "goal": "Görevlendirme, etik, inceleme ve rapor bilgisini tek bir çalışma akışında birleştir.",
+      "pages": [
+        183,
+        198,
+        224,
+        280,
+        298,
+        299
+      ],
+      "sections": [
+        {
+          "title": "Parçaları tek zincirde birleştir",
+          "text": "Önceki konular birbirinden bağımsız kutular değildir. Görev sorusu, uzmanlık uygunluğunu ve veri ihtiyacını belirler. Etik kontrol incelemenin kim tarafından ve hangi ilişki içinde yapılabileceğini etkiler. Yöntem veriyi teknik bulguya, gerekçe bulguyu sorunun cevabına bağlar. Raporun kalitesi bu zincirin bütün halkalarına bağlıdır."
+        },
+        {
+          "title": "Her aşamada bir çıktı üret",
+          "text": "Görevlendirmeyi okurken açık soru listesi; ön incelemede uygunluk ve eksik listesi; teknik çalışmada materyal ve bulgu kaydı; raporda soru-cevap ve dayanak ilişkisi üret. Bunlar bu eğitim için önerilen çalışma araçlarıdır. Kaynaktaki kuralları davranışa dönüştürürler; resmi işlem veya rapor şablonu yerine geçmezler."
+        },
+        {
+          "title": "Kendi açıklamanı değerlendirmeyi öğren",
+          "text": "Bir konuyu anladığını yalnızca doğru seçeneği işaretleyerek ölçme. Neden başka bir seçeneğin sorunlu olduğunu ve benzer bir olayda neyi değiştireceğini de anlat. Aşağıdaki çalışma alanına kendi akışını yazıp örnek yaklaşımı açarak karşılaştır. Bu karşılaştırma otomatik hukuki doğruluk puanı vermez; eksik düşünce adımlarını görmene yardımcı olur."
+        }
+      ],
+      "case": "Bir cihazın arıza nedenini incelemekle görevlendirildin. Görev yazısında dönem belirsiz, bakım kayıtları eksik ve taraflardan biri seni özel olarak arıyor.",
+      "steps": [
+        {
+          "title": "Önce sınır ve etik",
+          "text": "İnceleme dönemini açıklığa kavuşturma ihtiyacını belirle. Tarafın özel iletişimi karşısında dosya hakkında bilgi vermekten kaçınma ve merciye bildirim konusunu ayrı ele al."
+        },
+        {
+          "title": "Sonra veri ve yöntem",
+          "text": "Eksik bakım kayıtlarının hangi soruyu etkilediğini açıkla. Görev netleşip gerekli veriler sağlandığında teknik yöntem ve materyal izini kur."
+        },
+        {
+          "title": "En son gerekçeli rapor",
+          "text": "Bulguları açık sorulara bağla. Kaynakları, yöntemi ve sınırlılıkları göster; hukuki sonuç belirlemeden teknik görüşünü sun."
+        }
+      ],
+      "comparison": {
+        "wrong": "Önce sonucu yazayım; eksikleri daha sonra uygun biçimde tamamlarım.",
+        "right": "Görev ve veri sınırlarını netleştirir, teknik bulgudan gerekçeli cevaba ilerlerim.",
+        "why": "Sonuçtan başlayıp veriyi ona uydurmak yerine, incelemenin dayanakları üzerinden sonuç oluşturmak gerekir."
+      },
+      "check": {
+        "question": "Bütünleşik dosya örneğinde hangi sıra daha uygundur?",
+        "options": [
+          "Sonuç → uygun veri seçimi → görev sorusu",
+          "Taraf beklentisi → sonuç → imza",
+          "Görev ve etik kontrol → gerekli veri ve yöntem → gerekçeli rapor"
+        ],
+        "correct": 2,
+        "feedback": [
+          "Bu sıra sonucu önceden belirleyerek veriyi ona uydurma riskini taşır.",
+          "Taraf beklentisi teknik incelemenin ölçütü değildir; etik ve yöntem zinciri eksiktir.",
+          "Doğru. Bu sıra, görevden veriye ve veriden sonuca izlenebilir bir ilişki kurar."
+        ]
+      },
+      "reflection": {
+        "prompt": "Bu dosyada ilk üç işlemini ve her birinin nedenini kendi cümlelerinle yaz.",
+        "model": "İnceleme dönemini görevlendiren merciden açıklığa kavuştururum; çünkü kapsam belirsizdir. Eksik bakım kayıtlarının hangi soruya gerekli olduğunu belirtirim; çünkü verisiz sonuç kuramam. Özel iletişim durumunu usulüne uygun ele alırım; çünkü tarafsızlık ve gizlilik teknik çalışmanın da koşuludur."
+      },
+      "minutes": 6
+    }
+  ]
+}
