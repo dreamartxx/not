@@ -157,3 +157,9 @@ Hatırlatıcılar artık sayfanın tamamına değil yazıya bağlanır: bir meti
 Kaynak metin 8 JSON parçasında tutulur ve oturum korumalı `education-book` API'sinden okunur. Kaynak PDF bağlantısı Bakanlığın yayımladığı, yüklenen dosyayla aynı SHA-256 değerine sahip özgün dosyaya gider (`a686e2b3d609d42173db3009c82ac0ee6040bc7240e41b8d1d6ba2880b5d6e04`). Ekran görüntüleri ve şablonlar metin aktarımında yeniden çizilmez; bu sayfalarda özgün PDF bağlantısı gösterilir. İçerik güncel mevzuat iddiasında bulunmadan Mayıs 2025 kaynağını yansıtır.
 
 `education_workspace` tablosu otomatik kurulur. İlerleme, yer imleri, notlar ve kartlar tek sürümlü belge olarak atomik kaydedilir; çakışma sessizce üzerine yazılmaz. Eğitim menüsündeki ayrı JSON yedeği aynı doğrulamadan geçerek içe alınabilir. 307 sayfa sınırı, kayıt kimlikleri, tarih, liste ve metin uzunlukları sunucuda doğrulanır. Genel not yedeği eğitim kaydını içermez; eğitim yedeği kendi menüsündedir. Tam not yedeği eğitim kapak fotoğrafını da taşır.
+
+### Etkileşimli eğitim stüdyosu
+
+Eğitim alanının varsayılanı artık kaynak metin okuyucusu yerine öğrenme panosudur. Beş ders; Keşfet (üç açılır kavram ve üç adımlı süreç), Uygula (seçimli örnek olay ve gerekçe), Pekiştir (üç açıklamalı soru) aşamalarına ayrılır. 15 soru ve özetler Mayıs 2025 kaynak kitabının belirtilen sayfalarından hazırlanmış kişisel çalışma içeriğidir; resmî sınav soruları değildir. Tam metin ayrı Kaynak kitap sekmesinde korunur.
+
+Ders seçimi, soru yanıtları ve tamamlanan dersler `learning` alanında sürümlü eğitim kaydına/yedeğine dahildir. Ders tamamlama için üç doğru yanıt sunucuda da doğrulanır; eski istemciler bu alanı göndermediğinde mevcut öğrenme kaydı korunur. Sayfa okuma ve ders tamamlama ilerlemesi ayrıdır. Hareketi azalt tercihi animasyonları kapatır.

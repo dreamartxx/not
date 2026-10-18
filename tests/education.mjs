@@ -12,3 +12,9 @@ assert.deepEqual(progress([12,12,13,200],12,15),{done:2,total:4,percent:50});
 const now=new Date('2026-10-18T22:30:00Z');assert.equal(studyDay(now),'2026-10-19');let c={level:0,due:'2026-10-18'};
 c=reviewCard(c,'known',now);assert.equal(c.due,'2026-10-20');assert.equal(c.level,1);c=reviewCard(c,'known',now);assert.equal(c.due,'2026-10-22');assert.equal(reviewCard(c,'again',now).due,'2026-10-19');assert.equal(reviewCard({level:6},'known',new Date('2026-12-20T10:00:00Z')).due,'2027-02-18');
 console.log('PASS: complete 307-page source, chapter/page mapping, Turkish search, deduplicated progress, Istanbul dates and review intervals.');
+const {courseScore}=await import('../assets/education-course.js');
+const course=JSON.parse(fs.readFileSync(new URL('lessons.json',root)));
+assert.equal(course.lessons.length,5);const questionIds=new Set();
+for(const lesson of course.lessons){assert.ok(book.chapters.some(c=>c.id===lesson.id));assert.equal(lesson.concepts.length,3);assert.equal(lesson.steps.length,3);assert.equal(lesson.quiz.length,3);assert.ok(lesson.scenario.correct<lesson.scenario.options.length);for(const c of lesson.concepts)assert.ok(book.pages[c[3]-1].paragraphs.length);const answers={};for(const q of lesson.quiz){assert.ok(!questionIds.has(q.id));questionIds.add(q.id);assert.ok(q.correct>=0&&q.correct<q.options.length);assert.ok(q.page>=1&&q.page<=307);answers[q.id]=q.correct;}assert.equal(courseScore(lesson,{}),0);assert.equal(courseScore(lesson,answers),3);answers[lesson.quiz[0].id]=(lesson.quiz[0].correct+1)%3;assert.equal(courseScore(lesson,answers),2);}
+assert.equal(questionIds.size,15);
+console.log('PASS: five interactive lessons, valid source references, unique questions and correct scoring.');
