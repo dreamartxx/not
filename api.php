@@ -6,12 +6,14 @@ header('X-Content-Type-Options: nosniff');
 function respond(array $data, int $status = 200): never { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 function fail(string $message, int $status = 400): never { respond(['error' => $message], $status); }
 set_exception_handler(function(Throwable $e) { error_log('Not API: '.$e->getMessage()); fail('Sunucu işlemi tamamlayamadı. Bağlantını kontrol edip tekrar dene.', 500); });
+// Retired module: block old clients before starting a session or accessing the database.
+if (str_starts_with((string)($_GET['action'] ?? ''), 'education')) fail('Eğitim modülü kaldırıldı.',410);
 $externalConfig = dirname(rtrim($_SERVER['DOCUMENT_ROOT'] ?? __DIR__, '/')).'/not-config.php';
 $configPath = getenv('NOT_CONFIG') ?: (is_file($externalConfig) ? $externalConfig : __DIR__.'/private/config.php');
 if (!is_file($configPath)) respond(['configured'=>false, 'error'=>'Sunucu ayarları henüz tamamlanmadı.'], 503);
 $config = require $configPath;
 $secure = $config['secure_cookie'] ?? true;
-session_name(defined('NOT_EDUCATION_GUEST') ? 'not_education_guest' : 'not_session');
+session_name('not_session');
 session_start(['cookie_httponly'=>true,'cookie_secure'=>$secure,'cookie_samesite'=>'Strict','use_strict_mode'=>true,'cookie_path'=>'/']);
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 if (isset($_SESSION['last_seen']) && time()-$_SESSION['last_seen'] > 43200) { unset($_SESSION['owner'], $_SESSION['guest'], $_SESSION['guest_data']); }
@@ -26,7 +28,6 @@ $db->exec('CREATE TABLE IF NOT EXISTS login_guard (id INTEGER PRIMARY KEY, attem
 $db->exec($sqlite ? 'INSERT OR IGNORE INTO login_guard VALUES (1,0,0)' : 'INSERT IGNORE INTO login_guard VALUES (1,0,0)');
 $action = $_GET['action'] ?? 'status';
 $method = $_SERVER['REQUEST_METHOD'];
-if (defined('NOT_EDUCATION_GUEST')) { require __DIR__.'/lib/education-guest.php'; educationGuestAPI($db,$action,$method); }
 $owner = $db->query('SELECT id, username, password_hash FROM owner WHERE id=1')->fetch();
 if (isset($_SESSION['owner']) && (!isset($_SESSION['fingerprint']) || !$owner || !hash_equals(hash('sha256',$owner['password_hash']), $_SESSION['fingerprint']))) unset($_SESSION['owner']);
 if ($method === 'GET' && $action === 'status') respond(['configured'=>true,'setup'=>!$owner,'authenticated'=>isset($_SESSION['owner']),'username'=>isset($_SESSION['owner'])?$owner['username']:null,'csrf'=>$_SESSION['csrf']]);
@@ -59,7 +60,6 @@ if (in_array($action,['setup','login'],true) && $method==='POST') {
     respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if (!isset($_SESSION['owner'])) fail('Devam etmek için giriş yap.',401);
-if ($action==='education-guest-access') { require __DIR__.'/lib/education-guest.php'; educationGuestManage($db,$method,$input??[]); }
 if ($action==='password' && $method==='POST') {
     $current=(string)($input['current_password']??'');$next=(string)($input['new_password']??'');
     if(!password_verify($current,$owner['password_hash'])) fail('Mevcut şifre yanlış.',403);
@@ -80,7 +80,6 @@ function validParent(PDO $db,?string $parent,string $id): void {
     $seen=[$id=>true];
     while($parent) { if(isset($seen[$parent])) fail('Bir sayfa kendi altına taşınamaz.');$seen[$parent]=true;$p=findPage($db,$parent);if($p['deleted_at']) fail('Çöp kutusundaki sayfaya eklenemez.');$parent=$p['parent_id']; }
 }
-if(in_array($action,['education','education-save','education-book','education-figure'],true)){require __DIR__.'/lib/education.php';educationAPI($db,$action,$method,$input??[]);}
 if(in_array($action,['dnd','dnd-save','dnd-spells'],true)){require __DIR__.'/lib/dnd.php';dndAPI($db,$action,$method,$input??[]);}
 if(in_array($action,['football','football-refresh','football-video','football-live','football-history','football-standings','football-cover'],true)){require __DIR__.'/lib/football.php';footballAPI($db,$action,$method,$input??[],$config);}
 if ($action==='pages' && $method==='GET') respond(['pages'=>array_map('decodePage',allPages($db))]);
