@@ -12,3 +12,14 @@ const p={id:'note-id',title:'Kısa not',parent_id:'root'},parent={id:'root',titl
 const url=new URL(googleReminderURL(p,r,'Çalışma alanı / Oyunlar','https://n4me.com.tr/'));assert.equal(url.origin,'https://calendar.google.com');assert.equal(url.searchParams.get('dates'),'20261018T101500Z/20261018T104500Z');assert.equal(url.searchParams.get('text'),r.label);assert.ok(url.searchParams.get('details').includes('https://n4me.com.tr/#note-id'));
 const ics=reminderICS(p,r,'Oyunlar','https://n4me.com.tr/');assert.ok(ics.includes('TRIGGER:-PT30M'));assert.ok(ics.includes('SUMMARY:İş\\, plan\\; 🧙'));assert.ok(ics.endsWith('END:VCALENDAR\r\n'));assert.ok(ics.split('\r\n').every(s=>Buffer.byteLength(s)<=75));
 console.log('PASS: inline formatting ranges, Unicode, escaping, links, Markdown; reminder status boundaries, Istanbul conversion, breadcrumbs and Google/ICS exports.');
+
+const {resolveReminderTarget,reminderNoteURL,reminderTitle}=await import('../assets/reminders.js');
+const note={id:'text-note',title:'Sayfa',blocks:[{id:'a',text:'İlk yazı'},{id:'b',text:'🧙 İkinci yazı burada'}]},anchored={...r,label:'',target:{block_id:'b',start:3,quote:'İkinci yazı'}};
+assert.equal(resolveReminderTarget(note,anchored).start,3);assert.equal(resolveReminderTarget(note,anchored).block.id,'b');
+assert.equal(resolveReminderTarget({...note,blocks:[note.blocks[1],note.blocks[0]]},anchored).block.id,'b');
+assert.equal(resolveReminderTarget({...note,blocks:[{id:'b',text:'Ön ek 🧙 İkinci yazı burada'}]},anchored).start,9);
+assert.equal(resolveReminderTarget({...note,blocks:[{id:'b',text:'Değişen yazı'}]},anchored).status,'changed');
+assert.equal(resolveReminderTarget({...note,blocks:[]},anchored).status,'missing');assert.equal(resolveReminderTarget(note,r).status,'legacy');
+assert.equal(reminderTitle(note,anchored),'İkinci yazı');assert.ok(reminderNoteURL(note,anchored,'https://n4me.com.tr/').endsWith('#text-note/reminder/test-reminder'));
+assert.ok(new URL(googleReminderURL(note,anchored,'Alan','https://n4me.com.tr/')).searchParams.get('details').includes('/reminder/test-reminder'));
+console.log('PASS: paragraph anchors, selected excerpts, moved/edited/deleted text, old reminders and calendar deep links.');

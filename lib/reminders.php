@@ -12,8 +12,14 @@ function validReminders(mixed $items): array {
   $date=DateTimeImmutable::createFromFormat('!Y-m-d\TH:i:s\Z',$at,new DateTimeZone('UTC'));
   if(!$date||$date->format('Y-m-d\TH:i:s\Z')!==$at)fail('Geçerli tarih ve saat seç.');
   if(!is_bool($item['done']??false))fail('Geçersiz hatırlatıcı durumu.');
-  $out[]=['id'=>$id,'label'=>shortText($item['label']??'',160),'at'=>$at,'done'=>$item['done']??false,'lead'=>choice($item['lead']??60,[0,5,15,30,60,180,1440]),'color'=>choice($item['color']??'violet',['violet','blue','pink','orange','teal'])];
+  $r=['id'=>$id,'label'=>shortText($item['label']??'',160),'at'=>$at,'done'=>$item['done']??false,'lead'=>choice($item['lead']??60,[0,5,15,30,60,180,1440]),'color'=>choice($item['color']??'violet',['violet','blue','pink','orange','teal'])];
+  if(isset($item['target'])){
+   $t=$item['target'];if(!is_array($t)||!is_string($t['block_id']??null)||!preg_match('/^[a-zA-Z0-9_-]{1,60}$/D',$t['block_id'])||!is_int($t['start']??null)||$t['start']<0||$t['start']>200000)fail('Geçersiz hatırlatıcı yazısı.');
+   $quote=shortText($t['quote']??null,1000);if(trim($quote)==='')fail('Hatırlatılacak yazıyı seç.');$r['target']=['block_id'=>$t['block_id'],'start'=>$t['start'],'quote'=>$quote];
+  }
+  $out[]=$r;
  }
+ if(strlen(json_encode($out,JSON_UNESCAPED_UNICODE))>60000)fail('Hatırlatıcı metinleri çok uzun. Daha kısa bir bölüm seç.');
  return $out;
 }
 function pageReminders(PDO $db,string $id): array {$q=$db->prepare('SELECT payload FROM page_reminders WHERE page_id=?');$q->execute([$id]);return json_decode($q->fetchColumn()?:'[]',true);}
