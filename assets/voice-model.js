@@ -13,15 +13,25 @@ export function appendSpeech(block,text){
 }
 export const commandKey=text=>String(text).toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/\p{M}/gu,'').replace(/ı/g,'i').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
 export function voiceCommand(text,pages=[]){
- const key=commandKey(text).replace(/^bir /,'');
- const areas={education:['egitim','egitimi','egitim alani','egitim alanini'],football:['futbol','futbolu','futbol alani','futbol alanini'],dnd:['dnd','d d','d and d'],reminders:['hatirlaticilar','hatirlaticilari'],home:['tum sayfalar','tum sayfalari'],favorites:['favoriler','favorileri'],blank:['calisma alani','calisma alanini']};
+ const key=commandKey(text).replace(/^bir (?=sonraki|onceki)/,'');
+ const areas={education:['egitim','egitimi','egitim alani','egitim alanini'],football:['futbol','futbolu','futbol alani','futbol alanini'],dnd:['dnd','d d','d and d'],reminders:['hatirlaticilar','hatirlaticilari'],home:['sayfalar','sayfalari','notlar','notlari','tum sayfalar','tum sayfalari'],favorites:['favoriler','favorileri'],blank:['calisma alani','calisma alanini']};
  for(const [view,names]of Object.entries(areas))if(names.some(n=>key===n+' ac'))return {type:'area',view};
- const destinations={'egitime git':'education','futbola git':'football','dnd ye git':'dnd','dndye git':'dnd','d d ye git':'dnd','hatirlaticilara git':'reminders','tum sayfalara git':'home','favorilere git':'favorites','calisma alanina git':'blank'};if(destinations[key])return {type:'area',view:destinations[key]};
+ const destinations={'egitime git':'education','futbola git':'football','dnd ye git':'dnd','dndye git':'dnd','d d ye git':'dnd','hatirlaticilara git':'reminders','tum sayfalara git':'home','sayfalara git':'home','sayfalara don':'home','notlara don':'home','favorilere git':'favorites','calisma alanina git':'blank'};if(destinations[key])return {type:'area',view:destinations[key]};
  const exact={ 'sonraki sayfa':'nextPage','onceki sayfa':'prevPage','sonraki not':'nextPage','onceki not':'prevPage','sonraki paragraf':'nextBlock','onceki paragraf':'prevBlock','sonraki blok':'nextBlock','onceki blok':'prevBlock','asagi kaydir':'down','yukari kaydir':'up','basa git':'top','sona git':'bottom','notu oku':'read','notu sesli oku':'read','sayfayi oku':'read','sayfayi sesli oku':'read','bu blogu oku':'readBlock','komutlari durdur':'stop','dinlemeyi durdur':'stop' };
  if(exact[key])return {type:exact[key]};
+ const ordinal={'ilk':1,'birinci':1,'bir':1,'ikinci':2,'iki':2,'ucuncu':3,'uc':3,'dorduncu':4,'dort':4,'besinci':5,'bes':5,'altinci':6,'alti':6,'yedinci':7,'yedi':7,'sekizinci':8,'sekiz':8,'dokuzuncu':9,'dokuz':9,'onuncu':10,'on':10,'on birinci':11,'on ikinci':12};
+ const numbered=key.match(/^(.+?) (sayfayi|sayfa|notu|not|paragrafi|paragraf|blogu|blok) (ac|sec)$/)||key.match(/^(.+?) (sayfaya|nota|paragrafa|bloga) git$/);
+ if(numbered){const n=numbered[1]==='son'?-1:ordinal[numbered[1]]??(/^\d+$/.test(numbered[1])?Number(numbered[1]):0);if(n===-1||Number.isSafeInteger(n)&&n>0)return {type:/^(sayfa|not)/.test(numbered[2])?'pageNumber':'blockNumber',number:n};}
  const match=key.match(/^(.+?) (?:sayfasini|notunu) ac$/)||key.match(/^(.+?) (?:sayfasina|notuna) git$/);
  if(match){const found=pages.filter(p=>commandKey(p.title)===match[1]);if(found.length===1)return {type:'page',id:found[0].id};return {type:'error',message:found.length?'Bu başlıkla birden fazla sayfa var. Ayırt edebilmek için sayfalara farklı başlıklar ver.':'Bu isimde bir sayfa bulunamadı. Sayfanın tam başlığını söyle.'};}
  return {type:'error',message:'Komut anlaşılmadı. Paneldeki örneklerden birini söyle.'};
+}
+// Stable navigation follows the same newest-first order as the page list.
+export const voicePageOrder=pages=>pages.filter(p=>!p.deleted_at).slice().sort((a,b)=>(Date.parse(b.updated_at)||0)-(Date.parse(a.updated_at)||0)||String(a.id).localeCompare(String(b.id)));
+export function voiceIndex(length,current,action){
+ if(!length)return -1;
+ const index=action.number===-1?length-1:action.number!==undefined?action.number-1:current<0?(action.type.startsWith('prev')?length-1:0):current+(action.type.startsWith('next')?1:-1);
+ return index>=0&&index<length?index:-1;
 }
 export const recognitionErrors={
  'not-allowed':'Mikrofon izni verilmedi. Tarayıcıdaki site ayarlarından mikrofon iznini açıp tekrar dene.',
@@ -34,21 +44,21 @@ export const recognitionErrors={
 };
 export function createSpeechEngine({Recognition,Utterance,synth,secure=true,onFinal=()=>{},onChange=()=>{}}){
  const state={recording:'idle',reading:'idle',interim:'',error:'',chunks:[],index:0};
- let recognition=null,token=0,utterance=null,readToken=0,readOptions={};
+ let recognition=null,token=0,utterance=null,readToken=0,readOptions={},restartTimer=null,keepListening=false;
  const notify=()=>onChange({...state});
- function abort(){token++;const old=recognition;recognition=null;state.recording='idle';state.interim='';try{old?.abort();}catch{}notify();}
+ function abort(){keepListening=false;clearTimeout(restartTimer);restartTimer=null;token++;const old=recognition;recognition=null;state.recording='idle';state.interim='';try{old?.abort();}catch{}notify();}
  function stopReading(){readToken++;utterance=null;state.reading='idle';state.chunks=[];state.index=0;try{synth?.cancel();}catch{}notify();}
- function start(){
+ function start({keepAlive=false}={}){
   if(!Recognition||!secure){state.error=!secure?'Mikrofon için HTTPS bağlantısı gerekli.':'Bu tarayıcı sesle yazdırmayı desteklemiyor. Chrome veya Safari’de açmayı ya da klavyenin dikte özelliğini deneyebilirsin.';notify();return;}
-  abort();stopReading();state.error='';state.recording='starting';notify();const current=++token;let r;
+  abort();keepListening=keepAlive;stopReading();state.error='';state.recording='starting';notify();const current=++token;let r;
   try{r=new Recognition();recognition=r;r.lang='tr-TR';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;const applied=new Set();
    r.onstart=()=>{if(current!==token)return;state.recording='listening';notify();};
    r.onresult=e=>{if(current!==token)return;let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i],text=result[0]?.transcript?.trim()||'';if(result.isFinal&&!applied.has(i)){applied.add(i);if(text){try{onFinal(text);}catch(err){abort();state.error=err.message;notify();return;}if(current!==token)return;}}else if(!result.isFinal)interim+=(interim?' ':'')+text;}state.interim=interim;notify();};
    r.onerror=e=>{if(current!==token)return;abort();state.error=recognitionErrors[e.error]||'Konuşma tanıma başlatılamadı. Tekrar dene.';notify();};
-   r.onend=()=>{if(current!==token)return;recognition=null;state.recording='idle';state.interim='';notify();};r.start();
+   r.onend=()=>{if(current!==token)return;recognition=null;state.recording=keepListening?'starting':'idle';state.interim='';notify();if(keepListening)restartTimer=setTimeout(()=>{if(current===token&&keepListening)start({keepAlive:true});},400);};r.start();
   }catch{abort();state.error='Mikrofon başlatılamadı. Site iznini ve tarayıcı desteğini kontrol et.';notify();}
  }
- function stop(){if(!recognition)return;state.recording='stopping';notify();try{recognition.stop();}catch{abort();}}
+ function stop(){keepListening=false;clearTimeout(restartTimer);restartTimer=null;if(!recognition){abort();return;}state.recording='stopping';notify();try{recognition.stop();}catch{abort();}}
  function next(){
   if(state.index>=state.chunks.length){state.reading='done';utterance=null;notify();return;}
   const current=readToken,u=new Utterance(state.chunks[state.index]);utterance=u;u.lang=readOptions.voice?.lang||'tr-TR';if(readOptions.voice)u.voice=readOptions.voice;u.rate=readOptions.rate||1;

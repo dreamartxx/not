@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {appendSpeech,speechChunks,voiceCommand,createSpeechEngine} from '../assets/voice-model.js';
+import {appendSpeech,speechChunks,voiceCommand,voicePageOrder,voiceIndex,createSpeechEngine} from '../assets/voice-model.js';
 const note={text:'Önemli',runs:[{text:'Önemli',bold:true}]};appendSpeech(note,'bir fikir.');appendSpeech(note,'Devamı.');assert.equal(note.text,'Önemli bir fikir. Devamı.');assert.deepEqual(note.runs,[{text:'Önemli',bold:true},{text:' bir fikir. Devamı.'}]);
 assert.equal(appendSpeech(note,'  '),false);const huge={text:'a'.repeat(100000)};assert.throws(()=>appendSpeech(huge,'b'));assert.equal(huge.text.length,100000);
 const long=('Türkçe 🧙 bir cümle. ').repeat(80)+'x'.repeat(450);const chunks=speechChunks(long);assert.ok(chunks.length>3);assert.ok(chunks.every(c=>Array.from(c).length<=180));assert.equal(chunks.join('').replace(/\s/g,''),long.replace(/\s/g,''));assert.deepEqual(speechChunks('  '),[]);
@@ -21,3 +21,13 @@ engine.read('Sesli okuma');engine.start();assert.equal(engine.state.reading,'idl
 const unavailable=createSpeechEngine({});unavailable.start();assert.match(unavailable.state.error,/desteklemiyor/);unavailable.read('not');assert.match(unavailable.state.error,/desteklemiyor/);
 const insecure=createSpeechEngine({Recognition,secure:false});insecure.start();assert.match(insecure.state.error,/HTTPS/);
 console.log('Voice: rich text preservation, Unicode chunking, safe commands, deduplication, stop/abort, errors and playback lifecycle passed.');
+
+for(const text of ['Sayfaları aç','Sayfalara git','Sayfalara dön','Notları aç'])assert.equal(voiceCommand(text).view,'home');
+for(const [text,type,n]of [['İlk sayfayı aç','pageNumber',1],['İkinci sayfayı aç','pageNumber',2],['12. sayfaya git','pageNumber',12],['Son sayfayı aç','pageNumber',-1],['Üçüncü paragrafa git','blockNumber',3],['Bir paragrafı seç','blockNumber',1],['Son bloğa git','blockNumber',-1]])assert.deepEqual(voiceCommand(text),{type,number:n});
+assert.equal(voiceCommand('0. sayfayı aç').type,'error');assert.equal(voiceCommand('İkinci sayfasını aç',[{id:'named',title:'İkinci'}]).id,'named');
+const ordered=voicePageOrder([{id:'old',updated_at:'2025-01-01'},{id:'trash',updated_at:'2026-01-01',deleted_at:'2026-01-01'},{id:'new',updated_at:'2025-02-01'}]);assert.deepEqual(ordered.map(p=>p.id),['new','old']);
+assert.equal(voiceIndex(2,-1,{type:'nextPage'}),0);assert.equal(voiceIndex(2,-1,{type:'prevPage'}),1);assert.equal(voiceIndex(2,1,{type:'nextPage'}),-1);assert.equal(voiceIndex(2,0,{type:'prevPage'}),-1);assert.equal(voiceIndex(2,0,{number:2}),1);assert.equal(voiceIndex(2,0,{number:3}),-1);assert.equal(voiceIndex(0,0,{number:-1}),-1);
+engine.start({keepAlive:true});let first=Recognition.all.at(-1);first.onend();assert.equal(engine.state.recording,'starting');await new Promise(r=>setTimeout(r,450));assert.notEqual(Recognition.all.at(-1),first);assert.equal(engine.state.recording,'listening');
+let running=Recognition.all.at(-1);running.onend();engine.abort();let count=Recognition.all.length;await new Promise(r=>setTimeout(r,450));assert.equal(Recognition.all.length,count);
+engine.start({keepAlive:true});running=Recognition.all.at(-1);engine.stop();running.onend();assert.equal(engine.state.recording,'idle');count=Recognition.all.length;await new Promise(r=>setTimeout(r,450));assert.equal(Recognition.all.length,count);
+console.log('Voice navigation: numbered pages/blocks, visible order, bounds, command session restart and explicit stop passed.');

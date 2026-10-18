@@ -1,5 +1,5 @@
 const {createVoice}=await import('./voice.js'+new URL(import.meta.url).search);
-const {appendSpeech,voiceCommand}=await import('./voice-model.js'+new URL(import.meta.url).search);
+const {appendSpeech,voiceCommand,voicePageOrder,voiceIndex}=await import('./voice-model.js'+new URL(import.meta.url).search);
 const {createEducation}=await import('./education.js'+new URL(import.meta.url).search);
 const {createReminders}=await import('./reminders.js'+new URL(import.meta.url).search);
 const {createRichEditor,richTypes,richHTML,syncRich,readRuns,richMarkdown}=await import('./rich-text.js'+new URL(import.meta.url).search);
@@ -71,8 +71,8 @@ function tree(parent=null, depth=0, seen=new Set()) {
 function sidebar() { return `<aside class="sidebar"><button class="workspace" data-view="blank"><span class="brand-mark small">n.</span><span><strong>Kişisel alanım</strong><small>Sadece sana ait</small></span><span class="workspace-chevron">⌄</span></button><nav><button class="nav-item" id="search-open"><span>⌕</span> Hızlı arama <kbd>⌘ K</kbd></button><button class="nav-item ${state.view==='page'?'selected':''}" data-view="blank"><span>⌂</span> Çalışma alanı</button><button class="nav-item ${state.view==='home'?'selected':''}" data-view="home"><span>☷</span> Tüm sayfalar</button><button class="nav-item ${state.view==='football'?'selected':''}" data-view="football"><span>⚽</span> Futbol</button><button class="nav-item ${state.view==='dnd'?'selected':''}" data-view="dnd"><span>◇</span> D&D</button><button class="nav-item ${state.view==='education'?'selected':''}" data-view="education"><span>▤</span> Eğitim</button><button class="nav-item ${state.view==='reminders'?'selected':''}" data-view="reminders"><span>◷</span> Hatırlatıcılar</button><button class="nav-item ${state.view==='favorites'?'selected':''}" data-view="favorites"><span>☆</span> Favoriler</button></nav><div class="side-label">SAYFALAR <button class="icon-button" id="workspace-menu" aria-label="Çalışma alanı menüsü" title="Yeni sayfa ve şablonlar">•••</button></div><div class="tree">${tree()||'<p class="side-empty">İlk düşüncene yer aç.</p>'}</div><div class="sidebar-bottom"><button class="nav-item" data-pwa-open><span>↧</span> Uygulama olarak kullan</button><button class="nav-item ${state.view==='trash'?'selected':''}" data-view="trash"><span>♲</span> Çöp kutusu</button><button class="nav-item" id="settings-open"><span>⚙</span> Ayarlar ve yedekleme</button><div class="profile"><span class="avatar">${esc(state.username.slice(0,1).toUpperCase())}</span><span><strong>${esc(state.username)}</strong><small>Kişisel hesap</small></span><button class="icon-button" id="theme-toggle" aria-label="Temayı değiştir">${state.theme==='dark'?'☀':'☾'}</button></div></div></aside>`; }
 function card(p) {return `<button class="note-card" data-page="${p.id}"><div class="card-cover ${p.cover==='none'?'sage':esc(p.cover)}">${covers.image('page:'+p.id)}<span>${esc(p.icon)}</span></div><div class="card-body"><h3>${esc(p.title||'Başlıksız')}</h3><p>${esc(p.blocks.map(blockText).find(Boolean)?.slice(0,95)||'Yeni fikirlerin için boş bir sayfa.')}</p><small>${formatDate(p.updated_at)} <span>${p.favorite?'★':''}</span></small></div></button>`;}
 function home() {
- const notes=active().slice().sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at));
- return `<section class="home-wrap quiet-home"><div class="eyebrow">KİŞİSEL ÇALIŞMA ALANI</div><h1>Düşüncelerine yer aç.</h1><p class="lead">Her şey, bir sayfayla başlar.</p><div class="recent-heading"><h2>Son sayfalar</h2><span>${notes.length} sayfa</span></div><div class="recent-list">${notes.slice(0,12).map(p=>`<button class="recent-row" data-page="${p.id}"><span class="recent-icon">${esc(p.icon)}</span><span class="recent-title">${esc(p.title||'Başlıksız')}</span><small>${formatDate(p.updated_at)}</small><span class="recent-arrow">↗</span></button>`).join('')||'<p class="quiet">Çalışma alanı menüsünden yeni bir sayfa açabilirsin.</p>'}</div></section>`;
+ const notes=voicePageOrder(active());
+ return `<section class="home-wrap quiet-home"><div class="eyebrow">KİŞİSEL ÇALIŞMA ALANI</div><h1>Düşüncelerine yer aç.</h1><p class="lead">Her şey, bir sayfayla başlar.</p><div class="recent-heading"><h2>Son sayfalar</h2><span>${notes.length} sayfa</span></div><div class="recent-list">${notes.map((p,i)=>`<button class="recent-row" data-page="${p.id}" aria-label="${i+1}. ${esc(p.title||'Başlıksız')}"><span class="voice-page-number">${i+1}</span><span class="recent-icon">${esc(p.icon)}</span><span class="recent-title">${esc(p.title||'Başlıksız')}</span><small>${formatDate(p.updated_at)}</small><span class="recent-arrow">↗</span></button>`).join('')||'<p class="quiet">Çalışma alanı menüsünden yeni bir sayfa açabilirsin.</p>'}</div></section>`;
 }
 function blockHTML(b,index) {
  const controls='<div class="block-controls"><button draggable="true" data-block-menu="'+b.id+'" title="Blok seçenekleri; sürükleyerek taşı" aria-label="Blok seçenekleri">⠿</button></div>';
@@ -96,7 +96,7 @@ function render() {
  status();voice.sync();bindCommon();reminders.bind();if(state.view==='page')bindEditor();if(state.view==='football'){football.bind();football.load();}if(state.view==='dnd'){dnd.bind();dnd.load();}if(state.view==='education'){education.bind();education.load();}
 }
 function bindCommon() {
- $('#voice-open').onclick=()=>voice.open();
+ $('#voice-open').onclick=()=>voice.open('commands');
  app.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>navigate(el.dataset.view));
  app.querySelectorAll('[data-page]').forEach(el=>el.onclick=()=>navigate('page',el.dataset.page));
  app.querySelectorAll('[data-new]').forEach(el=>el.onclick=()=>createPage());
@@ -238,18 +238,19 @@ async function runVoiceCommand(text){
  const action=voiceCommand(text,active());
  if(action.type==='error')return action.message;
  if(action.type==='stop'){voice.stop();return 'Sesli komutlar durduruldu.';}
+ if(dialog.open)return 'Önce açık pencereyi kapat, ardından komutu tekrar söyle.';
  if(action.type==='area'){await navigate(action.view);return 'Çalışma alanı açıldı.';}
  if(action.type==='page'){await navigate('page',action.id);return (page()?.title||'Sayfa')+' açıldı.';}
- if(['nextPage','prevPage'].includes(action.type)){const list=active(),at=list.findIndex(p=>p.id===state.current),index=at<0?0:at+(action.type==='nextPage'?1:-1);if(!list[index])return 'Bu yönde başka sayfa yok.';await navigate('page',list[index].id);return list[index].title+' açıldı.';}
+ if(['nextPage','prevPage','pageNumber'].includes(action.type)){const list=voicePageOrder(active()),index=voiceIndex(list.length,list.findIndex(p=>p.id===state.current),action);if(index<0)return 'Bu sırada veya bu yönde bir sayfa yok.';await navigate('page',list[index].id);return (list[index].title||'Başlıksız')+' açıldı.';}
  if(['down','up','top','bottom'].includes(action.type)){const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';if(action.type==='down'||action.type==='up')window.scrollBy({top:innerHeight*.65*(action.type==='down'?1:-1),behavior});else window.scrollTo({top:action.type==='top'?0:document.documentElement.scrollHeight,behavior});return 'Sayfa kaydırıldı.';}
  if(state.view!=='page'||!page())return 'Bu komut için önce bir not sayfası aç.';
  if(action.type==='read'){voice.speak(pageSpeech(),'Sayfanın tamamı');return 'Not sesli okunuyor.';}
- if(action.type==='readBlock'){voice.speak(blockText(page().blocks[selectedIndex()]||{}),'Seçili not bloğu');return 'Seçili not sesli okunuyor.';}
- const current=page().blocks.findIndex(b=>b.id===selectedBlock),index=current<0?0:current+(action.type==='nextBlock'?1:-1),block=page().blocks[index];
+ if(action.type==='readBlock'){voice.speak(blockText(page().blocks.find(b=>b.id===selectedBlock)||page().blocks[0]||{}),'Seçili not bloğu');return 'Seçili not sesli okunuyor.';}
+ const current=page().blocks.findIndex(b=>b.id===selectedBlock),index=voiceIndex(page().blocks.length,current,action),block=page().blocks[index];
  if(!block)return 'Bu yönde başka not bloğu yok.';
  selectedBlock=block.id;const row=$('[data-block="'+block.id+'"]');row?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});document.querySelectorAll('.voice-current-block').forEach(el=>el.classList.remove('voice-current-block'));row?.classList.add('voice-current-block');return (index+1)+'. not bloğu seçildi.';
 }
-const voice=createVoice({esc,getPage:()=>state.view==='page'?page():null,getText:pageSpeech,makeWriter:speechWriter,command:runVoiceCommand});
+const voice=createVoice({esc,getPage:()=>state.view==='page'?page():null,getText:pageSpeech,makeWriter:speechWriter,command:runVoiceCommand,getContext:()=>({view:state.view,title:state.view==='page'?page()?.title:'',count:active().length})});
 const studio=createStudio({esc,uid,getPage:page,dirty,renderBlocks,modal,toast,api,download,flush,csrf:()=>state.csrf,pages:()=>state.pages});
 document.addEventListener('keydown',e=>{if(dialog.open||state.view!=='page'||!page())return;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'&&!e.target.closest('input,textarea,[contenteditable]')){e.preventDefault();stepHistory(e.shiftKey?1:-1);}if(e.key==='Escape')document.body.classList.remove('focus-mode');});
 const covers=createCovers({api,esc,modal,toast,render,flush,uploadFile:file=>studio.uploadFile(file)});
