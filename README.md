@@ -163,3 +163,15 @@ Kaynak metin 8 JSON parçasında tutulur ve oturum korumalı `education-book` AP
 Eğitim alanının varsayılanı artık kaynak metin okuyucusu yerine öğrenme panosudur. Beş ders; Keşfet (üç açılır kavram ve üç adımlı süreç), Uygula (seçimli örnek olay ve gerekçe), Pekiştir (üç açıklamalı soru) aşamalarına ayrılır. 15 soru ve özetler Mayıs 2025 kaynak kitabının belirtilen sayfalarından hazırlanmış kişisel çalışma içeriğidir; resmî sınav soruları değildir. Tam metin ayrı Kaynak kitap sekmesinde korunur.
 
 Ders seçimi, soru yanıtları ve tamamlanan dersler `learning` alanında sürümlü eğitim kaydına/yedeğine dahildir. Ders tamamlama için üç doğru yanıt sunucuda da doğrulanır; eski istemciler bu alanı göndermediğinde mevcut öğrenme kaydı korunur. Sayfa okuma ve ders tamamlama ilerlemesi ayrıdır. Hareketi azalt tercihi animasyonları kapatır.
+
+### Ses araçları
+
+Üst çubuktaki mikrofon simgesi üç mod açar: **Konuşarak yaz**, **Sesli dinle** ve **Sesli komut**. Türkçe dikte, kesinleşen cümleleri yeni metin bloğuna veya seçili yazının sonuna ekler; mevcut biçimleri korur ve normal otomatik kayıt/geri alma akışını kullanır. Ara sonuçlar önizlemedir, notlara yazılmaz. Dikte sırasında sayfa değiştirmek mikrofonu durdurur. Sesli komut modunda sayfalar arasında gezinirken dinleme devam eder; tarayıcı oturumu bitirirse yeniden başlatılabilir.
+
+Komutlar: “Futbolu aç”, “Eğitimi aç”, “DND aç”, “Hatırlatıcıları aç”, “Tüm sayfaları aç”, “Çalışma alanını aç”, “<tam başlık> sayfasını aç”, “Sonraki/önceki sayfa”, “Sonraki/önceki paragraf”, “Aşağı/yukarı kaydır”, “Başa/sona git”, “Notu oku”, “Bu bloğu oku”, “Komutları durdur”. Aynı başlıklı birden fazla sayfa varsa otomatik seçim yapılmaz. Komut modu metin yazmaz veya veri silmez.
+
+Tüm sayfa, blok menüsünden tek not veya seçim araç çubuğundan seçili metin dinlenebilir. Türkçe ses önceliklidir; ses seçimi, hız, duraklat/devam et, durdur ve okuma ilerlemesi vardır. Uzun metinler parçalara bölünür. Okuma başlatılınca mikrofon kapanır; panel kapanınca dinleme ve okuma durur. Sekme arka plana geçince mikrofon kapanır, okuma duraklar.
+
+Dikte/komutlar tarayıcının `SpeechRecognition` desteğini, HTTPS ve mikrofon iznini gerektirir. Bazı tarayıcılar sesi kendi çevrimiçi konuşma hizmetinde işler. Uygulama ham ses kaydı saklamaz, özel bir transkripsiyon hizmeti veya API anahtarı kullanmaz. Sesli okuma cihazın/tarayıcının `speechSynthesis` seslerini kullanır; Türkçe ses bulunmuyorsa cihaz ayarlarından eklenebilir. PWA desteği kurulu tarayıcıya bağlıdır. İzin ve ağ hataları panelde açıklanır.
+
+`node tests/voice.mjs`: Türkçe komut eşleştirme ve belirsiz başlıklar, Unicode uzun metin bölme, biçimlerin korunması, tekrar eden/geciken tanıma sonuçları, durdurma, izin hatası ve oynatma yaşam döngüsü.

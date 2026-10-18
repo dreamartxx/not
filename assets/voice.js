@@ -1,0 +1,45 @@
+const {createSpeechEngine}=await import('./voice-model.js'+new URL(import.meta.url).search);
+export function createVoice({esc,getPage,getText,makeWriter,command}){
+ const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition,synth=window.speechSynthesis;
+ const panel=document.createElement('section');panel.className='voice-panel';panel.hidden=true;panel.setAttribute('role','region');panel.setAttribute('aria-label','Ses araçları');document.body.append(panel);
+ let mode='dictate',owner=null,writer=null,source=null,last='',notice='',commandBusy=false,returnFocus=null,voiceURI='';
+ const $=s=>panel.querySelector(s);
+ const engine=createSpeechEngine({Recognition,Utterance:window.SpeechSynthesisUtterance,synth,secure:window.isSecureContext,onChange:update,onFinal:text=>{
+  last=text;
+  if(mode==='dictate'){writer?.(text);notice='Söylediklerin nota eklendi. Değişiklikler otomatik kaydedilir.';}
+  else if(mode==='commands'&&!commandBusy){commandBusy=true;Promise.resolve(command(text)).then(message=>{notice=message||'Komut uygulandı.';}).catch(e=>{notice=e.message||'Komut uygulanamadı.';}).finally(()=>{commandBusy=false;update();});}
+ }});
+ function voices(){return (synth?.getVoices()||[]).slice().sort((a,b)=>(Number(b.lang.toLowerCase().startsWith('tr'))-Number(a.lang.toLowerCase().startsWith('tr')))||(Number(b.localService)-Number(a.localService))||a.name.localeCompare(b.name));}
+ function refreshVoices(){if(!$('#voice-voice'))return;const list=voices();if(!list.some(v=>v.voiceURI===voiceURI))voiceURI=list.find(v=>v.lang.toLowerCase().startsWith('tr'))?.voiceURI||'';$('#voice-voice').innerHTML='<option value="">Türkçe · sistem varsayılanı</option>'+list.map(v=>`<option value="${esc(v.voiceURI)}">${esc(v.name)} · ${esc(v.lang)}${v.localService?' · cihazda':''}</option>`).join('');$('#voice-voice').value=voiceURI;$('#voice-language-note').textContent=list.some(v=>v.lang.toLowerCase().startsWith('tr'))?'Türkçe ses hazır.':'Türkçe ses listelenmiyorsa cihazının konuşma ayarlarından Türkçe ses ekleyebilirsin.';}
+ function mount(){
+  panel.innerHTML=`<header class="voice-header"><span class="voice-emblem" aria-hidden="true">≋</span><div><span class="voice-eyebrow">KELİMELERİ SERBEST BIRAK</span><h2>Ses araçları</h2></div><button class="icon-button" data-voice-close aria-label="Ses araçlarını kapat">×</button></header><div class="voice-tabs" role="tablist" aria-label="Ses modu"><button role="tab" data-voice-mode="dictate">Konuşarak yaz</button><button role="tab" data-voice-mode="read">Sesli dinle</button><button role="tab" data-voice-mode="commands">Sesli komut</button></div><div class="voice-body"><div id="voice-dictate" role="tabpanel" aria-label="Konuşarak yaz"><label>Yazılacak yer<select id="voice-target"><option value="new">Yeni metin bloğu</option><option value="selected">Seçili yazının sonu</option></select></label><p class="voice-hint">Kesinleşen cümleler doğrudan notuna eklenir. Dinlemeyi durdurunca yazıyı düzenleyebilirsin.</p></div><div id="voice-read" role="tabpanel" aria-label="Sesli dinle"><p class="voice-source" id="voice-source"></p><div class="voice-settings"><label>Ses<select id="voice-voice"></select></label><label>Hız<select id="voice-rate">${[.75,1,1.25,1.5,1.75].map(n=>`<option value="${n}" ${n===1?'selected':''}>${n}×</option>`).join('')}</select></label></div><p class="voice-hint" id="voice-language-note"></p><p class="voice-hint">Seçtiğin ses, cihazda veya tarayıcının konuşma hizmetinde işlenir.</p><progress id="voice-progress" max="1" value="0" aria-label="Okuma ilerlemesi"></progress><p id="voice-position" class="voice-hint"></p><div class="voice-controls"><button class="button primary" id="voice-play">▶ Oynat</button><button class="button" id="voice-pause" hidden>Ⅱ Duraklat</button><button class="button" id="voice-read-stop" hidden>■ Durdur</button></div></div><div id="voice-commands" role="tabpanel" aria-label="Sesli komut"><p class="voice-hint">Dinlemeyi başlat, ardından bir komut söyle.</p><div class="voice-examples"><span>“Futbolu aç”</span><span>“Eğitimi aç”</span><span>“Toplantı sayfasını aç”</span><span>“Sonraki sayfa”</span><span>“Sonraki paragraf”</span><span>“Aşağı kaydır”</span><span>“Notu oku”</span><span>“Komutları durdur”</span></div><p class="voice-hint">Bir sayfayı açmak için tam başlığını söyle. Komutlar notlara yazılmaz.</p></div><div id="voice-microphone"><div class="voice-live"><span class="voice-dot"></span><strong id="voice-mic-status">Hazır</strong><span class="voice-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div><p id="voice-transcript" class="voice-transcript"></p><button class="button primary" id="voice-start">● Dinlemeyi başlat</button><p class="voice-privacy">Mikrofon yalnızca başlattığında açılır. Tarayıcı, sesi kendi konuşma hizmetine gönderebilir; internet gerekebilir. Uygulama ses kaydı saklamaz.</p><p class="voice-hint" id="voice-support"></p></div><p id="voice-feedback" role="status" aria-live="polite"></p></div>`;
+  $('[data-voice-close]').onclick=close;
+  panel.querySelectorAll('[data-voice-mode]').forEach(b=>b.onclick=()=>{engine.close();mode=b.dataset.voiceMode;last='';notice='';source=null;update();});
+  $('#voice-start').onclick=()=>{if(engine.state.recording!=='idle'){engine.stop();return;}try{if(mode==='dictate')writer=makeWriter($('#voice-target').value);last='';notice='';engine.start();}catch(e){notice=e.message;update();}};
+  $('#voice-play').onclick=play;$('#voice-pause').onclick=()=>engine.state.reading==='paused'?engine.resume():engine.pause();$('#voice-read-stop').onclick=()=>engine.stopReading();
+  $('#voice-voice').onchange=e=>{voiceURI=e.target.value;engine.stopReading();};$('#voice-rate').onchange=()=>engine.stopReading();refreshVoices();
+ }
+ function update(){if(panel.hidden||!$('#voice-feedback'))return;const s=engine.state,hasPage=!!getPage(),recording=s.recording!=='idle',reading=['playing','paused'].includes(s.reading);
+  panel.dataset.listening=String(recording);panel.querySelectorAll('[data-voice-mode]').forEach(b=>{b.setAttribute('aria-selected',String(mode===b.dataset.voiceMode));b.disabled=!hasPage&&b.dataset.voiceMode!=='commands';});
+  for(const id of ['dictate','read','commands'])$('#voice-'+id).hidden=mode!==id;
+  $('#voice-microphone').hidden=mode==='read';$('#voice-target').disabled=recording;
+  $('#voice-mic-status').textContent=({idle:'Hazır',starting:'Mikrofon açılıyor…',listening:'Dinliyorum · Türkçe',stopping:'Son cümle tamamlanıyor…'})[s.recording];
+  $('#voice-transcript').textContent=s.interim||last||(mode==='commands'?'Komutunu bekliyorum.':'Söylediklerin burada görünecek.');$('#voice-transcript').classList.toggle('is-interim',!!s.interim);
+  $('#voice-start').textContent=recording?'■ Dinlemeyi durdur':'● Dinlemeyi başlat';$('#voice-start').disabled=!Recognition||!window.isSecureContext||s.recording==='stopping';
+  $('#voice-support').textContent=!Recognition?'Bu tarayıcı konuşma tanımayı desteklemiyor. Uygulamayı Chrome veya Safari’de açmayı deneyebilirsin.':!window.isSecureContext?'Mikrofon için HTTPS bağlantısı gerekli.':'';
+  $('#voice-source').textContent=source?.label||('Sayfanın tamamı · '+(getPage()?.title||'Başlıksız'));$('#voice-play').disabled=!synth||!window.SpeechSynthesisUtterance;$('#voice-play').hidden=reading;$('#voice-play').textContent=s.reading==='done'?'↻ Tekrar dinle':'▶ Oynat';
+  $('#voice-pause').hidden=!reading;$('#voice-pause').textContent=s.reading==='paused'?'▶ Devam et':'Ⅱ Duraklat';$('#voice-read-stop').hidden=!reading;
+  $('#voice-progress').max=s.chunks.length||1;$('#voice-progress').value=s.index;$('#voice-position').textContent=s.chunks.length?`${Math.min(s.index+1,s.chunks.length)} / ${s.chunks.length} bölüm${s.reading==='done'?' · Tamamlandı':s.reading==='paused'?' · Duraklatıldı':''}`:'';
+  $('#voice-feedback').textContent=s.error||notice;$('#voice-feedback').classList.toggle('voice-error',!!s.error);
+ }
+ function play(){engine.read(source?.text??getText(),{voice:voices().find(v=>v.voiceURI===voiceURI),rate:+$('#voice-rate').value});}
+ function open(nextMode){returnFocus=document.activeElement;engine.close();mode=nextMode|| (getPage()?'dictate':'commands');owner=getPage()?.id;source=null;last='';notice='';panel.hidden=false;mount();update();$(`[data-voice-mode="${mode}"]`).focus();}
+ function close(){engine.close();panel.hidden=true;source=null;if(returnFocus?.isConnected)returnFocus.focus();}
+ function speak(text,label){open('read');source={text,label};update();play();}
+ function sync(){if(panel.hidden)return;if(mode!=='commands'&&owner!==getPage()?.id)close();else update();}
+ synth?.addEventListener('voiceschanged',refreshVoices);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){close();}});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){engine.abort();if(engine.state.reading==='playing')engine.pause();}});
+ window.addEventListener('pagehide',()=>engine.close());
+ return {open,close,speak,sync,leaveForNavigation(){if(mode!=='commands')close();},stop(){engine.abort();notice='Sesli komutlar durduruldu.';update();}};
+}
