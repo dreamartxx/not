@@ -1,0 +1,5 @@
+export const studyDay=(now=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Istanbul',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+export function chapterAt(book,page){return book.chapters.find(c=>page>=c.start&&page<=c.end);}
+export function progress(read,start,end){const n=new Set(read.filter(p=>p>=start&&p<=end)).size;return {done:n,total:end-start+1,percent:Math.round(n/(end-start+1)*1000)/10};}
+export function searchBook(book,query){const q=query.trim().toLocaleLowerCase('tr');if(!q)return [];return book.pages.flatMap(p=>{const t=p.paragraphs.join(' '),i=t.toLocaleLowerCase('tr').indexOf(q);return i<0?[]:[{page:p.number,label:p.label,text:(i>60?'…':'')+t.slice(Math.max(0,i-60),i+160)+(i+160<t.length?'…':'')}];});}
+export function reviewCard(card,rating,now=new Date()){const level=rating==='again'?0:Math.min(6,card.level+1),days=rating==='again'?0:[1,1,3,7,14,30,60][level];const date=new Date(studyDay(now)+'T12:00:00+03:00');date.setUTCDate(date.getUTCDate()+days);return {...card,level,due:studyDay(date)};}
