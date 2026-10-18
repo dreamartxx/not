@@ -40,6 +40,18 @@ def run_education(a,Client):
     stale=r['version'];r=a.call('education-save',{'data':ld,'version':stale})
     a.call('education-save',{'data':old_client,'version':stale},409)
     assert a.call('education')['data']['learning']['study']==study
+    ld=a.call('education')['data'];outline=book['course']['outline'];assert len(outline['nodes'])==244
+    bk={'current':'book-12-3','visited':['book-12-3'],'notes':{'book-12-3':'Yargı kolu ile derece farklıdır. 🧠'}}
+    ld['learning']['book']=bk;r=a.call('education-save',{'data':ld,'version':r['version']})
+    assert a.call('education')['data']['learning']['book']==bk
+    for field,value in [('current','missing'),('visited',['book-12-3','book-12-3']),('visited',['missing']),('notes',{'missing':'x'}),('notes',{'book-12-3':'x'*6001})]:
+        bad=deepcopy(ld);bad['learning']['book'][field]=value;a.call('education-save',{'data':bad,'version':r['version']},400)
+    old_client=deepcopy(ld);del old_client['learning']['book']
+    r=a.call('education-save',{'data':old_client,'version':r['version']});assert a.call('education')['data']['learning']['book']==bk
+    Client(a.base).call('education-figure&page=252',code=401)
+    a.call('education-figure&page=999',code=404);a.call('education-figure&page=../../config',code=404)
+    with a.opener.open(a.base+'/api.php?action=education-figure&page=252') as image:
+        assert image.headers['Content-Type']=='image/jpeg';assert image.headers['Cache-Control']=='no-store';assert image.read()[:2]==b'\xff\xd8'
     saved=r;d=a.call('education')['data']
     # Backup/import uses the same schema and optimistic concurrency, no partial write.
     imported=a.call('education-save',{'data':deepcopy(d),'version':saved['version']});assert a.call('education')['data']==d

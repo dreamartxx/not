@@ -78,7 +78,7 @@ function validParent(PDO $db,?string $parent,string $id): void {
     $seen=[$id=>true];
     while($parent) { if(isset($seen[$parent])) fail('Bir sayfa kendi altına taşınamaz.');$seen[$parent]=true;$p=findPage($db,$parent);if($p['deleted_at']) fail('Çöp kutusundaki sayfaya eklenemez.');$parent=$p['parent_id']; }
 }
-if(in_array($action,['education','education-save','education-book'],true)){require __DIR__.'/lib/education.php';educationAPI($db,$action,$method,$input??[]);}
+if(in_array($action,['education','education-save','education-book','education-figure'],true)){require __DIR__.'/lib/education.php';educationAPI($db,$action,$method,$input??[]);}
 if(in_array($action,['dnd','dnd-save','dnd-spells'],true)){require __DIR__.'/lib/dnd.php';dndAPI($db,$action,$method,$input??[]);}
 if(in_array($action,['football','football-refresh','football-video','football-live','football-history','football-standings','football-cover'],true)){require __DIR__.'/lib/football.php';footballAPI($db,$action,$method,$input??[],$config);}
 if ($action==='pages' && $method==='GET') respond(['pages'=>array_map('decodePage',allPages($db))]);

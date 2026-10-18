@@ -37,3 +37,22 @@ assert.deepEqual(tutorialProgress(tutorials,study),{done:20,total:20});
 study.answers[tutorials[0].id]=(tutorials[0].check.correct+1)%3;study.answers.unknown=0;
 assert.deepEqual(tutorialProgress(tutorials,study),{done:19,total:20});
 console.log('PASS: 20 detailed topics, 60 solution steps, source references, option-specific feedback and topic progress.');
+
+const outline=JSON.parse(fs.readFileSync(new URL('outline.json',root)));
+const guides=JSON.parse(fs.readFileSync(new URL('guides.json',root)));
+const {outlineAncestors,outlineProgress,outlineRefs}=await import('../assets/education-outline-model.js');
+const {educationVisuals,educationVisual}=await import('../assets/education-visuals.js');
+const refs=outline.nodes.flatMap(n=>n.refs.map(r=>r.page+':'+r.index));
+const expected=book.pages.filter(p=>p.number>=10).flatMap(p=>p.paragraphs.map((_,i)=>p.number+':'+i));
+assert.deepEqual(refs,expected);assert.equal(new Set(refs).size,expected.length);
+assert.equal(outline.nodes.length,244);assert.equal(outline.toc.length,135);assert.equal(guides.length,37);
+for(const n of outline.nodes){assert.ok(outlineRefs(book,n).every(r=>r.text));if(n.parent){const parent=outline.nodes.find(x=>x.id===n.parent);assert.ok(parent);assert.ok(parent.level<n.level);assert.equal(parent.lesson,n.lesson);}assert.ok(outlineAncestors(outline.nodes,n.id).length<=8);}
+for(const t of outline.toc){assert.ok(outline.nodes.some(n=>n.id===t.node));assert.ok(t.match>.65);}
+for(const c of outline.chapters)assert.ok(outline.nodes.some(n=>n.lesson===c.id));
+assert.equal(outlineProgress(outline.nodes,['book-12-3','book-12-3','missing']).done,1);
+assert.equal(outlineAncestors(outline.nodes,'book-23-3').at(-1).title,'b.- Ceza Mahkemeleri');
+assert.equal(outline.nodes.find(n=>n.id==='book-262-1').parent,'book-251-4');
+const figures=new Set(outline.nodes.flatMap(n=>n.figurePages));assert.deepEqual([...figures].sort((a,b)=>a-b),outline.figurePages);
+for(const p of figures){const bytes=fs.readFileSync(new URL('figures/page-'+p+'.jpg',root));assert.equal(bytes[0],255);assert.equal(bytes[1],216);}
+assert.equal(Object.keys(educationVisuals).length,9);for(const [key,v]of Object.entries(educationVisuals)){assert.ok(educationVisual(key,s=>String(s),'').includes('aria-pressed="true"'));for(const node of v.nodes)assert.ok(book.pages[node[4]-1]);}
+console.log('PASS: all 2299 source paragraphs covered exactly once, 135 TOC mappings, 244 nested headings, 42 original images and 9 teaching diagrams.');
