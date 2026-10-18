@@ -199,3 +199,5 @@ dialog{border-radius:14px;padding:25px;border-color:var(--line)}dialog::backdrop
 
 /* Voice navigation: unobtrusive list positions and contextual guidance. */
 .voice-page-number{font-size:10px;color:var(--muted);min-width:18px;font-variant-numeric:tabular-nums}.voice-context{font-size:12px;line-height:1.6;padding:10px 12px;border-radius:9px;background:var(--hover);border:1px solid var(--line);overflow-wrap:anywhere}
+
+.reminder-save-actions{flex-wrap:wrap}.reminder-save-actions .button{white-space:normal}
