@@ -59,5 +59,5 @@ export function createSpeechEngine({Recognition,Utterance,synth,secure=true,onFi
  function read(text,options={}){abort();stopReading();state.error='';if(!synth||!Utterance){state.error='Bu tarayıcı sesli okumayı desteklemiyor.';notify();return;}state.chunks=speechChunks(text);if(!state.chunks.length){state.error='Okunacak yazı yok.';notify();return;}readOptions=options;state.reading='playing';synth.resume();next();}
  function pause(){if(state.reading!=='playing')return;state.reading='paused';synth.pause();notify();}
  function resume(){if(state.reading!=='paused')return;state.reading='playing';if(utterance)synth.resume();else next();notify();}
- return {state,start,stop,abort,read,pause,resume,stopReading,close(){abort();stopReading();}};
+ return {state,start,stop,abort,read,pause,resume,stopReading,close(){state.error='';abort();stopReading();}};
 }

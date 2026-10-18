@@ -247,7 +247,7 @@ async function runVoiceCommand(text){
  if(action.type==='readBlock'){voice.speak(blockText(page().blocks[selectedIndex()]||{}),'Seçili not bloğu');return 'Seçili not sesli okunuyor.';}
  const current=page().blocks.findIndex(b=>b.id===selectedBlock),index=current<0?0:current+(action.type==='nextBlock'?1:-1),block=page().blocks[index];
  if(!block)return 'Bu yönde başka not bloğu yok.';
- selectedBlock=block.id;const row=$('[data-block="'+block.id+'"]');row?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});focusBlock(index);document.querySelectorAll('.voice-current-block').forEach(el=>el.classList.remove('voice-current-block'));row?.classList.add('voice-current-block');return (index+1)+'. not bloğu seçildi.';
+ selectedBlock=block.id;const row=$('[data-block="'+block.id+'"]');row?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});document.querySelectorAll('.voice-current-block').forEach(el=>el.classList.remove('voice-current-block'));row?.classList.add('voice-current-block');return (index+1)+'. not bloğu seçildi.';
 }
 const voice=createVoice({esc,getPage:()=>state.view==='page'?page():null,getText:pageSpeech,makeWriter:speechWriter,command:runVoiceCommand});
 const studio=createStudio({esc,uid,getPage:page,dirty,renderBlocks,modal,toast,api,download,flush,csrf:()=>state.csrf,pages:()=>state.pages});
