@@ -201,3 +201,7 @@ dialog{border-radius:14px;padding:25px;border-color:var(--line)}dialog::backdrop
 .voice-page-number{font-size:10px;color:var(--muted);min-width:18px;font-variant-numeric:tabular-nums}.voice-context{font-size:12px;line-height:1.6;padding:10px 12px;border-radius:9px;background:var(--hover);border:1px solid var(--line);overflow-wrap:anywhere}
 
 .reminder-save-actions{flex-wrap:wrap}.reminder-save-actions .button{white-space:normal}
+
+/* Page actions remain visible for mouse, keyboard and touch. */
+.tree-menu{flex:0 0 30px;width:30px;height:30px;margin-left:4px;border-radius:5px;padding:0;color:var(--muted);font-size:13px;letter-spacing:1px}.tree-menu:hover,.tree-menu:focus-visible{background:var(--hover);color:var(--text)}
+@media(max-width:760px){.tree-menu{flex-basis:36px;width:36px;height:40px}}
