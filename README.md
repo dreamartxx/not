@@ -10,6 +10,7 @@ Notion'dan esinlenen, Türkçe ve tek kullanıcılı bir not uygulaması. PHP 8.
 - Otomatik kayıt ve sürüm denetimi: başka sekmedeki değişikliklerin sessizce üzerine yazılmaz
 - Başlık ve içerikte Türkçe arama (`Cmd/Ctrl + K`)
 - Renkli kapaklar, simgeler, açık/koyu tema, mobil görünüm
+- Ayarlar → Görünüm ve renkler: açıkta İnci / Riviera / Şafak, koyuda Ametist / Gece mavisi / Obsidyen. İki modun renk seçimi tarayıcıda ayrı saklanır; profil düğmesi kayıtlı paletler arasında geçer. Menü yüzeyleri katmanlı gölgeler ve basılma efekti kullanır; azaltılmış hareket tercihine uyar.
 - Her not/alt sayfa, Tüm sayfalar, Favoriler, Çöp kutusu, D&D ve Futbol için bağımsız fotoğraf kapağı. Sağ üst `•••` menüsünden dosya yükleme veya özel kütüphaneden seçme, dikey kadraj ve kaldırma; kapaksız sayfalarda ek bir alan görünmez.
 - Kapaklar özel medya deposunda ve veritabanında saklanır; kullanılan kapak dosyaları silinmeye karşı korunur. Tam JSON yedeği kapak görsellerini de içerir. İçe aktarım sayfa kapaklarını yeni kopyalara taşır, mevcut alan kapaklarının üzerine yazmaz.
 - Günlük, proje ve okuma şablonları
@@ -62,6 +63,10 @@ Hesap şifresi Ayarlar → Şifremi değiştir üzerinden değiştirilebilir. Ş
 ## Studio editörü
 
 Boş sayfa yalnızca başlık ve yazı alanıyla açılır. Üst çubuktaki **Ekle** menüsü 21 blok türünü açar; bir bloğa dokunup menüden eklediğinde yeni içerik o bloğun altına gelir. Boş metin satırında `/` de bu menüyü açar. Geri al/ileri al, odak modu, kapak, simge, taşıma ve alt sayfa işlemleri sağ üstteki **•••** menüsündedir. Her bloğun solundaki tutamaçla sürükleyip sıralayabilir; blok menüsünden yarım satır seçerek iki bloğu yan yana koyabilir, renk ve hizalama ayarlayabilirsin.
+
+Sol menüde ana sayfalar belirgin başlıklar, alt sayfalar daha sade satırlar olarak görünür. Fareyle sayfa adını sürükleyip bir satırın üst/alt çizgisine bırakarak sıralayabilir, ortasına bırakarak o sayfanın altına taşıyabilirsin. Sürükleme sırasında alttaki **Ana sayfa olarak buraya bırak** alanı kök seviyeye taşır. Kapalı başlıklar otomatik açılmaz. Sayfanın yanındaki **••• → Sayfayı sil**, onaydan sonra sayfayı alt sayfalarıyla çöp kutusuna taşır; geri alınabilir.
+
+Sıra `page_order` tablosunda tutulur; mevcut notlar ilk yazma işleminde eski sıraları korunarak eşlenir. `page-move` yalnız hiyerarşi/sıra metadatasını değiştirir. Bir işlem kilidi, beklenen sayfa ağacı ve taşınan notun sürümü; eşzamanlı değişiklik, döngü ve eski sekmeden üzerine yazmayı engeller. JSON yedeklerindeki sayfa sırası içe aktarımda korunur.
 
 - **Tablo:** hücre düzenleme, satır/sütun ekleme ve silme, başlık satırı, Excel/Sheets'ten sekmeyle ayrılmış hücre yapıştırma, CSV dışa aktarma.
 - **Çizim / diyagram:** kalem, silgi, metin, dikdörtgen, elips, karar şekli, çizgi ve ok; şekilleri taşıma ve boyutlandırma; iki düğümü bağlayan ve taşınırken takip eden oklar; fotoğraf ekleme; geri/ileri alma ve PNG indirme.

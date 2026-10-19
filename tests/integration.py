@@ -134,6 +134,8 @@ def run():
       run_studio(a,Client)
       from covers_integration import run_covers
       run_covers(a,Client)
+      from page_tree_integration import run_page_tree
+      run_page_tree(a,Client)
       a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
       a.call('password',{'current_password':password,'new_password':'Abc12!'},400)
       a.call('password',{'current_password':password,'new_password':'şşşşşş'},400)
