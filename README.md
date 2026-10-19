@@ -5,6 +5,8 @@ Notion'dan esinlenen, Türkçe ve tek kullanıcılı bir not uygulaması. PHP 8.
 ## Özellikler
 
 - İç içe sayfalar, sayfa taşıma, kopyalama ve favoriler
+- Sol menü üst çubuktaki panel düğmesiyle açılıp kapanır. Menü başlığındaki raptiye masaüstünde sabit / geçici görünümü seçer. Sabit menünün açık/kapalı durumu ve sabitleme tercihi bu tarayıcıda hatırlanır; geçici menü sayfa seçiminde, dışarı tıklayınca veya Escape ile kapanır. Mobilde menü geçici panel olarak açılır.
+- Varsayılan sayfa simgesi, palete uyumlu vektör defter simgesidir; özel emoji seçimleri korunur.
 - Metin, iki başlık seviyesi, madde listesi, yapılacaklar, alıntı, bilgi kutusu, kod ve ayırıcı blokları
 - `/` blok menüsü, Enter ile blok ekleme, Alt + ↑/↓ ile blok taşıma
 - Otomatik kayıt ve sürüm denetimi: başka sekmedeki değişikliklerin sessizce üzerine yazılmaz

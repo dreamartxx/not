@@ -267,3 +267,29 @@ dialog:has(.appearance-options) .modal-heading{margin-bottom:14px}.appearance-in
 :root[data-palette] .tree-root:hover{background:color-mix(in srgb,var(--accent) 6%,var(--side));border-color:color-mix(in srgb,var(--accent) 16%,var(--line))}
 :root[data-palette] .tree-root.selected:hover{background:color-mix(in srgb,var(--accent) 12%,var(--side))}
 :root[data-palette] .tree-item .tree-page:hover{background:transparent}
+
+/* Custom notebook mark replaces the platform-dependent default paper emoji. */
+.page-symbol{width:19px;height:21px;display:inline-block;vertical-align:middle;flex-shrink:0;color:var(--accent)}
+.tree-page>span:first-child:has(.page-symbol),.recent-icon:has(.page-symbol){filter:none}
+.tree-child .page-symbol{width:16px;height:18px;color:var(--muted)}
+.tree-item.selected .page-symbol{color:var(--accent)}
+.card-cover .page-symbol{width:30px;height:34px}.child-pages .page-symbol{margin-right:5px}
+
+/* Explicit sidebar visibility, with an optional pinned desktop layout. */
+.sidebar-heading{display:flex;align-items:center;gap:3px;padding-bottom:16px;flex-shrink:0}
+.sidebar-heading .workspace{padding:0;gap:8px;min-width:0;flex:1;text-align:left}
+.sidebar-heading .workspace strong{font-size:12px;white-space:nowrap}.sidebar-heading .workspace small{font-size:9px}
+.sidebar-heading .brand-mark.small{width:29px;height:30px;flex-shrink:0;font-size:26px}
+.sidebar-controls{display:flex;gap:1px;align-items:center}.sidebar-controls .icon-button{width:23px;height:28px;color:var(--muted);border-radius:6px;font-size:23px}
+#sidebar-pin[aria-pressed=true]{color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+#sidebar-pin[aria-pressed=true] svg{fill:color-mix(in srgb,var(--accent) 14%,transparent)}
+.mobile-menu{display:inline-flex;color:var(--muted)}.mobile-menu:hover{color:var(--accent)}
+@media(min-width:761px){
+ .sidebar{transition:transform .2s ease,visibility .2s}
+ body.sidebar-collapsed .sidebar{transform:translateX(-100%);visibility:hidden;pointer-events:none}
+ body.sidebar-collapsed main,body.sidebar-floating main{margin-left:0}
+ body.sidebar-floating:not(.sidebar-collapsed) .sidebar{box-shadow:8px 0 40px #0003}
+ body.sidebar-floating:not(.sidebar-collapsed) .sidebar-scrim{display:block;position:fixed;inset:0;background:#0002;z-index:19}
+}
+@media(max-width:760px){#sidebar-pin{display:none}.sidebar-controls .icon-button{width:30px}.sidebar-heading .workspace strong{font-size:13px}.sidebar{visibility:hidden}.sidebar-open .sidebar{visibility:visible}.breadcrumb-root{display:none}}
+@media(prefers-reduced-motion:reduce){.sidebar{transition:none}}
