@@ -6,13 +6,14 @@ Notion'dan esinlenen, Türkçe ve tek kullanıcılı bir not uygulaması. PHP 8.
 
 - İç içe sayfalar, sayfa taşıma, kopyalama ve favoriler
 - Sol menü üst çubuktaki panel düğmesiyle açılıp kapanır. Menü başlığındaki raptiye masaüstünde sabit / geçici görünümü seçer. Sabit menünün açık/kapalı durumu ve sabitleme tercihi bu tarayıcıda hatırlanır; geçici menü sayfa seçiminde, dışarı tıklayınca veya Escape ile kapanır. Mobilde menü geçici panel olarak açılır.
+- Mobil menüde çalışma alanları tek bir seçicide, hesap/ayarlar/çöp kutusu/kurulum işlemleri alt hesap menüsünde toplanır. Sayfa ağacı ekranın kalan yüksekliğini kullanır; uzun ağaçlar bu geniş alanda kaydırılır. Alt sıradaki ◈ düğmesi doğrudan renk seçimini açar.
 - Varsayılan sayfa simgesi, palete uyumlu vektör defter simgesidir; özel emoji seçimleri korunur.
 - Metin, iki başlık seviyesi, madde listesi, yapılacaklar, alıntı, bilgi kutusu, kod ve ayırıcı blokları
 - `/` blok menüsü, Enter ile blok ekleme, Alt + ↑/↓ ile blok taşıma
 - Otomatik kayıt ve sürüm denetimi: başka sekmedeki değişikliklerin sessizce üzerine yazılmaz
 - Başlık ve içerikte Türkçe arama (`Cmd/Ctrl + K`)
 - Renkli kapaklar, simgeler, açık/koyu tema, mobil görünüm
-- Ayarlar → Görünüm ve renkler: açıkta İnci / Riviera / Şafak, koyuda Ametist / Gece mavisi / Obsidyen. İki modun renk seçimi tarayıcıda ayrı saklanır; profil düğmesi kayıtlı paletler arasında geçer. Menü yüzeyleri katmanlı gölgeler ve basılma efekti kullanır; azaltılmış hareket tercihine uyar.
+- Ayarlar → Görünüm ve renkler: açıkta İnci / Riviera / Şafak / Şampanya / Pudra / Platin; koyuda Ametist / Gece mavisi / Obsidyen / Bordo / Bakır / Grafit. Toplam 12 palet açık ve koyu sekmelerinde önizlenir. İki modun renk seçimi tarayıcıda ayrı saklanır; profil düğmesi kayıtlı paletler arasında geçer. Menü yüzeyleri katmanlı gölgeler ve basılma efekti kullanır; azaltılmış hareket tercihine uyar.
 - Her not/alt sayfa, Tüm sayfalar, Favoriler, Çöp kutusu, D&D ve Futbol için bağımsız fotoğraf kapağı. Sağ üst `•••` menüsünden dosya yükleme veya özel kütüphaneden seçme, dikey kadraj ve kaldırma; kapaksız sayfalarda ek bir alan görünmez.
 - Kapaklar özel medya deposunda ve veritabanında saklanır; kullanılan kapak dosyaları silinmeye karşı korunur. Tam JSON yedeği kapak görsellerini de içerir. İçe aktarım sayfa kapaklarını yeni kopyalara taşır, mevcut alan kapaklarının üzerine yazmaz.
 - Günlük, proje ve okuma şablonları
