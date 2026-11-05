@@ -108,7 +108,7 @@ Yeni worker sürümleri bekleme durumuna geçer ve güncelleme bildirimi göster
 
 ## Boş çalışma alanı ve Futbol
 
-Kök adres / PWA açılışı boş bir not sayfasına gider. Kullanılmamış boş sayfa varsa tekrar kullanılır; mevcut notlar silinmez. Sayfa bağlantıları doğrudan ilgili notu, `#football` futbol alanını açar.
+Kök adres ve PWA, yeni not oluşturmadan Tüm sayfalar listesini açar. Hiç not yoksa liste boş kalır. Bulunamayan sayfa bağlantıları da bu listeye döner. Sayfa bağlantıları doğrudan ilgili notu, `#football` futbol alanını açar.
 
 Futbol alanı Barcelona, Real Madrid, Bayern Münih, PSG, Manchester City, Manchester United, Beşiktaş, Bursaspor ve Türkiye millî takımının tüm kulvarlardaki fikstürlerini birleştirir. ESPN'in herkese açık takım fikstürü kaynağı sunucuda okunur; Türkiye yayınları S Sport ve beIN SPORTS'un resmi akışından takım çifti ve saatle eşleştirilir. Açıklanmayan saat ve kanallar tahmin edilmez. Tüm saatler Europe/Istanbul olarak gösterilir.
 
