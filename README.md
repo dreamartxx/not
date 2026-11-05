@@ -177,3 +177,9 @@ Dikte/komutlar tarayıcının `SpeechRecognition` desteğini, HTTPS ve mikrofon 
 Sesli gezinme hem **Tüm sayfalar** ekranında hem not sayfasında kullanılabilir. Liste en son güncellenenden eskiye sıralıdır; sıra numaraları görünür ve numarayla açma/sonraki/önceki komutları aynı sırayı izler. “Sayfaları aç”, “Sayfalara dön”, “İkinci sayfayı aç”, “Son sayfayı aç”, “İlk paragrafa git”, “Üçüncü paragrafı seç” ve “Son bloğa git” komutları desteklenir. Paragraf komutları notun içerik bloklarını izler ve seçilen bloğu vurgular. Komut paneli açık nota göre örneklerini günceller. Açık bir işlem penceresi varken gezinme yapılmaz; önce pencerenin kapatılması istenir.
 
 Hatırlatıcı ekleme/düzenleme formundaki **Google Takvim’e ekle** düğmesi, formdaki son başlık ve İstanbul saatini kullanır. Önce not hatırlatıcısı kaydedilir; kayıt başarılı olunca 30 dakikalık etkinlik taslağı, çalışma alanı ve seçili yazıya dönüş bağlantısıyla Google Takvim’de açılır. Kullanıcı Google’daki Kaydet düğmesiyle tamamlar. Açılır pencere engellenirse kaydedilmiş hatırlatıcı için doğrudan takvim bağlantısı gösterilir; kayıt hatasında takvime gönderim yapılmaz. Yerel kayıt düğmesi takvim açmadan çalışır.
+
+## Şifre kasası
+
+Çalışma alanı seçicisi → Şifre kasası. Ayrı kasa parolasını unutursan içerikleri kurtaramazsın. Kayıtlara hesap parolası ve/veya bir TOTP kurulum anahtarı eklenebilir. İlk kurulumda üretilen kodu ilgili sitede onayla. Kasa pencere kapanınca, sekme arka plana geçince veya üç dakika işlem yapılmayınca kilitlenir. Notların JSON yedeğine dahil edilmez.
+
+AES-256-GCM ve PBKDF2-SHA256 (600.000 tur, rastgele 16 bayt salt) tarayıcıda çalışır. Her yazmada yeni bir IV kullanılır. Kimliği doğrulanmış API, şifreli kasayı sürüm kontrolü ile saklar. Kod üretimi RFC 6238 uyumludur.

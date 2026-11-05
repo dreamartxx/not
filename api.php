@@ -68,6 +68,7 @@ if ($action==='password' && $method==='POST') {
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
+if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
 require __DIR__.'/lib/page-tree.php';
 function allPages(PDO $db): array { $pages=$db->query('SELECT p.* FROM pages p LEFT JOIN page_order o ON o.page_id=p.id ORDER BY COALESCE(o.position,2147483647),p.created_at,p.id')->fetchAll();$covers=allCovers($db);$reminders=[];foreach($db->query('SELECT * FROM page_reminders')->fetchAll() as $r)$reminders[$r['page_id']]=json_decode($r['payload'],true);foreach($pages as &$p){$p['cover_photo']=$covers['page:'.$p['id']]??['media_id'=>'','position'=>50];$p['reminders']=$reminders[$p['id']]??[];}unset($p);return $pages; }
 function decodePage(array $p): array { $p['blocks']=json_decode($p['blocks'],true); $p['favorite']=(bool)$p['favorite']; $p['version']=(int)$p['version']; return $p; }

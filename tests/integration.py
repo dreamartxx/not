@@ -43,6 +43,18 @@ def run():
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403)
       b=Client(a.base);b.status();b.call('login',{'username':'Test','password':'incorrect'},code=401)
       b.csrf=b.call('login',{'username':'Test','password':password})['csrf']
+      # Opaque vault storage: require ownership/CSRF and reject concurrent overwrites.
+      import base64
+      box={'format':1, **{k:base64.b64encode(os.urandom(n)).decode() for k,n in [('salt',16),('iv',12),('data',42)]}}
+      Client(a.base).call('vault',code=401)
+      assert a.call('vault')=={'version':0,'envelope':None}
+      a.call('vault',{'version':0,'envelope':box},403,csrf='bad')
+      a.call('vault',{'version':0,'envelope':{**box,'password':'plaintext'}},400)
+      assert a.call('vault',{'version':0,'envelope':box})['version']==1
+      b.call('vault',{'version':0,'envelope':box},409)
+      assert b.call('vault')=={'version':1,'envelope':box}
+      assert b.call('vault',{'version':1,'envelope':box})['version']==2
+      a.call('vault',{'version':1,'envelope':box},409)
       p=a.call('create',{'title':'Türkçe 🌿','blocks':[{'id':'b1','type':'todo','text':'Çalış','checked':False}]},201)['page']
       child=a.call('create',{'title':'Alt sayfa','parent_id':p['id']},201)['page']
       p['title']='Updated';p['blocks'][0]['checked']=True

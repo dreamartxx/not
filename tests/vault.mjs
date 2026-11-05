@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {vaultKey,seal,unseal,b64,rand,parseOTP,otpAt} from '../assets/vault-crypto.js';
+const salt=b64(rand(16)),key=await vaultKey('sample-only',salt),entries=[{name:'demo',password:'sample-only!'}];
+const envelope=await seal(key,salt,entries);assert.deepEqual(await unseal(key,envelope),entries);
+assert.notEqual((await seal(key,salt,entries)).iv,envelope.iv);
+await assert.rejects(unseal(await vaultKey('wrong pass',salt),envelope));
+const tampered={...envelope,data:(envelope.data[0]==='A'?'B':'A')+envelope.data.slice(1)};await assert.rejects(unseal(key,tampered));
+const seed='GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
+assert.equal(await otpAt(parseOTP(seed),59),'287082');
+const cfg=parseOTP('otpauth://totp/Test?digits=8&secret='+seed);
+for(const [t,expected] of [[59,'94287082'],[1111111109,'07081804'],[1111111111,'14050471'],[20000000000,'65353130']])assert.equal(await otpAt(cfg,t),expected);
+assert.throws(()=>parseOTP('otpauth://hotp/Test?secret='+seed));assert.throws(()=>parseOTP('bad!'));
+console.log('PASS: encrypted vault round trip, wrong key, tampering, fresh nonces and RFC 6238 codes.');
