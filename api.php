@@ -70,9 +70,10 @@ if ($action==='password' && $method==='POST') {
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
 if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
 require __DIR__.'/lib/page-tree.php';
-function allPages(PDO $db): array { $pages=$db->query('SELECT p.* FROM pages p LEFT JOIN page_order o ON o.page_id=p.id ORDER BY COALESCE(o.position,2147483647),p.created_at,p.id')->fetchAll();$covers=allCovers($db);$reminders=[];foreach($db->query('SELECT * FROM page_reminders')->fetchAll() as $r)$reminders[$r['page_id']]=json_decode($r['payload'],true);foreach($pages as &$p){$p['cover_photo']=$covers['page:'.$p['id']]??['media_id'=>'','position'=>50];$p['reminders']=$reminders[$p['id']]??[];}unset($p);return $pages; }
-function decodePage(array $p): array { $p['blocks']=json_decode($p['blocks'],true); $p['favorite']=(bool)$p['favorite']; $p['version']=(int)$p['version']; return $p; }
-function findPage(PDO $db,string $id): array { $s=$db->prepare('SELECT * FROM pages WHERE id=?');$s->execute([$id]);$p=$s->fetch();if(!$p) fail('Sayfa bulunamadı.',404);$p['reminders']=pageReminders($db,$id);return $p; }
+require __DIR__.'/lib/mindmap.php';
+function allPages(PDO $db): array { $pages=$db->query('SELECT p.*,m.payload AS map_json FROM pages p LEFT JOIN page_mindmaps m ON m.page_id=p.id LEFT JOIN page_order o ON o.page_id=p.id ORDER BY COALESCE(o.position,2147483647),p.created_at,p.id')->fetchAll();$covers=allCovers($db);$reminders=[];foreach($db->query('SELECT * FROM page_reminders')->fetchAll() as $r)$reminders[$r['page_id']]=json_decode($r['payload'],true);foreach($pages as &$p){$p['cover_photo']=$covers['page:'.$p['id']]??['media_id'=>'','position'=>50];$p['reminders']=$reminders[$p['id']]??[];}unset($p);return $pages; }
+function decodePage(array $p): array { $p['mindmap']=json_decode($p['map_json']??'null',true);unset($p['map_json']); $p['blocks']=json_decode($p['blocks'],true); $p['favorite']=(bool)$p['favorite']; $p['version']=(int)$p['version']; return $p; }
+function findPage(PDO $db,string $id): array { $s=$db->prepare('SELECT p.*,m.payload AS map_json FROM pages p LEFT JOIN page_mindmaps m ON m.page_id=p.id WHERE p.id=?');$s->execute([$id]);$p=$s->fetch();if(!$p) fail('Sayfa bulunamadı.',404);$p['reminders']=pageReminders($db,$id);return $p; }
 require __DIR__.'/lib/blocks.php';
 require __DIR__.'/lib/reminders.php';
 require __DIR__.'/lib/covers.php';
@@ -97,7 +98,7 @@ if (in_array($action,['import','validate-import'],true)) {
         $title=$item['title']??'';$icon=$item['icon']??'📄';$cover=$item['cover']??'none';
         if(!is_string($title)||mb_strlen($title)>255||!is_string($icon)||mb_strlen($icon)>8||!in_array($cover,['none','sage','sand','lavender','blue','rose'],true)) fail('Geçersiz sayfa bilgileri.');
         $parent=$item['parent_id']??null;if($parent!==null&&!is_string($parent)) fail('Geçersiz üst sayfa.');
-        $item['blocks']=validBlocks($item['blocks']??null);$item['reminders']=validReminders($item['reminders']??[]);if(isset($item['cover_photo']))$item['cover_photo']=validCover($item['cover_photo']);$clean[$item['id']]=$item;
+        $item['mindmap']=validMindmap($item['mindmap']??null);$item['blocks']=validBlocks($item['blocks']??null);$item['reminders']=validReminders($item['reminders']??[]);if(isset($item['cover_photo']))$item['cover_photo']=validCover($item['cover_photo']);$clean[$item['id']]=$item;
     }
     foreach($clean as $id=>$item) {
         $seen=[$id=>true];$parent=$item['parent_id']??null;
@@ -111,7 +112,7 @@ if (in_array($action,['import','validate-import'],true)) {
     beginPageWrite($db);$now=gmdate('c');
     $stmt=$db->prepare('INSERT INTO pages (id,parent_id,title,icon,cover,blocks,favorite,deleted_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)');
     foreach($clean as $id=>$item) {
-        $stmt->execute([$map[$id],$map[$item['parent_id']??'']??null,$item['title']??'',$item['icon']??'📄',$item['cover']??'none',json_encode($item['blocks'],JSON_UNESCAPED_UNICODE),(int)(bool)($item['favorite']??false),empty($item['deleted_at'])?null:$now,$now,$now]);appendPageOrder($db,$map[$id]);
+        $stmt->execute([$map[$id],$map[$item['parent_id']??'']??null,$item['title']??'',$item['icon']??'📄',$item['cover']??'none',json_encode($item['blocks'],JSON_UNESCAPED_UNICODE),(int)(bool)($item['favorite']??false),empty($item['deleted_at'])?null:$now,$now,$now]);appendPageOrder($db,$map[$id]);if($item['mindmap'])saveMindmap($db,$map[$id],$item['mindmap']);
     }
     foreach($clean as $id=>$item)saveReminders($db,$map[$id],$item['reminders']);
     foreach($clean as $id=>$item)if(isset($item['cover_photo']))saveCover($db,'page:'.$map[$id],$item['cover_photo']);
@@ -123,7 +124,7 @@ if ($action==='create') {
     $title=mb_substr(trim((string)($input['title']??'Başlıksız')),0,255);$now=gmdate('c');
     $blocks=validBlocks($input['blocks']??[['id'=>bin2hex(random_bytes(8)),'type'=>'text','text'=>'']]);$reminders=validReminders($input['reminders']??[]);beginPageWrite($db);validParent($db,$parent,$id);
     $s=$db->prepare('INSERT INTO pages (id,parent_id,title,icon,cover,blocks,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)');
-    $s->execute([$id,$parent,$title,'📄','none',json_encode($blocks,JSON_UNESCAPED_UNICODE),$now,$now]);appendPageOrder($db,$id);saveReminders($db,$id,$reminders);$db->commit();respond(['page'=>decodePage(findPage($db,$id))],201);
+    $s->execute([$id,$parent,$title,'📄','none',json_encode($blocks,JSON_UNESCAPED_UNICODE),$now,$now]);appendPageOrder($db,$id);if(isset($input['mindmap']))saveMindmap($db,$id,validMindmap($input['mindmap']));saveReminders($db,$id,$reminders);$db->commit();respond(['page'=>decodePage(findPage($db,$id))],201);
 }
 if ($action==='save') {
     $id=(string)($input['id']??'');$p=findPage($db,$id);if($p['deleted_at']) fail('Bu sayfa çöp kutusunda.',409);
@@ -134,6 +135,7 @@ if ($action==='save') {
     $s=$db->prepare('UPDATE pages SET title=?,icon=?,cover=?,blocks=?,favorite=?,parent_id=?,updated_at=?,version=version+1 WHERE id=? AND version=? AND deleted_at IS NULL');
     $s->execute([$title,$icon,$cover,json_encode($blocks,JSON_UNESCAPED_UNICODE),(int)(bool)($input['favorite']??false),$parent,gmdate('c'),$id,(int)($input['version']??0)]);
     if(!$s->rowCount()) fail('Bu not başka bir sekmede değişti. Yerel taslağını indirip sayfayı yenile.',409);
+    if(array_key_exists('mindmap',$input))saveMindmap($db,$id,validMindmap($input['mindmap']));
     saveReminders($db,$id,$reminders);$db->commit();respond(['page'=>decodePage(findPage($db,$id))]);
 }
 if (in_array($action,['trash','restore','purge'],true)) {
@@ -144,7 +146,7 @@ if (in_array($action,['trash','restore','purge'],true)) {
     do { $count=count($ids); foreach($pages as $item) if(in_array($item['parent_id'],$ids,true)&&!in_array($item['id'],$ids,true)) $ids[]=$item['id']; } while(count($ids)>$count);
     if ($action==='restore') { $s=$db->prepare('UPDATE pages SET parent_id=NULL WHERE id=?');$s->execute([$id]); }
     foreach($ids as $pid) {
-        if($action==='purge') {$s=$db->prepare('DELETE FROM pages WHERE id=?');$s->execute([$pid]);$db->prepare('DELETE FROM page_order WHERE page_id=?')->execute([$pid]);$db->prepare('DELETE FROM workspace_covers WHERE scope=?')->execute(['page:'.$pid]);$db->prepare('DELETE FROM page_reminders WHERE page_id=?')->execute([$pid]);}
+        if($action==='purge') {saveMindmap($db,$pid,null);$s=$db->prepare('DELETE FROM pages WHERE id=?');$s->execute([$pid]);$db->prepare('DELETE FROM page_order WHERE page_id=?')->execute([$pid]);$db->prepare('DELETE FROM workspace_covers WHERE scope=?')->execute(['page:'.$pid]);$db->prepare('DELETE FROM page_reminders WHERE page_id=?')->execute([$pid]);}
         else {$s=$db->prepare('UPDATE pages SET deleted_at=?,version=version+1,updated_at=? WHERE id=?');$s->execute([$action==='trash'?gmdate('c'):null,gmdate('c'),$pid]);}
     }
     $db->commit();respond(['ok'=>true]);

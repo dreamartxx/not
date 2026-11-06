@@ -183,3 +183,5 @@ Hatırlatıcı ekleme/düzenleme formundaki **Google Takvim’e ekle** düğmesi
 Çalışma alanı seçicisi → Şifre kasası. Ayrı kasa parolasını unutursan içerikleri kurtaramazsın. Kayıtlara hesap parolası ve/veya bir TOTP kurulum anahtarı eklenebilir. İlk kurulumda üretilen kodu ilgili sitede onayla. Kasa pencere kapanınca, sekme arka plana geçince veya üç dakika işlem yapılmayınca kilitlenir. Notların JSON yedeğine dahil edilmez.
 
 AES-256-GCM ve PBKDF2-SHA256 (600.000 tur, rastgele 16 bayt salt) tarayıcıda çalışır. Her yazmada yeni bir IV kullanılır. Kimliği doğrulanmış API, şifreli kasayı sürüm kontrolü ile saklar. Kod üretimi RFC 6238 uyumludur.
+
+Açık notta **Ekle → Zihin haritası** aynı sayfaya bağlı bir harita açar. Not / Zihin haritası düğmeleri görünümü değiştirir. Bir konu seçip dal ekleyebilir, adını değiştirebilir veya dalı alt konularıyla kaldırabilirsin. Ayarlar’daki çizgi kalınlığı, dal uzunluğu ve hareket yalnızca o haritayla saklanır. JSON yedeği haritaları içerir.

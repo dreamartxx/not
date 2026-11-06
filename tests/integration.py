@@ -148,6 +148,19 @@ def run():
       run_covers(a,Client)
       from page_tree_integration import run_page_tree
       run_page_tree(a,Client)
+      mind={'nodes':[{'id':'r','parent':None,'label':'Merkez'},{'id':'n','parent':'r','label':'Dal'}],'motion':'ripple','length':125,'weight':5}
+      mapped=a.call('create',{'title':'Map test','mindmap':mind},201)['page']
+      assert mapped['mindmap']==mind
+      legacy=dict(mapped);del legacy['mindmap']
+      updated=a.call('save',legacy)['page'];assert updated['mindmap']==mind
+      a.call('save',{**updated,'mindmap':{**mind,'weight':30}},400)
+      a.call('save',{**updated,'mindmap':{**mind,'nodes':[mind['nodes'][0],{'id':'c','parent':'c','label':'cycle'}]}},400)
+      a.call('import',{'pages':[updated]},201)
+      copies=[p for p in a.call('pages')['pages'] if p['title']=='Map test']
+      assert len(copies)==2 and all(p['mindmap']==mind for p in copies)
+      a.call('save',{**updated,'mindmap':{**mind,'motion':'still'}})
+      assert next(p for p in a.call('pages')['pages'] if p['title']=='Map test' and p['id']!=mapped['id'])['mindmap']==mind
+      print('PASS: per-page mind map settings, validation, legacy save and independent backup copies.')
       a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
       a.call('password',{'current_password':password,'new_password':'Abc12!'},400)
       a.call('password',{'current_password':password,'new_password':'şşşşşş'},400)
