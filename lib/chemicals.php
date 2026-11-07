@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/chemical-translations.php';
+require_once __DIR__.'/chemical-turkish.php';
 
-// PubChem is the only upstream. User input never controls a host or a URL.
+// Fixed upstream hosts only. User input never controls a host or a URL.
 function chemicalCAS(string $value): bool {
  if(!preg_match('/^[1-9][0-9]{1,6}-[0-9]{2}-[0-9]$/D',$value))return false;
  $digits=str_replace('-','',$value);$sum=0;$body=strrev(substr($digits,0,-1));
@@ -160,10 +161,9 @@ function chemicalsAPI(PDO $db,string $action,string $method): never {
     if(!$suggestions)throw $e;
     $result=['term'=>$term,'total'=>0,'compounds'=>[],'suggestions'=>$suggestions];
    }
-   $translationAvailable=true;
    foreach($result['compounds'] as &$compound){
     $compound['Title_tr']=chemicalTurkishName($compound['Title']);
-    if($compound['Title_tr']===''&&$translationAvailable){try{$compound['Title_tr']=chemicalTranslate($db,$compound['Title']);}catch(Throwable){$translationAvailable=false;}}
+
    }unset($compound);
    respond([...$result,'query'=>$query,'resolved_name'=>$resolved['label']]);
   }
@@ -171,7 +171,10 @@ function chemicalsAPI(PDO $db,string $action,string $method): never {
   if($cid===false)throw new InvalidArgumentException('Geçerli bir PubChem CID seç.');
   session_write_close();$result=chemicalCached($db,'compound-v1:'.$cid,fn()=>chemicalNormalize(chemicalFetch('rest/pug_view/data/compound/'.$cid.'/JSON')['Record']??[],$cid));
   $result['title_tr']=chemicalTurkishName($result['title']);
-  if($result['title_tr']===''){try{$result['title_tr']=chemicalTranslate($db,$result['title']);}catch(Throwable){}}
+
+  $result=chemicalLocalStored($db,chemicalStoredTurkish($db,$result));
+  $result['turkish_form']=chemicalTurkishForm($db,$result);
+  if($result['turkish_form']['available']??false)$result['title_tr']=$result['turkish_form']['title'];
   respond($result);
  }catch(InvalidArgumentException $e){fail($e->getMessage());}catch(Throwable $e){$code=in_array($e->getCode(),[404,429,502,503],true)?$e->getCode():502;fail($code===502&&$e->getCode()!==502?'Kimyasal verileri alınamadı. Biraz sonra tekrar dene.':$e->getMessage(),$code);}
 }

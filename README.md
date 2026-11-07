@@ -200,28 +200,41 @@ Zihin haritası çalışma ekranının tamamını kullanır. Boş alanı sürük
 ad eşlemeleri; sonuçtan CID seçimi; PUG-View güvenlik açıklamaları GBF'nin 16 başlığına
 dağıtılır. Türkçe adlar, bitişik yazım, Türkçe klavye farkları ve yaygın yazım hataları
 tanınır; bilinmeyen yakın yazımlar için öneri seçilir. Sonuç adları Türkçe gösterilir.
-Açılan kaynak açıklamaları MyMemory ile Türkçeye çevrilir; özgün metin, birim, kaynak,
-atıf ve lisans bilgileri korunur. Molekül resmi, kaynak GHS işaretleri, kayıt içi Türkçe başlık/özgün metin
-araması ve metin dökümü vardır. Eksik alanlar açıkça belirtilir. Bu bir üretici GBF'si
-değildir; ürün bileşimi, saflığı, tedarikçi veya Türkiye mevzuatına uygunluk varsayılmaz.
+**Hazır bilgi formu** artık yalnızca Türkçe kaynaklarla doldurulur: PubChem kaydındaki
+ILO bağlantısından Türkçe ICSC kartı alınır, kart numarası ve CAS eşleşmesi doğrulanır.
+İlk yardım, KKD, uyumsuzluk, maruziyet, sınır değerleri ve özellikler kaynak bağlamıyla
+alanlara aktarılır. Kartın özel notları ilk yardım bölümünde korunur. Türkçe kartta
+tarih yoksa belirtilir; kartlar 24 saat önbelleklenir, bağlantı hatasında eski kayıt
+kullanılıyorsa açıkça işaretlenir. Kart, PubChem veya üretici GBF'sinin güncel olduğunu
+garanti etmez; Türkiye'ye ait yasal sınır olarak değerlendirilmez.
 
-Arama sonucu varsayılan olarak **Hazır bilgi formu** açılır: CAS kimliği ve sekiz
-başlık altında 23 alan (kullanım, ilk yardım, KKD, karışım/uyumsuzluklar, maruziyet
-yolları/sınırları, fiziksel-kimyasal ve toksikolojik özellikler). Öne çıkan kaynak
-gösterilir; diğer kayıtlar açılır detaylarda, tam kayıtlar 16 başlıklı ayrı görünümde
-kalır. **Formu indir** bağımsız HTML taslağı, **Yazdır / PDF** yazdırma görünümü
-oluşturur. Dışa aktarılan özet her alanda bir kaynak; sınır değerlerinde tüm kaynakları
-korur. Tamamlanmış Türkçe çeviriler kullanılır, diğer kayıtlar açıkça etiketli özgün
-metinle yer alır. Kaynak, birim, atıf, eksik alanlar ve taslak niteliği korunur.
+Formda CAS kimliği ve sekiz başlık altında 23 alan bulunur. ICSC'de olmayan alanlar
+için yalnızca daha önce veritabanına kaydedilmiş **tam** Türkçe çeviriler kullanılabilir.
+Eksik Türkçe kaynakla eksik kaynak verisi ayrı belirtilir. Form açma/indirme/yazdırma
+hiçbir çeviri servisine istek yapmaz; ücretli API veya anahtar gerektirmez. Tüm PubChem
+maddelerinin Türkçe karşılığı bulunduğu iddia edilmez. İngilizce açıklamalar Türkçe
+forma veya çıktısına düşmez; **PubChem · Özgün kaynaklar** sekmesinde korunur.
 
-Kimyasal veri API'si sabit PubChem HTTPS hostuna; çeviri API'si sabit
-`api.mymemory.translated.net` hostuna istek yapar. Yönlendirme izlenmez. Çeviriye yalnızca
-sunucuda önbelleklenmiş halka açık PubChem metni gönderilebilir; not veya serbest metin
-kabul edilmez. MyMemory anonim hizmetinin 5.000 karakter/gün kotası vardır; e-posta
-veya API anahtarı gönderilmez. Yalnızca tam kaynak cümlesi eşleşen çeviriler kullanılır;
-sayı, CAS ve H/P kodu değişiklikleri reddedilir. Çeviriler kalıcı veritabanı
-önbelleğinde saklanır, kota/bağlantı hatası Türkçe uyarıyla görünür. Resmî GBF çevirisi
-değildir. Kaynak metin dökümü özgün dilde kalır.
+**Formu indir** bağımsız HTML, **Yazdır / PDF** yazdırılabilir Türkçe taslak oluşturur.
+Aynı ICSC alanındaki tüm ilgili paragraflar ve özel notlar bir arada korunur. Üreticinin
+resmî GBF'si değildir; karışım yüzdesi, saflık ve tedarikçi varsayılmaz.
+
+**Ücretsiz Türkçe çeviri** düğmesi, destekleyen masaüstü tarayıcıda yerel
+`Translator` API'sini (`en` → `tr`) başlatır. İlk model indirme kullanıcı tıklamasıyla
+başlar, ilerleme gösterilir. Safari/Firefox/mobil veya kurum politikası desteği yoksa
+özellik açıklamayla kapalıdır; hazır Türkçe kartlar ve önceden kaydedilen sonuçlar
+kullanılır. Eksik form alanlarının öne çıkan kaynakları sırayla çevrilir. Çeviri
+isteği haricî bir servise gönderilmez; tamamlanan sonuç yalnızca kendi sunucusuna,
+oturum+CSRF korumalı `chemical-local-save` ile kaydedilir. Kaynak metin hash'i ve
+sayı/birim eşleşmesi hem istemcide hem sunucuda kontrol edilir. Bu kontrol anlamsal
+veya tıbbi doğruluğu kanıtlamaz. Başarısız metin İngilizce olarak forma düşmez.
+Kaydedilen tam metinler sonraki açılışlarda ve telefonda tekrar çevrilmeden kullanılır.
+
+Veri bağlantıları sabit PubChem ve `chemicalsafety.ilo.org` HTTPS hostlarıyla sınırlıdır;
+yönlendirmeler izlenmez, boyut ve süre sınırı uygulanır. ILO kartı HTML olarak çalıştırılmaz;
+yalnızca ayrıştırılmış ve arayüzde kaçırılmış metin kullanılır. ILO/WHO ve Türkçe sürümün
+Başkent Üniversitesi atfı korunur. Önceki MyMemory uç noktası geriye uyumluluk için
+kalır, fakat arama/form/kaynak sekmesi tarafından otomatik çağrılmaz.
 
  Arama ve kayıtlar MySQL/SQLite önbelleğinde 24 saat tutulur; 30 günden eski
 kayıtlar temizlenir. Bağlantı hatasında eski kayıt kullanılırsa tarihi ve eski olduğu

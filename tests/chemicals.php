@@ -61,3 +61,29 @@ $r=chemicalCached($db,'test',fn()=>throw new RuntimeException('upstream unavaila
 $db->exec('UPDATE chemical_guard SET attempted_at=0');
 try{chemicalCached($db,'test',fn()=>throw new RuntimeException('removed',404));throw new LogicException('removed record served stale');}catch(RuntimeException $e){check($e->getCode()===404,'404 not hidden');}
 echo "PASS: chemical normalization, provenance, safe URLs, identity, missing data and cache failure handling.\n";
+
+$card='<html><table><tr><td><b>Deneme kimyasalı</b></td><td>ICSC: 0023 ()</td></tr><tr><td>CAS #: 630-08-0</td></tr></table><table><tr><th></th><th>BELİRTİLER</th><th>ÖNLEME</th><th>İLK YARDIM</th></tr><tr><th>Solunum</th><td>Örnek belirti</td><td>Örnek koruma</td><td>Örnek yardım. Notlara bakın.</td></tr></table><table><tr><th>FİZİKSEL VE KİMYASAL BİLGİLER</th></tr><tr><td><p><b>Fiziksel Durum; Dış görünüş</b><br>Örnek görünüm<p><b>Kimyasal tehlikeler</b><br>Örnek uyumsuzluk</td><td><p>Formül: CO<br>Kaynama noktası: -191 ° C<br>Buhar basıncı: 12 kPa</td></tr></table><table><tr><th>MARUZ KALMA ve SAĞLIK ETKİLERİ</th></tr><tr><td><p><b>Maruz kalma yolları</b><br>Örnek yol</td></tr></table><table><tr><th>MESLEKİ MARUZ KALMA LİMİTLERİ</th></tr><tr><td>TWA 25 ppm<br>STEL 100 ppm; 117 mg/m<sup>3</sup></td></tr></table><table><tr><th>NOTLAR</th></tr><tr><td>Örnek koşul mutlaka korunur.</td></tr></table><script>evil()</script></html>';
+$tr=chemicalTurkishCardParse($card,'0023',['630-08-0']);
+check($tr['fields']['inhalation'][0]['lang']==='tr','native Turkish source');
+check(str_contains($tr['fields']['generalAid'][0]['text'],'koşul mutlaka'),'do not drop source caveats');
+check(str_contains($tr['fields']['limits'][0]['text'],'117 mg/m3'),'keep superscript unit');
+check(!str_contains(json_encode($tr),'evil()'),'never execute or include scripts');
+check(count($tr['fields']['boiling'])===1&&count($tr['fields']['vapor'])===1,'property routing');
+foreach([['0023',['64-17-5']],['0044',['630-08-0']]] as [$id,$cas]){try{chemicalTurkishCardParse($card,$id,$cas);throw new LogicException('wrong identity accepted');}catch(RuntimeException){}}
+check(chemicalTurkishCardIds(['sections'=>[1=>[['source'=>['url'=>'https://evil-ilo.org/dyn/icsc/showcard.display?p_card_id=23']]]]])===[],'foreign card host rejected');
+check(chemicalTurkishCardIds(['sections'=>[1=>[['source'=>['url'=>'https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_card_id=23']]]]])===['0023'],'linked official card');
+$cacheSource='Source example with 12 ppm.';$cacheRecord=['sections'=>[1=>[['text'=>$cacheSource],['text'=>'A different uncached source.']]]];
+chemicalStoredTurkish($db,$cacheRecord);
+$db->prepare('INSERT INTO chemical_translations VALUES(?,?,?)')->execute([hash('sha256','en-tr-v1:'.$cacheSource),'12 ppm içeren Türkçe örnek.',time()]);
+$stored=chemicalStoredTurkish($db,$cacheRecord);check($stored['sections'][1][0]['text_tr']==='12 ppm içeren Türkçe örnek.','reuse complete stored translation without a service call');check(!isset($stored['sections'][1][1]['text_tr']),'never mark incomplete translations ready');
+echo "PASS: Turkish ICSC identity, source notes, numeric units, safe parsing and offline translation reuse.\n";
+
+$original='Limit: 35 ppm at -20 °C.';$native='Sınır: 35 ppm, -20 °C.';
+chemicalLocalTranslationValidate($original,$native);
+foreach(['Sınır: 350 ppm, -20 °C.','Sınır: 35 ppb, -20 °C.','Sınır: 35 ppm, 20 °C.',$original] as $bad){try{chemicalLocalTranslationValidate($original,$bad);throw new LogicException('invalid local translation accepted');}catch(InvalidArgumentException){}}
+$db->prepare('INSERT INTO chemical_cache VALUES(?,?,?)')->execute(['compound-v1:281',json_encode(['sections'=>[8=>[['text'=>$original]]]]),time()]);
+$save=['cid'=>281,'section'=>8,'entry'=>0,'source_hash'=>hash('sha256',$original),'translated'=>$native];
+check(chemicalLocalTranslationSave($db,$save)['ok'],'save source-bound local translation');
+$saved=chemicalLocalStored($db,['sections'=>[8=>[['text'=>$original]]]]);check($saved['sections'][8][0]['text_tr']===$native,'read saved translation on another device');
+foreach([array_replace($save,['source_hash'=>str_repeat('0',64)]),array_replace($save,['entry'=>999]),array_replace($save,['translated'=>'Wrong 350 ppm'])] as $bad){try{chemicalLocalTranslationSave($db,$bad);throw new LogicException('invalid save accepted');}catch(InvalidArgumentException){}}
+echo "PASS: source-bound on-device translation persistence and server-side unit/sign validation.\n";

@@ -34,6 +34,7 @@ def run():
       assert a.status()['setup']
       a.call('pages',code=401)
       a.call('football',code=401)
+      a.call('chemical-local-save',{},code=401)
       a.call('chemical-search&q=ethanol',code=401)
       a.call('chemical&cid=702',code=401)
       a.call('chemical-translate&cid=281&section=9&entry=0',code=401)
@@ -47,6 +48,9 @@ def run():
         a.call(invalid,code=400)
       a.call('chemical',{},405)
       a.call('chemical-translate',{},405)
+      a.call('chemical-local-save',{},403,csrf='wrong')
+      a.call('chemical-local-save',code=405)
+      a.call('chemical-local-save',{},400)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403)
       b=Client(a.base);b.status();b.call('login',{'username':'Test','password':'incorrect'},code=401)
       b.csrf=b.call('login',{'username':'Test','password':password})['csrf']
@@ -94,6 +98,9 @@ def run():
         a.call(invalid,code=400)
       a.call('chemical',{},405)
       a.call('chemical-translate',{},405)
+      a.call('chemical-local-save',{},403,csrf='wrong')
+      a.call('chemical-local-save',code=405)
+      a.call('chemical-local-save',{},400)
       print('PASS: education and guest entry points retired; owner session preserved.')
       from rich_reminders_integration import run_rich_reminders
       run_rich_reminders(a)
