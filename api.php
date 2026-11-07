@@ -69,7 +69,7 @@ if ($action==='password' && $method==='POST') {
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
 if($action==='chemical-local-save'){require __DIR__.'/lib/chemicals.php';if($method!=='POST')fail('Desteklenmeyen yöntem.',405);try{respond(chemicalLocalTranslationSave($db,$input??[]));}catch(InvalidArgumentException $e){fail($e->getMessage());}}
-if(in_array($action,['chemical-search','chemical','chemical-translate'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method);}
+if(in_array($action,['chemical-search','chemical','chemical-translate','chemical-status'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method,$config);}
 if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
 require __DIR__.'/lib/page-tree.php';
 require __DIR__.'/lib/mindmap.php';

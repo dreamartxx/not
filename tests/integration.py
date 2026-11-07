@@ -44,8 +44,11 @@ def run():
       a.call('setup',{'username':'Test','password':'şşşşşş','setup_key':key},code=400)
       result=a.call('setup',{'username':'Test','password':password,'setup_key':key});a.csrf=result['csrf']
       assert a.status()['authenticated']
-      for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x','chemical-translate&cid=281&section=17&entry=0','chemical-translate&cid=281&section=1&entry=-1']:
+      for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x']:
         a.call(invalid,code=400)
+      assert a.call('chemical-status')['configured'] is False
+      a.call('chemical-search&q=ethanol',code=503)
+      a.call('chemical-translate',code=410)
       a.call('chemical',{},405)
       a.call('chemical-translate',{},405)
       a.call('chemical-local-save',{},403,csrf='wrong')
@@ -94,8 +97,11 @@ def run():
           assert e.headers['Cache-Control']=='no-store'
         else: raise AssertionError('Retired education entry point is still available')
       assert a.status()['authenticated']
-      for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x','chemical-translate&cid=281&section=17&entry=0','chemical-translate&cid=281&section=1&entry=-1']:
+      for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x']:
         a.call(invalid,code=400)
+      assert a.call('chemical-status')['configured'] is False
+      a.call('chemical-search&q=ethanol',code=503)
+      a.call('chemical-translate',code=410)
       a.call('chemical',{},405)
       a.call('chemical-translate',{},405)
       a.call('chemical-local-save',{},403,csrf='wrong')

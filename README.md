@@ -196,51 +196,42 @@ Zihin haritası çalışma ekranının tamamını kullanır. Boş alanı sürük
 Çalışma alanı seçicisinden açılır; doğrudan yollar `#chemicals`, `#firstaid`, `#isg`.
 Üçü de açık/koyu paletleri, mobil düzeni ve ayrı kapak fotoğraflarını destekler.
 
-**Kimyasal:** PubChem PUG-REST ad/CAS araması; CAS kontrol basamağı ve yaygın Türkçe
-ad eşlemeleri; sonuçtan CID seçimi; PUG-View güvenlik açıklamaları GBF'nin 16 başlığına
-dağıtılır. Türkçe adlar, bitişik yazım, Türkçe klavye farkları ve yaygın yazım hataları
-tanınır; bilinmeyen yakın yazımlar için öneri seçilir. Sonuç adları Türkçe gösterilir.
-**Hazır bilgi formu** artık yalnızca Türkçe kaynaklarla doldurulur: PubChem kaydındaki
-ILO bağlantısından Türkçe ICSC kartı alınır, kart numarası ve CAS eşleşmesi doğrulanır.
-İlk yardım, KKD, uyumsuzluk, maruziyet, sınır değerleri ve özellikler kaynak bağlamıyla
-alanlara aktarılır. Kartın özel notları ilk yardım bölümünde korunur. Türkçe kartta
-tarih yoksa belirtilir; kartlar 24 saat önbelleklenir, bağlantı hatasında eski kayıt
-kullanılıyorsa açıkça işaretlenir. Kart, PubChem veya üretici GBF'sinin güncel olduğunu
-garanti etmez; Türkiye'ye ait yasal sınır olarak değerlendirilmez.
+**Kimyasal:** Kaynak EPA CompTox / CTX API'dir. Türkçe kimyasal adları ve yaygın
+yazım hataları İngilizce arama adına eşlenir; CAS kontrol basamağı doğrulanır.
+Ad, CAS veya DTXSID ile tam eşleşme aranır. Hazır Türkçe kaynak araması ve ILO
+kartı getirme kaldırılmıştır; eski PubChem önbelleği yeni kaynak olarak kullanılmaz.
 
-Formda CAS kimliği ve sekiz başlık altında 23 alan bulunur. ICSC'de olmayan alanlar
-için yalnızca daha önce veritabanına kaydedilmiş **tam** Türkçe çeviriler kullanılabilir.
-Eksik Türkçe kaynakla eksik kaynak verisi ayrı belirtilir. Form açma/indirme/yazdırma
-hiçbir çeviri servisine istek yapmaz; ücretli API veya anahtar gerektirmez. Tüm PubChem
-maddelerinin Türkçe karşılığı bulunduğu iddia edilmez. İngilizce açıklamalar Türkçe
-forma veya çıktısına düşmez; **PubChem · Özgün kaynaklar** sekmesinde korunur.
+**Bağlantı:** EPA API ücretsizdir ancak kişisel anahtar gerektirir. Anahtar
+`ccte_api@epa.gov` adresinden istenir (uygulama e-posta göndermez). Anahtarı web
+kökünün dışındaki `not-config.php` dosyasına `comptox_api_key` olarak veya sunucuda
+`COMPTOX_API_KEY` ortam değişkenine ekleyin. Anahtar Git'e, istemciye, URL'ye veya
+hata yanıtına yazılmaz; sabit `https://comptox.epa.gov/ctx-api` adresine `x-api-key`
+başlığında gönderilir. Yönlendirmeler izlenmez. Anahtar yoksa modül kurulum
+kartını gösterir; çalışan otomatik veri bağlantısı varmış gibi davranmaz.
+Belgeler: https://comptox.epa.gov/ctx-api/docs/ ve
+https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis-about
 
-**Formu indir** bağımsız HTML, **Yazdır / PDF** yazdırılabilir Türkçe taslak oluşturur.
-Aynı ICSC alanındaki tüm ilgili paragraflar ve özel notlar bir arada korunur. Üreticinin
-resmî GBF'si değildir; karışım yüzdesi, saflık ve tedarikçi varsayılmaz.
+Kimlik, deneysel ve hesaplanan özellikler, bildirilen işlevsel kullanım, ürün kullanım
+kategorileri ve ToxValDB çalışma verileri alınır. Her alt kaydın DTXSID'si doğrulanır.
+Hesaplanan değerler ölçüm olarak sunulmaz; tahminin uygulanabilirlik bilgileri korunur.
+Monoizotopik kütle ortalama molekül ağırlığına yazılmaz. Toksisite dozu veya çevresel
+eşik mesleki maruziyet sınırı olarak aktarılmaz. İlk yardım, KKD, uyumsuzluk ve
+mesleki sınır alanları ilgili veri sağlanmadığında boş kalır; başka kaynaktan
+uydurulmaz. GBF düzeni, üreticinin resmî GBF'si olduğu anlamına gelmez.
 
-**Ücretsiz Türkçe çeviri** düğmesi, destekleyen masaüstü tarayıcıda yerel
-`Translator` API'sini (`en` → `tr`) başlatır. İlk model indirme kullanıcı tıklamasıyla
-başlar, ilerleme gösterilir. Safari/Firefox/mobil veya kurum politikası desteği yoksa
-özellik açıklamayla kapalıdır; hazır Türkçe kartlar ve önceden kaydedilen sonuçlar
-kullanılır. Eksik form alanlarının öne çıkan kaynakları sırayla çevrilir. Çeviri
-isteği haricî bir servise gönderilmez; tamamlanan sonuç yalnızca kendi sunucusuna,
-oturum+CSRF korumalı `chemical-local-save` ile kaydedilir. Kaynak metin hash'i ve
-sayı/birim eşleşmesi hem istemcide hem sunucuda kontrol edilir. Bu kontrol anlamsal
-veya tıbbi doğruluğu kanıtlamaz. Başarısız metin İngilizce olarak forma düşmez.
-Kaydedilen tam metinler sonraki açılışlarda ve telefonda tekrar çevrilmeden kullanılır.
+Formda sekiz başlık / 23 alan, kaynak görünümü, HTML indirme ve yazdırma bulunur.
+**Ücretsiz Türkçe çeviri** destekleyen masaüstü Chrome'da yerel `Translator` API'sini
+(`en` → `tr`) kullanır. İlk dil paketi indirmesi kullanıcı tıklamasıyla başlar.
+Ücretli çeviri servisi veya günlük çeviri kotası yoktur. İlk seçilen kaynak metinleri
+cihazda çevrilir, oturum+CSRF korumalı `chemical-local-save` ile kendi veritabanına
+kaydedilir. DTXSID, kaynak hash'i, sayı ve birimler doğrulanır; bu kontrol anlamsal
+veya kimyasal doğruluk garantisi değildir. İngilizce açıklama Türkçe forma düşmez;
+çevrilmemiş alanlar belirtilir. Kaydedilen çeviriler diğer cihazlarda da görünür.
 
-Veri bağlantıları sabit PubChem ve `chemicalsafety.ilo.org` HTTPS hostlarıyla sınırlıdır;
-yönlendirmeler izlenmez, boyut ve süre sınırı uygulanır. ILO kartı HTML olarak çalıştırılmaz;
-yalnızca ayrıştırılmış ve arayüzde kaçırılmış metin kullanılır. ILO/WHO ve Türkçe sürümün
-Başkent Üniversitesi atfı korunur. Önceki MyMemory uç noktası geriye uyumluluk için
-kalır, fakat arama/form/kaynak sekmesi tarafından otomatik çağrılmaz.
-
- Arama ve kayıtlar MySQL/SQLite önbelleğinde 24 saat tutulur; 30 günden eski
-kayıtlar temizlenir. Bağlantı hatasında eski kayıt kullanılırsa tarihi ve eski olduğu
-gösterilir; 404 gizlenmez. Yanıt boyutu 12 MB, bağlantı 8 sn ve toplam süre 30 sn ile
-sınırlıdır. Anahtar gerektirmez; sunucuda PHP cURL gerekir. API cevapları PWA önbelleğine
-yazılmaz. Üretim veritabanı tabloları ilk yetkili sorguda oluşturulur.
+Anahtar olmadan gerçek EPA API yanıtlarıyla uçtan uca doğrulama yapılamaz; testler
+resmî OpenAPI şemasına göre hazırlanmış sentetik veriler kullanır. Arama/kayıtlar
+24 saat önbelleklenir; bağlantı hatasında eski kayıt sunulursa açıkça işaretlenir.
+Alt veri bağlantı hatası boş veri gibi kaydedilmez. API yanıtları PWA'ya kaydedilmez.
 
 **Kalp & EKG:** Genel ilk yardım içeriği kaldırıldı. Dört yetişkin AHA 2025
 algoritması (arrest, nabızlı taşikardi, bradikardi, elektrik tedavisi), manuel karar

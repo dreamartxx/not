@@ -64,19 +64,6 @@ function chemicalURL(mixed $value): string {
  if(!is_string($value)||!filter_var($value,FILTER_VALIDATE_URL))return '';
  return in_array(strtolower(parse_url($value,PHP_URL_SCHEME)??''),['http','https'],true)?$value:'';
 }
-function chemicalFetch(string $path): array {
- $url='https://pubchem.ncbi.nlm.nih.gov/'.$path;$body='';$tooBig=false;
- $ch=curl_init($url);
- curl_setopt_array($ch,[CURLOPT_FOLLOWLOCATION=>false,CURLOPT_CONNECTTIMEOUT=>8,CURLOPT_TIMEOUT=>30,CURLOPT_USERAGENT=>'NotPersonalReference/1.0',CURLOPT_HTTPHEADER=>['Accept: application/json'],CURLOPT_ENCODING=>'',CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_WRITEFUNCTION=>function($c,string $chunk)use(&$body,&$tooBig){if(strlen($body)+strlen($chunk)>12_000_000){$tooBig=true;return 0;}$body.=$chunk;return strlen($chunk);}]);
- $ok=curl_exec($ch);$status=curl_getinfo($ch,CURLINFO_RESPONSE_CODE);unset($ch);
- if($status===404)throw new RuntimeException('PubChem kaydı bulunamadı. İngilizce adı veya CAS numarasını dene.',404);
- if($status===429||$status===503)throw new RuntimeException('PubChem şu anda yoğun. Biraz sonra tekrar dene.',503);
- if($tooBig)throw new RuntimeException('Bu PubChem kaydı uygulama sınırını aşıyor. Kaydı PubChem sitesinden inceleyebilirsin.',502);
- if(!$ok||$status!==200)throw new RuntimeException('PubChem bağlantısı kurulamadı. Biraz sonra tekrar dene.',502);
- try{$json=json_decode($body,true,512,JSON_THROW_ON_ERROR);}catch(Throwable){throw new RuntimeException('PubChem geçerli bir veri yanıtı göndermedi.',502);}
- if(!is_array($json))throw new RuntimeException('PubChem yanıtı okunamadı.',502);
- return $json;
-}
 function chemicalSection(array $path): int {
  $leaf=end($path);$root=$path[0]??'';
  if($leaf==='Disposal Methods')return 13;
@@ -134,47 +121,9 @@ function chemicalCached(PDO $db,string $key,callable $loader): array {
   $db->prepare($sql)->execute([$key,json_encode($data,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),$now]);
   $db->prepare('DELETE FROM chemical_cache WHERE updated_at<?')->execute([$now-30*86400]);
   return [...$data,'cached'=>false,'stale'=>false];
- }catch(Throwable $e){if($old&&$e->getCode()!==404)return [...json_decode($old['payload'],true),'cached'=>true,'stale'=>true,'warning'=>'PubChem yenilenemedi. Son alınan kayıt gösteriliyor.'];throw $e;}
+ }catch(Throwable $e){if($old&&$e->getCode()!==404)return [...json_decode($old['payload'],true),'cached'=>true,'stale'=>true,'warning'=>'EPA CompTox yenilenemedi. Son alınan kayıt gösteriliyor.'];throw $e;}
 }
-function chemicalsAPI(PDO $db,string $action,string $method): never {
- if($method!=='GET')fail('Desteklenmeyen yöntem.',405);
- try{
-  if($action==='chemical-translate')chemicalTranslationAPI($db);
-  if($action==='chemical-search'){
-   $query=chemicalQuery($_GET['q']??'');
-   $resolved=chemicalResolve($query);$term=$resolved['term'];session_write_close();
-   try{
-   $result=chemicalCached($db,'q:'.hash('sha256',$term),function()use($term){
-    $found=chemicalFetch('rest/pug/compound/name/'.rawurlencode($term).'/cids/JSON?name_type=complete');$ids=array_values(array_filter($found['IdentifierList']['CID']??[],fn($v)=>is_int($v)&&$v>0));
-    if(!$ids)throw new RuntimeException('Bu ad veya CAS numarası için kayıt bulunamadı.',404);
-    usleep(250000);$props=chemicalFetch('rest/pug/compound/cid/'.implode(',',array_slice($ids,0,12)).'/property/Title,MolecularFormula,MolecularWeight,IUPACName/JSON');
-    $compounds=[];foreach($props['PropertyTable']['Properties']??[] as $p){
-     if(!is_int($p['CID']??null)||!in_array($p['CID'],array_slice($ids,0,12),true))continue;
-     $clean=['CID'=>$p['CID']];foreach(['Title','MolecularFormula','MolecularWeight','IUPACName'] as $field)$clean[$field]=is_scalar($p[$field]??null)?(string)$p[$field]:'';
-     $compounds[]=$clean;
-    }
-    if(!$compounds)throw new RuntimeException('PubChem arama sonucu okunamadı.',502);
-    return ['term'=>$term,'total'=>count($ids),'compounds'=>$compounds];
-   });
-   }catch(RuntimeException $e){
-    $suggestions=$e->getCode()===404?chemicalSuggestions($query):[];
-    if(!$suggestions)throw $e;
-    $result=['term'=>$term,'total'=>0,'compounds'=>[],'suggestions'=>$suggestions];
-   }
-   foreach($result['compounds'] as &$compound){
-    $compound['Title_tr']=chemicalTurkishName($compound['Title']);
-
-   }unset($compound);
-   respond([...$result,'query'=>$query,'resolved_name'=>$resolved['label']]);
-  }
-  $cid=filter_var($_GET['cid']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999999999]]);
-  if($cid===false)throw new InvalidArgumentException('Geçerli bir PubChem CID seç.');
-  session_write_close();$result=chemicalCached($db,'compound-v1:'.$cid,fn()=>chemicalNormalize(chemicalFetch('rest/pug_view/data/compound/'.$cid.'/JSON')['Record']??[],$cid));
-  $result['title_tr']=chemicalTurkishName($result['title']);
-
-  $result=chemicalLocalStored($db,chemicalStoredTurkish($db,$result));
-  $result['turkish_form']=chemicalTurkishForm($db,$result);
-  if($result['turkish_form']['available']??false)$result['title_tr']=$result['turkish_form']['title'];
-  respond($result);
- }catch(InvalidArgumentException $e){fail($e->getMessage());}catch(Throwable $e){$code=in_array($e->getCode(),[404,429,502,503],true)?$e->getCode():502;fail($code===502&&$e->getCode()!==502?'Kimyasal verileri alınamadı. Biraz sonra tekrar dene.':$e->getMessage(),$code);}
+function chemicalsAPI(PDO $db,string $action,string $method,array $config=[]): never {
+ require_once __DIR__.'/comptox.php';
+ comptoxAPI($db,$action,$method,$config);
 }

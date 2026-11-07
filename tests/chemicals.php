@@ -62,28 +62,35 @@ $db->exec('UPDATE chemical_guard SET attempted_at=0');
 try{chemicalCached($db,'test',fn()=>throw new RuntimeException('removed',404));throw new LogicException('removed record served stale');}catch(RuntimeException $e){check($e->getCode()===404,'404 not hidden');}
 echo "PASS: chemical normalization, provenance, safe URLs, identity, missing data and cache failure handling.\n";
 
-$card='<html><table><tr><td><b>Deneme kimyasalı</b></td><td>ICSC: 0023 ()</td></tr><tr><td>CAS #: 630-08-0</td></tr></table><table><tr><th></th><th>BELİRTİLER</th><th>ÖNLEME</th><th>İLK YARDIM</th></tr><tr><th>Solunum</th><td>Örnek belirti</td><td>Örnek koruma</td><td>Örnek yardım. Notlara bakın.</td></tr></table><table><tr><th>FİZİKSEL VE KİMYASAL BİLGİLER</th></tr><tr><td><p><b>Fiziksel Durum; Dış görünüş</b><br>Örnek görünüm<p><b>Kimyasal tehlikeler</b><br>Örnek uyumsuzluk</td><td><p>Formül: CO<br>Kaynama noktası: -191 ° C<br>Buhar basıncı: 12 kPa</td></tr></table><table><tr><th>MARUZ KALMA ve SAĞLIK ETKİLERİ</th></tr><tr><td><p><b>Maruz kalma yolları</b><br>Örnek yol</td></tr></table><table><tr><th>MESLEKİ MARUZ KALMA LİMİTLERİ</th></tr><tr><td>TWA 25 ppm<br>STEL 100 ppm; 117 mg/m<sup>3</sup></td></tr></table><table><tr><th>NOTLAR</th></tr><tr><td>Örnek koşul mutlaka korunur.</td></tr></table><script>evil()</script></html>';
-$tr=chemicalTurkishCardParse($card,'0023',['630-08-0']);
-check($tr['fields']['inhalation'][0]['lang']==='tr','native Turkish source');
-check(str_contains($tr['fields']['generalAid'][0]['text'],'koşul mutlaka'),'do not drop source caveats');
-check(str_contains($tr['fields']['limits'][0]['text'],'117 mg/m3'),'keep superscript unit');
-check(!str_contains(json_encode($tr),'evil()'),'never execute or include scripts');
-check(count($tr['fields']['boiling'])===1&&count($tr['fields']['vapor'])===1,'property routing');
-foreach([['0023',['64-17-5']],['0044',['630-08-0']]] as [$id,$cas]){try{chemicalTurkishCardParse($card,$id,$cas);throw new LogicException('wrong identity accepted');}catch(RuntimeException){}}
-check(chemicalTurkishCardIds(['sections'=>[1=>[['source'=>['url'=>'https://evil-ilo.org/dyn/icsc/showcard.display?p_card_id=23']]]]])===[],'foreign card host rejected');
-check(chemicalTurkishCardIds(['sections'=>[1=>[['source'=>['url'=>'https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_card_id=23']]]]])===['0023'],'linked official card');
-$cacheSource='Source example with 12 ppm.';$cacheRecord=['sections'=>[1=>[['text'=>$cacheSource],['text'=>'A different uncached source.']]]];
-chemicalStoredTurkish($db,$cacheRecord);
-$db->prepare('INSERT INTO chemical_translations VALUES(?,?,?)')->execute([hash('sha256','en-tr-v1:'.$cacheSource),'12 ppm içeren Türkçe örnek.',time()]);
-$stored=chemicalStoredTurkish($db,$cacheRecord);check($stored['sections'][1][0]['text_tr']==='12 ppm içeren Türkçe örnek.','reuse complete stored translation without a service call');check(!isset($stored['sections'][1][1]['text_tr']),'never mark incomplete translations ready');
-echo "PASS: Turkish ICSC identity, source notes, numeric units, safe parsing and offline translation reuse.\n";
-
 $original='Limit: 35 ppm at -20 °C.';$native='Sınır: 35 ppm, -20 °C.';
 chemicalLocalTranslationValidate($original,$native);
 foreach(['Sınır: 350 ppm, -20 °C.','Sınır: 35 ppb, -20 °C.','Sınır: 35 ppm, 20 °C.',$original] as $bad){try{chemicalLocalTranslationValidate($original,$bad);throw new LogicException('invalid local translation accepted');}catch(InvalidArgumentException){}}
-$db->prepare('INSERT INTO chemical_cache VALUES(?,?,?)')->execute(['compound-v1:281',json_encode(['sections'=>[8=>[['text'=>$original]]]]),time()]);
-$save=['cid'=>281,'section'=>8,'entry'=>0,'source_hash'=>hash('sha256',$original),'translated'=>$native];
+$db->prepare('INSERT INTO chemical_cache VALUES(?,?,?)')->execute(['comptox-v1:DTXSID1020160',json_encode(['sections'=>[8=>[['text'=>$original]]]]),time()]);
+$save=['dtxsid'=>'DTXSID1020160','section'=>8,'entry'=>0,'source_hash'=>hash('sha256',$original),'translated'=>$native];
 check(chemicalLocalTranslationSave($db,$save)['ok'],'save source-bound local translation');
 $saved=chemicalLocalStored($db,['sections'=>[8=>[['text'=>$original]]]]);check($saved['sections'][8][0]['text_tr']===$native,'read saved translation on another device');
 foreach([array_replace($save,['source_hash'=>str_repeat('0',64)]),array_replace($save,['entry'=>999]),array_replace($save,['translated'=>'Wrong 350 ppm'])] as $bad){try{chemicalLocalTranslationSave($db,$bad);throw new LogicException('invalid save accepted');}catch(InvalidArgumentException){}}
 echo "PASS: source-bound on-device translation persistence and server-side unit/sign validation.\n";
+require_once __DIR__.'/../lib/comptox.php';
+$id='DTXSID1020160';
+foreach(['281','DTXSID1','DTXSID1020160/../x',"DTXSID1020160\n",12] as $bad){try{comptoxId($bad);throw new LogicException('bad ID');}catch(InvalidArgumentException){}}
+check(comptoxKey([])==='','key absence is explicit');
+try{comptoxKey(['comptox_api_key'=>"test\r\nInjected: yes"]);throw new LogicException('header injection');}catch(RuntimeException){}
+$rows=comptoxSearchRows([['dtxsid'=>$id,'preferredName'=>'Carbon monoxide','casrn'=>'630-08-0'],['dtxsid'=>$id,'preferredName'=>'Carbon monoxide','casrn'=>'630-08-0']]);
+check(count($rows)===1&&$rows[0]['Title_tr']==='Karbon monoksit','deduplicate IDs and resolve Turkish label');
+$detail=['dtxsid'=>$id,'preferredName'=>'Carbon monoxide','casrn'=>'630-08-0','molFormula'=>'CO','monoisotopicMass'=>27.9949];
+$sets=['experimental'=>[['dtxsid'=>$id,'propName'=>'Boiling Point','propValue'=>-191.5,'propUnit'=>'°C','expDetailsPressureMmhg'=>760,'lsCitation'=>'Fixture 2026','publicSourceUrl'=>'javascript:bad']],'predicted'=>[['dtxsid'=>$id,'propName'=>'Boiling Point','propValue'=>-190,'propUnit'=>'°C','adConclusion'=>'Outside applicability domain','modelName'=>'Fixture model']],'uses'=>[['dtxsid'=>$id,'category'=>'Fixture use','definition'=>'Fixture definition']],'toxval'=>[['dtxsid'=>$id,'toxvalType'=>'Exposure Limit','toxvalNumeric'=>5,'toxvalUnits'=>'mg/L','exposureRoute'=>'oral','speciesCommon'=>'rat','studyDurationValue'=>28,'studyDurationUnits'=>'days','qualifier'=>'<','riskAssessmentClass'=>'water','toxicologicalEffect'=>'Fixture effect','longRef'=>'Fixture study']]];
+$r=comptoxNormalize($id,$detail,$sets);
+check($r['dtxsid']===$id&&$r['mass']===''&&$r['formula']==='CO','monoisotopic mass never used as molecular weight');
+check(count($r['sections'][4])===0&&count($r['sections'][8])===0,'no invented first aid, PPE or occupational limits');
+check(str_contains($r['sections'][9][1]['text'],'760')&&$r['sections'][9][1]['url']==='','measurement conditions and safe links');
+check(in_array('Computed Properties',$r['sections'][9][2]['path'],true)&&str_contains($r['sections'][9][2]['text'],'Outside applicability'),'prediction provenance and uncertainty');
+check(str_contains($r['sections'][11][0]['text'],'rat')&&str_contains($r['sections'][11][0]['text'],'28')&&str_contains($r['sections'][11][0]['text'],'Qualifier: <'),'toxicity study context and qualifiers');
+try{comptoxNormalize($id,['dtxsid'=>'DTXSID9020584'],[]);throw new LogicException('wrong detail');}catch(RuntimeException){}
+try{comptoxNormalize($id,$detail,['uses'=>[['dtxsid'=>'DTXSID9020584','category'=>'wrong']]]);throw new LogicException('wrong subrecord');}catch(RuntimeException){}
+$fetch=function($path)use($detail){if(str_contains($path,'/detail/'))return $detail;throw new RuntimeException('temporary',503);};
+try{comptoxLoad($id,'test-key',$fetch);throw new LogicException('partial response accepted');}catch(RuntimeException $e){check($e->getCode()===503,'partial failures not cached as absent data');}
+$missing=function($path)use($detail){if(str_contains($path,'/detail/'))return $detail;throw new RuntimeException('absent',404);};
+check(count(comptoxLoad($id,'test-key',$missing)['sections'][11])===0,'confirmed absent endpoint stays absent');
+try{chemicalLocalTranslationSave($db,array_replace($save,['dtxsid'=>'DTXSID9020584']));throw new LogicException('source crossover');}catch(InvalidArgumentException){}
+echo "PASS: EPA identity boundaries, schema mapping, experimental/predicted distinction, source context, missing API key and partial failure handling.\n";
