@@ -205,6 +205,15 @@ atıf ve lisans bilgileri korunur. Molekül resmi, kaynak GHS işaretleri, kayı
 araması ve metin dökümü vardır. Eksik alanlar açıkça belirtilir. Bu bir üretici GBF'si
 değildir; ürün bileşimi, saflığı, tedarikçi veya Türkiye mevzuatına uygunluk varsayılmaz.
 
+Arama sonucu varsayılan olarak **Hazır bilgi formu** açılır: CAS kimliği ve sekiz
+başlık altında 23 alan (kullanım, ilk yardım, KKD, karışım/uyumsuzluklar, maruziyet
+yolları/sınırları, fiziksel-kimyasal ve toksikolojik özellikler). Öne çıkan kaynak
+gösterilir; diğer kayıtlar açılır detaylarda, tam kayıtlar 16 başlıklı ayrı görünümde
+kalır. **Formu indir** bağımsız HTML taslağı, **Yazdır / PDF** yazdırma görünümü
+oluşturur. Dışa aktarılan özet her alanda bir kaynak; sınır değerlerinde tüm kaynakları
+korur. Tamamlanmış Türkçe çeviriler kullanılır, diğer kayıtlar açıkça etiketli özgün
+metinle yer alır. Kaynak, birim, atıf, eksik alanlar ve taslak niteliği korunur.
+
 Kimyasal veri API'si sabit PubChem HTTPS hostuna; çeviri API'si sabit
 `api.mymemory.translated.net` hostuna istek yapar. Yönlendirme izlenmez. Çeviriye yalnızca
 sunucuda önbelleklenmiş halka açık PubChem metni gönderilebilir; not veya serbest metin
