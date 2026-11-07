@@ -11,7 +11,7 @@ function validMindmap(mixed $map): ?array {
   if(!is_string($id)||!preg_match('/^[a-zA-Z0-9_-]{1,60}$/D',$id)||isset($seen[$id])||($i===0?$parent!==null:!is_string($parent)||!isset($seen[$parent])))fail('Konu bağlantısı geçersiz.');
   $label=trim(shortText($n['label']??'',100));if($label==='')fail('Konu adı boş olamaz.');
   $seen[$id]=true;$node=['id'=>$id,'parent'=>$parent,'label'=>$label];
-  foreach(['dx','dy'] as $axis)if(array_key_exists($axis,$n))$node[$axis]=number($n[$axis],-4000,4000);$out[]=$node;
+  foreach(['dx','dy'] as $axis)if(array_key_exists($axis,$n))$node[$axis]=number($n[$axis],-PHP_FLOAT_MAX,PHP_FLOAT_MAX);if(array_key_exists('note',$n))$node['note']=shortText($n['note'],20000);$out[]=$node;
  }
  $result=['nodes'=>$out,'weight'=>number($map['weight']??3,1,9),'length'=>number($map['length']??90,40,220),'motion'=>choice($map['motion']??'still',['still','float','ripple'])];
  foreach(['strength'=>[0,100],'speed'=>[10,100]] as $key=>[$min,$max])if(array_key_exists($key,$map))$result[$key]=number($map[$key],$min,$max);

@@ -20,72 +20,59 @@ export function waveOffset(map,node,time,reduced=false){
  if(map.motion==='float')return {x:Math.sin(phase*.7+seed)*amount*5,y:Math.sin(phase+seed)*amount*12};
  return {x:(Math.sin(phase+seed)*.7+Math.cos(phase*.63-seed)*.3)*amount*20,y:(Math.sin(phase*1.3-seed)*.65+Math.cos(phase*.8+seed)*.35)*amount*26};
 }
-export function moveNode(node,x,y){node.dx=Math.max(-4000,Math.min(4000,(node.dx||0)+x));node.dy=Math.max(-4000,Math.min(4000,(node.dy||0)+y));}
-export function mapView(){return '<section class="mm"><header class="mm-heading"><div><div class="eyebrow">FİKİR ATÖLYESİ</div><h1>Zihin haritası</h1></div><button class="button" id="mm-settings">⚙ Ayarlar</button></header><div class="mm-canvas" aria-label="Zihin haritası konuları"><div class="mm-stage"></div></div><p class="mm-hint">Konuları tutup sürükle · Klavyede ok tuşlarıyla taşı · Boş alanda kaydır</p><div class="mm-tools"><span id="mm-selected"></span><button class="button primary" id="mm-add">＋ Dal ekle</button><button class="button" id="mm-edit">Adını değiştir</button><button class="button" id="mm-del">Dalı sil</button><button class="button" id="mm-center">Merkeze dön</button></div></section>';}
+// Camera coordinates stay independent of the graph bounds and stored node offsets.
+export function moveNode(node,x,y){node.dx=(node.dx||0)+x;node.dy=(node.dy||0)+y;}
+export function zoomAt(camera,scale,x,y){const zoom=Math.max(.1,Math.min(3,scale)),ratio=zoom/camera.zoom;return {x:x-(x-camera.x)*ratio,y:y-(y-camera.y)*ratio,zoom};}
+export function mapView(){return `<section class="mm"><div class="mm-canvas" aria-label="Zihin haritası konuları" tabindex="0"><div class="mm-stage"></div></div><header class="mm-heading"><div><div class="eyebrow">FİKİR ATÖLYESİ</div><h1>Zihin haritası</h1></div><button class="button" id="mm-settings">⚙ Ayarlar</button></header><div class="mm-navigation" role="group" aria-label="Harita görünümü"><button class="button" id="mm-out" aria-label="Uzaklaştır">−</button><output id="mm-zoom">100%</output><button class="button" id="mm-in" aria-label="Yakınlaştır">＋</button><button class="button" id="mm-fit">Tümünü göster</button><button class="button" id="mm-center">Merkeze dön</button></div><p class="mm-hint">Konuyu sürükle · Tıkla ve not al · Boşluğu sürükleyerek gezin · Ctrl / ⌘ + tekerlek ile yakınlaştır</p><div class="mm-tools"><span id="mm-selected"></span><button class="button primary" id="mm-add">＋ Dal ekle</button><button class="button" id="mm-edit">Adını değiştir</button><button class="button" id="mm-del">Dalı sil</button></div><aside class="mm-note-panel" hidden aria-label="Konu notu"><header><div><small>KONU NOTU</small><h2 id="mm-note-title"></h2></div><button class="icon-button" id="mm-note-close" aria-label="Konu notunu kapat">×</button></header><label for="mm-note">Bu konuya ait notların</label><textarea id="mm-note" maxlength="20000" placeholder="Fikirlerini, ayrıntıları ve yapılacakları yaz…"></textarea><p>Otomatik kaydedilir · Bu konuya özel</p></aside></section>`;}
 export function bindMap({p,dirty,modal,esc,toast,confirmAction}){
- const m=p.mindmap,root=m.nodes[0],q=s=>document.querySelector(s),canvas=q('.mm-canvas'),stage=q('.mm-stage');let chosen=root.id,frame=0,drag=null,suppressClickUntil=0;const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const m=p.mindmap,root=m.nodes[0],q=s=>document.querySelector(s),canvas=q('.mm-canvas'),stage=q('.mm-stage'),panel=q('.mm-note-panel');let chosen=root.id,frame=0,drag=null,pan=null,suppressClickUntil=0,camera={x:canvas.clientWidth/2,y:canvas.clientHeight/2,zoom:1},world=[];const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const current=()=>m.nodes.find(n=>n.id===chosen)||root;
+ function view(){stage.style.transform=`translate(${camera.x}px,${camera.y}px) scale(${camera.zoom})`;canvas.style.backgroundPosition=`${camera.x}px ${camera.y}px`;q('#mm-zoom').textContent=Math.round(camera.zoom*100)+'%';}
+ function centerOn(id){const n=world.find(n=>n.id===id);if(n){camera.x=canvas.clientWidth/2-n.x*camera.zoom;camera.y=canvas.clientHeight/2-n.y*camera.zoom;view();}}
+ function showNote(){q('#mm-note-title').textContent=current().label;q('#mm-note').value=current().note||'';panel.hidden=false;}
  function select(id,center=false){
   chosen=id;stage.querySelectorAll('[data-mm-node]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mmNode===id)));
   q('#mm-selected').textContent='Seçili: '+current().label;q('#mm-del').hidden=id===root.id;
-  if(center){const el=stage.querySelector('[aria-pressed=true]');canvas.scrollLeft=stage.offsetLeft+el.offsetLeft-canvas.clientWidth/2;canvas.scrollTop=stage.offsetTop+el.offsetTop-canvas.clientHeight/2;}
+  if(!panel.hidden)showNote();if(center)centerOn(id);
  }
+ q('#mm-note').oninput=e=>{current().note=e.target.value;dirty(p);const b=stage.querySelector('[aria-pressed=true]');if(b)b.classList.toggle('has-note',!!current().note.trim());};
+ q('#mm-note-close').onclick=()=>{panel.hidden=true;stage.querySelector('[aria-pressed=true]')?.focus({preventScroll:true});};
+ function setZoom(scale,x=canvas.clientWidth/2,y=canvas.clientHeight/2){camera=zoomAt(camera,scale,x,y);view();}
+ q('#mm-in').onclick=()=>setZoom(camera.zoom*1.25);q('#mm-out').onclick=()=>setZoom(camera.zoom/1.25);
+ q('#mm-fit').onclick=()=>{const xs=world.map(n=>n.x),ys=world.map(n=>n.y),left=Math.min(...xs)-100,right=Math.max(...xs)+100,top=Math.min(...ys)-60,bottom=Math.max(...ys)+60;camera.zoom=Math.max(.1,Math.min(1,(canvas.clientWidth-48)/(right-left),(canvas.clientHeight-190)/(bottom-top)));camera.x=canvas.clientWidth/2-(left+right)/2*camera.zoom;camera.y=canvas.clientHeight/2-(top+bottom)/2*camera.zoom;view();};
+ const wheel=e=>{e.preventDefault();if(drag||pan)return;const r=canvas.getBoundingClientRect();if(e.ctrlKey||e.metaKey)setZoom(camera.zoom*Math.exp(-e.deltaY*.006),e.clientX-r.left,e.clientY-r.top);else{camera.x-=e.deltaX;camera.y-=e.deltaY;view();}};
+ canvas.addEventListener('wheel',wheel,{passive:false});
+ canvas.onpointerdown=e=>{if(e.target.closest('[data-mm-node]')||e.button!==0||drag||pan)return;pan={pointer:e.pointerId,x:e.clientX,y:e.clientY,cx:camera.x,cy:camera.y};canvas.setPointerCapture(e.pointerId);canvas.classList.add('mm-panning');};
+ canvas.onpointermove=e=>{if(!pan||pan.pointer!==e.pointerId)return;camera.x=pan.cx+e.clientX-pan.x;camera.y=pan.cy+e.clientY-pan.y;view();};
+ const endPan=e=>{if(pan?.pointer!==e.pointerId)return;pan=null;canvas.classList.remove('mm-panning');if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);};
+ canvas.onpointerup=endPan;canvas.onpointercancel=endPan;canvas.onlostpointercapture=endPan;
  function paint(center=false){
   cancelAnimationFrame(frame);
-  const {width,height,points}=layout(m);stage.style.width=width+'px';stage.style.height=height+'px';stage.style.setProperty('--mm-half',height/2+'px');stage.dataset.motion=m.motion;
+  const {width,height,points:laid}=layout(m),points=laid.map(n=>({...n,x:n.x-width/2,y:n.y-height/2}));world=points;
   const hues=[265,204,335,30,175,243];const color=n=>hues[n.color%hues.length];
-  stage.innerHTML='<div class="mm-water"><svg class="mm-lines" aria-hidden="true" width="'+width+'" height="'+height+'" fill="none" stroke-width="'+m.weight+'">'+points.slice(1).map(n=>'<path data-edge="'+esc(n.id)+'" style="--h:'+color(n)+'"/>').join('')+'</svg>'+points.map(n=>'<button type="button" data-mm-node="'+esc(n.id)+'" class="mm-node '+(n.id===root.id?'mm-root':'')+'" title="'+esc(n.label)+' · Sürükleyerek taşı" style="left:'+n.x+'px;top:'+n.y+'px;--h:'+color(n)+'"><span>'+esc(n.label)+'</span></button>').join('')+'</div>';
+  stage.innerHTML='<svg class="mm-lines" aria-hidden="true" width="1" height="1" fill="none" stroke-width="'+m.weight+'">'+points.slice(1).map(n=>'<path data-edge="'+esc(n.id)+'" style="--h:'+color(n)+'"/>').join('')+'</svg>'+points.map(n=>'<button type="button" data-mm-node="'+esc(n.id)+'" class="mm-node '+(n.id===root.id?'mm-root ':'')+(n.note?.trim()?'has-note':'')+'" title="'+esc(n.label)+' · Tıkla ve not al · Sürükleyerek taşı" style="left:'+n.x+'px;top:'+n.y+'px;--h:'+color(n)+'"><span>'+esc(n.label)+'</span></button>').join('');
   const buttons=new Map([...stage.querySelectorAll('[data-mm-node]')].map(b=>[b.dataset.mmNode,b]));
   const edges=new Map([...stage.querySelectorAll('[data-edge]')].map(b=>[b.dataset.edge,b])),display=new Map();
-  function draw(){
-   for(const n of points){const v=display.get(n.id),btn=buttons.get(n.id);btn.style.left=v.x+'px';btn.style.top=v.y+'px';
-    if(n.parent){const a=display.get(n.parent),x=(a.x+v.x)/2;edges.get(n.id).setAttribute('d','M '+a.x+' '+a.y+' C '+x+' '+a.y+' '+x+' '+v.y+' '+v.x+' '+v.y);}
-   }
-  }
-  function tick(t){
-   if(!stage.isConnected)return;
-   if(!drag&&!document.hidden){for(const n of points){const w=waveOffset(m,n,t/1000,reduced.matches);display.set(n.id,{x:n.x+w.x,y:n.y+w.y});}draw();}
-   frame=requestAnimationFrame(tick);
-  }
-  // Static first frame makes pointer and keyboard actions deterministic even before RAF.
+  function draw(){for(const n of points){const v=display.get(n.id),btn=buttons.get(n.id);btn.style.left=v.x+'px';btn.style.top=v.y+'px';if(n.parent){const a=display.get(n.parent),x=(a.x+v.x)/2;edges.get(n.id).setAttribute('d','M '+a.x+' '+a.y+' C '+x+' '+a.y+' '+x+' '+v.y+' '+v.x+' '+v.y);}}}
+  function tick(t){if(!stage.isConnected)return;if(!drag&&!document.hidden){for(const n of points){const w=waveOffset(m,n,t/1000,reduced.matches);display.set(n.id,{x:n.x+w.x,y:n.y+w.y});}draw();}frame=requestAnimationFrame(tick);}
   for(const n of points)display.set(n.id,{x:n.x,y:n.y});draw();
   function finish(commit){
    if(!drag)return;const d=drag;drag=null;stage.classList.remove('mm-dragging');
    if(d.button.hasPointerCapture(d.pointer))d.button.releasePointerCapture(d.pointer);
    if(!d.moved)return;
-   if(d.moved&&commit){moveNode(m.nodes.find(n=>n.id===d.id),d.deltaX,d.deltaY);dirty(p);suppressClickUntil=Date.now()+350;}
-   const before=d.button.getBoundingClientRect();paint(false);
-   const after=stage.querySelector('[aria-pressed=true]').getBoundingClientRect();canvas.scrollLeft+=after.left-before.left;canvas.scrollTop+=after.top-before.top;
+   suppressClickUntil=Date.now()+350;
+   if(commit){moveNode(m.nodes.find(n=>n.id===d.id),d.deltaX,d.deltaY);dirty(p);}
+   paint(false);
   }
   for(const [id,b] of buttons){
-   b.onclick=()=>{if(Date.now()>=suppressClickUntil)select(id);};
+   b.onclick=()=>{if(Date.now()>=suppressClickUntil){select(id);showNote();}};
    b.ondblclick=()=>{if(Date.now()>=suppressClickUntil){select(id);nameForm(false);}};
-   b.onpointerdown=e=>{
-    if(e.button!==0||drag)return;
-    select(id);const n=m.nodes.find(n=>n.id===id),v=display.get(id);
-    drag={id,button:b,pointer:e.pointerId,startX:e.clientX,startY:e.clientY,scrollX:canvas.scrollLeft,scrollY:canvas.scrollTop,x:v.x,y:v.y,dx:n.dx||0,dy:n.dy||0,deltaX:0,deltaY:0,moved:false};
-    b.setPointerCapture(e.pointerId);b.focus({preventScroll:true});
-   };
-   b.onpointermove=e=>{
-    if(!drag||drag.pointer!==e.pointerId||drag.id!==id)return;
-    const d=drag,x=e.clientX-d.startX+canvas.scrollLeft-d.scrollX,y=e.clientY-d.startY+canvas.scrollTop-d.scrollY;
-    if(!d.moved&&Math.hypot(x,y)<4)return;
-    d.moved=true;stage.classList.add('mm-dragging');e.preventDefault();
-    // Keep the dragged topic reachable inside the scrollable canvas.
-    d.deltaX=Math.max(Math.max(-4000-d.dx,82-d.x),Math.min(Math.min(4000-d.dx,width-82-d.x),x));
-    d.deltaY=Math.max(Math.max(-4000-d.dy,42-d.y),Math.min(Math.min(4000-d.dy,height-42-d.y),y));
-    display.set(id,{x:d.x+d.deltaX,y:d.y+d.deltaY});draw();
-   };
-   b.onpointerup=e=>{if(drag?.pointer===e.pointerId)finish(true);};
-   b.onpointercancel=e=>{if(drag?.pointer===e.pointerId)finish(false);};
-   b.onlostpointercapture=e=>{if(drag?.pointer===e.pointerId)finish(false);};
-   b.onkeydown=e=>{
-    if(e.key==='Escape'&&drag){e.preventDefault();finish(false);return;}
-    const step=e.shiftKey?20:5,dirs={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]};
-    if(!dirs[e.key])return;e.preventDefault();e.stopPropagation();select(id);moveNode(current(),...dirs[e.key]);dirty(p);paint(false);stage.querySelector('[aria-pressed=true]').focus({preventScroll:true});
-   };
+   b.onpointerdown=e=>{if(e.button!==0||drag||pan)return;select(id);const v=display.get(id);drag={id,button:b,pointer:e.pointerId,startX:e.clientX,startY:e.clientY,x:v.x,y:v.y,deltaX:0,deltaY:0,moved:false};b.setPointerCapture(e.pointerId);b.focus({preventScroll:true});};
+   b.onpointermove=e=>{if(!drag||drag.pointer!==e.pointerId||drag.id!==id)return;const d=drag,x=e.clientX-d.startX,y=e.clientY-d.startY;if(!d.moved&&Math.hypot(x,y)<4)return;d.moved=true;stage.classList.add('mm-dragging');e.preventDefault();d.deltaX=x/camera.zoom;d.deltaY=y/camera.zoom;display.set(id,{x:d.x+d.deltaX,y:d.y+d.deltaY});draw();};
+   b.onpointerup=e=>{if(drag?.pointer===e.pointerId)finish(true);};b.onpointercancel=e=>{if(drag?.pointer===e.pointerId)finish(false);};b.onlostpointercapture=e=>{if(drag?.pointer===e.pointerId)finish(false);};
+   b.onkeydown=e=>{if(e.key==='Escape'&&drag){e.preventDefault();finish(false);return;}const step=e.shiftKey?20:5,dirs={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]};if(!dirs[e.key])return;e.preventDefault();e.stopPropagation();select(id);moveNode(current(),...dirs[e.key]);dirty(p);paint(false);stage.querySelector('[aria-pressed=true]').focus({preventScroll:true});};
   }
-  select(chosen,center);frame=requestAnimationFrame(tick);
+  select(chosen,center);view();frame=requestAnimationFrame(tick);
  }
  function nameForm(add){
   if(add&&m.nodes.length>=150){toast('Bir haritada en fazla 150 konu olabilir.');return;}
@@ -103,5 +90,5 @@ export function bindMap({p,dirty,modal,esc,toast,confirmAction}){
   f.onsubmit=e=>{e.preventDefault();Object.assign(m,{weight:+f.elements.weight.value,length:+f.elements.namedItem('length').value,motion:f.elements.motion.value,strength:+f.elements.strength.value,speed:+f.elements.speed.value});q('#dialog').close();dirty(p);paint(true);};
  });
  paint(true);
- return ()=>{cancelAnimationFrame(frame);drag=null;};
+ return ()=>{cancelAnimationFrame(frame);drag=null;pan=null;canvas.removeEventListener('wheel',wheel);};
 }

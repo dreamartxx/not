@@ -160,13 +160,19 @@ def run():
       assert len(copies)==2 and all(p['mindmap']==mind for p in copies)
       a.call('save',{**updated,'mindmap':{**mind,'motion':'still'}})
       assert next(p for p in a.call('pages')['pages'] if p['title']=='Map test' and p['id']!=mapped['id'])['mindmap']==mind
-      moved={**mind,'strength':75,'speed':80,'nodes':[{**mind['nodes'][0],'dx':44,'dy':-22},{**mind['nodes'][1],'dx':-65,'dy':90}]}
+      moved={**mind,'strength':75,'speed':80,'nodes':[{**mind['nodes'][0],'dx':12000,'dy':-9000,'note':'Merkez notu 🧠'},{**mind['nodes'][1],'dx':-65,'dy':90,'note':'Dal notu\nİkinci satır <script>alert(1)</script>'}]}
       latest=next(p for p in a.call('pages')['pages'] if p['id']==mapped['id'])
       latest=a.call('save',{**latest,'mindmap':moved})['page'];assert latest['mindmap']==moved
-      for bad in [{**moved,'strength':101},{**moved,'speed':0},{**moved,'nodes':[{**moved['nodes'][0],'dx':4001},moved['nodes'][1]]}]:
+      for bad in [{**moved,'strength':101},{**moved,'speed':0},{**moved,'nodes':[{**moved['nodes'][0],'dx':'invalid'},moved['nodes'][1]]}]:
        a.call('save',{**latest,'mindmap':bad},400)
       assert next(p for p in a.call('pages')['pages'] if p['id']==mapped['id'])['mindmap']==moved
-      print('PASS: persisted root/branch offsets and bounded wave controls.')
+      a.call('save',{**latest,'mindmap':{**moved,'nodes':[{**moved['nodes'][0],'note':'x'*20001},moved['nodes'][1]]}},400)
+      backup=next(p for p in a.call('pages')['pages'] if p['id']==mapped['id']);assert backup['mindmap']==moved
+      prior={p['id'] for p in a.call('pages')['pages']}
+      a.call('import',{'pages':[backup]},201)
+      restored=[p for p in a.call('pages')['pages'] if p['id'] not in prior]
+      assert len(restored)==1 and restored[0]['mindmap']==moved
+      print('PASS: large root/branch offsets, topic notes, backup/import and bounded wave controls.')
       print('PASS: per-page mind map settings, validation, legacy save and independent backup copies.')
       a.call('password',{'current_password':'wrong','new_password':'New123!'},403)
       a.call('password',{'current_password':password,'new_password':'Abc12!'},400)

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {newMindmap,layout,moveNode,waveOffset} from '../assets/mindmap.js';
+import {newMindmap,layout,moveNode,waveOffset,zoomAt} from '../assets/mindmap.js';
 const map=newMindmap('Merkez');map.nodes.push({id:'a',parent:'root',label:'A'},{id:'b',parent:'root',label:'B'},{id:'c',parent:'a',label:'C'});
 const relative=m=>{const l=layout(m);return l.points.map(p=>({x:p.x-l.width/2,y:p.y-l.height/2}));};
 const before=relative(map);moveNode(map.nodes[0],50,-40);moveNode(map.nodes[1],-25,30);const after=relative(map);
@@ -11,5 +11,7 @@ assert.deepEqual(waveOffset(map,n,2,true),{x:0,y:0});
 assert.equal(Math.hypot(...Object.values(waveOffset({...map,strength:0},n,2))),0);
 const weak=waveOffset({...map,strength:20},n,2),strong=waveOffset({...map,strength:40},n,2);assert.equal(strong.x,weak.x*2);assert.equal(strong.y,weak.y*2);
 assert.notDeepEqual(waveOffset({...map,speed:10},n,2),waveOffset({...map,speed:100},n,2));
-moveNode(map.nodes[0],1e6,-1e6);assert.equal(map.nodes[0].dx,4000);assert.equal(map.nodes[0].dy,-4000);
+moveNode(map.nodes[0],1e6,-1e6);assert.equal(map.nodes[0].dx,1000050);assert.equal(map.nodes[0].dy,-1000040);
+const camera={x:100,y:80,zoom:1},z=zoomAt(camera,2,350,200);assert.equal((350-z.x)/z.zoom,(350-camera.x)/camera.zoom);assert.equal((200-z.y)/z.zoom,(200-camera.y)/camera.zoom);
+map.nodes[1].note='Türkçe dal notu\nİkinci satır';assert.equal(JSON.parse(JSON.stringify(map)).nodes[1].note,map.nodes[1].note);
 console.log('PASS: independent root/branch movement, persistence, wave amplitude/speed and reduced motion.');
