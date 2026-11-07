@@ -15,6 +15,49 @@ function chemicalQuery(mixed $value): string {
  if(preg_match('/^[0-9 -]+$/D',$value)&&!chemicalCAS($value))throw new InvalidArgumentException('CAS numarasını kontrol et. Örnek: 64-17-5.');
  return $value;
 }
+function chemicalNameKey(string $value): string {
+ // Normalize only for dictionary lookup; unknown names/formulas go upstream unchanged.
+ $value=strtr(mb_strtolower(strtr($value,['İ'=>'i','I'=>'i'])),['ı'=>'i','ş'=>'s','ğ'=>'g','ü'=>'u','ö'=>'o','ç'=>'c',"\u{0307}"=>'']);
+ return preg_replace('/[\s\p{Z}-]+/u','',$value);
+}
+function chemicalNames(): array {
+ return [
+  ['Karbon monoksit','carbon monoxide',['karbonmoksit','karbon monoksid','karbonmonoxid','carbon monoksit']],
+  ['Karbon dioksit','carbon dioxide',['karbondioksid']],
+  ['Etanol','ethanol',['etil alkol']],['Metanol','methanol',['metil alkol']],
+  ['Aseton','acetone',[]],['Benzen','benzene',[]],['Toluen','toluene',[]],
+  ['Sülfürik asit','sulfuric acid',[]],['Hidroklorik asit','hydrochloric acid',[]],
+  ['Nitrik asit','nitric acid',[]],['Fosforik asit','phosphoric acid',[]],
+  ['Sodyum hidroksit','sodium hydroxide',[]],['Potasyum hidroksit','potassium hydroxide',[]],
+  ['Sodyum klorür','sodium chloride',[]],['Sodyum hipoklorit','sodium hypochlorite',[]],
+  ['Sodyum klorit','sodium chlorite',[]],['Sodyum karbonat','sodium carbonate',[]],
+  ['Sodyum bikarbonat','sodium bicarbonate',[]],['Kalsiyum karbonat','calcium carbonate',[]],
+  ['Hidrojen peroksit','hydrogen peroxide',[]],['Amonyak','ammonia',[]],
+  ['İzopropil alkol','isopropyl alcohol',['izopropanol']],['Asetik asit','acetic acid',[]],
+  ['Su','water',[]],['Oksijen','oxygen',[]],['Hidrojen','hydrogen',[]],['Azot','nitrogen',[]],
+  ['Klor','chlorine',[]],['Metan','methane',[]],['Propan','propane',[]],['Bütan','butane',[]],
+  ['Hidrojen sülfür','hydrogen sulfide',[]],['Kükürt dioksit','sulfur dioxide',[]],
+  ['Azot dioksit','nitrogen dioxide',[]],['Azot monoksit','nitric oxide',[]]
+ ];
+}
+function chemicalResolve(string $query): array {
+ if(!chemicalCAS($query))foreach(chemicalNames() as [$label,$term,$aliases]){
+  foreach([$label,$term,...$aliases] as $name)if(chemicalNameKey($query)===chemicalNameKey($name))return ['term'=>$term,'label'=>$label];
+ }
+ return ['term'=>$query,'label'=>''];
+}
+function chemicalSuggestions(string $query): array {
+ $key=chemicalNameKey($query);
+ // Never correct identifiers, formulas or unknown substances automatically.
+ if(strlen($key)<5||!preg_match('/^[a-z]+$/D',$key))return [];
+ $matches=[];$limit=strlen($key)>=9?2:1;
+ foreach(chemicalNames() as [$label,$term,$aliases]){
+  $distance=min(array_map(fn($name)=>levenshtein($key,chemicalNameKey($name)),[$label,$term,...$aliases]));
+  if($distance>0&&$distance<=$limit)$matches[]=['label'=>$label,'term'=>$term,'distance'=>$distance];
+ }
+ usort($matches,fn($a,$b)=>$a['distance']<=>$b['distance']);
+ return array_map(fn($v)=>['label'=>$v['label'],'term'=>$v['term']],array_slice($matches,0,3));
+}
 function chemicalURL(mixed $value): string {
  if(!is_string($value)||!filter_var($value,FILTER_VALIDATE_URL))return '';
  return in_array(strtolower(parse_url($value,PHP_URL_SCHEME)??''),['http','https'],true)?$value:'';
@@ -96,8 +139,8 @@ function chemicalsAPI(PDO $db,string $action,string $method): never {
  try{
   if($action==='chemical-search'){
    $query=chemicalQuery($_GET['q']??'');
-   $aliases=['etanol'=>'ethanol','etil alkol'=>'ethanol','metanol'=>'methanol','metil alkol'=>'methanol','aseton'=>'acetone','benzen'=>'benzene','toluen'=>'toluene','sülfürik asit'=>'sulfuric acid','hidroklorik asit'=>'hydrochloric acid','nitrik asit'=>'nitric acid','sodyum hidroksit'=>'sodium hydroxide','sodyum klorür'=>'sodium chloride','hidrojen peroksit'=>'hydrogen peroxide','amonyak'=>'ammonia','izopropil alkol'=>'isopropyl alcohol','asetik asit'=>'acetic acid','su'=>'water','karbon dioksit'=>'carbon dioxide'];
-   $term=$aliases[mb_strtolower($query)]??$query;session_write_close();
+   $resolved=chemicalResolve($query);$term=$resolved['term'];session_write_close();
+   try{
    $result=chemicalCached($db,'q:'.hash('sha256',$term),function()use($term){
     $found=chemicalFetch('rest/pug/compound/name/'.rawurlencode($term).'/cids/JSON?name_type=complete');$ids=array_values(array_filter($found['IdentifierList']['CID']??[],fn($v)=>is_int($v)&&$v>0));
     if(!$ids)throw new RuntimeException('Bu ad veya CAS numarası için kayıt bulunamadı.',404);
@@ -109,7 +152,13 @@ function chemicalsAPI(PDO $db,string $action,string $method): never {
     }
     if(!$compounds)throw new RuntimeException('PubChem arama sonucu okunamadı.',502);
     return ['term'=>$term,'total'=>count($ids),'compounds'=>$compounds];
-   });respond([...$result,'query'=>$query]);
+   });
+   }catch(RuntimeException $e){
+    $suggestions=$e->getCode()===404?chemicalSuggestions($query):[];
+    if(!$suggestions)throw $e;
+    $result=['term'=>$term,'total'=>0,'compounds'=>[],'suggestions'=>$suggestions];
+   }
+   respond([...$result,'query'=>$query,'resolved_name'=>$resolved['label']]);
   }
   $cid=filter_var($_GET['cid']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>9999999999]]);
   if($cid===false)throw new InvalidArgumentException('Geçerli bir PubChem CID seç.');

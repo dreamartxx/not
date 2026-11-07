@@ -5,6 +5,16 @@ foreach(['64-17-5','67-64-1','1310-73-2','71-43-2'] as $v)check(chemicalCAS($v),
 foreach(['64-17-6','123','064-17-5',"64-17-5\n"] as $v)check(!chemicalCAS($v),'invalid CAS');
 foreach([null,[],"ab\0c",'64-17-6',str_repeat('a',161)] as $v){try{chemicalQuery($v);throw new RuntimeException('validation missed');}catch(InvalidArgumentException){}}
 check(chemicalURL('javascript:alert(1)')==='','unsafe source');
+foreach(['karbonmoksit','karbonmonoksit','karbon monoksit','KARBON MONOKSİT','  karbon  monoksit  ','karbon-monoksit'] as $q)check(chemicalResolve($q)['term']==='carbon monoxide','carbon monoxide spelling: '.$q);
+foreach(['karbondioksit','KARBON DİOKSİT','carbon dioxide'] as $q)check(chemicalResolve($q)['term']==='carbon dioxide','CO2 stays distinct');
+foreach(['SULFURIK ASIT','SÜLFÜRİK ASİT'] as $q)check(chemicalResolve($q)['term']==='sulfuric acid','Turkish keyboard variants');
+check(chemicalResolve('sodyum klorit')['term']==='sodium chlorite','chlorite is not chloride');
+check(chemicalResolve('sodyum klorür')['term']==='sodium chloride','chloride is not chlorite');
+foreach(['630-08-0','CO','Co','CO2','CuSO4','1,2-dichloroethane','unlisted chemical'] as $q)check(chemicalResolve($q)['term']===$q,'preserve unknown names and identifiers');
+check(chemicalResolve('hidrojen peroksitt')['term']==='hidrojen peroksitt','do not silently guess unknown typos');
+check(in_array('Hidrojen peroksit',array_column(chemicalSuggestions('hidrojen peroksitt'),'label'),true),'offer nearby spelling');
+check(chemicalSuggestions('630-08-0')===[]&&chemicalSuggestions('CO')===[]&&chemicalSuggestions('unlisted chemical')===[],'no speculative identifier matches');
+
 $info=fn($text,$ref=1)=>['ReferenceNumber'=>$ref,'Value'=>['StringWithMarkup'=>[['String'=>$text]]]];
 $record=['RecordType'=>'CID','RecordNumber'=>702,'RecordTitle'=>'Fixture','Reference'=>[['ReferenceNumber'=>1,'SourceName'=>'Source A','URL'=>'https://example.org/','LicenseNote'=>'Test license']],'Section'=>[
  ['TOCHeading'=>'Names and Identifiers','Section'=>[['TOCHeading'=>'Other Identifiers','Section'=>[['TOCHeading'=>'CAS','Information'=>[$info('64-17-5')]]]]]],
