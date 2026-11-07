@@ -11,9 +11,9 @@ function chemicalLocalTable(PDO $db): void {$db->exec('CREATE TABLE IF NOT EXIST
 function chemicalLocalTranslationSave(PDO $db,array $input): array {
  foreach(['section','entry'] as $field)if(!isset($input[$field])||!is_int($input[$field]))throw new InvalidArgumentException('Kaynak kimliği geçersiz.');
  if($input['section']<1||$input['section']>16||$input['entry']<0)throw new InvalidArgumentException('Kaynak kimliği geçersiz.');
- require_once __DIR__.'/comptox.php';$id=comptoxId($input['dtxsid']??null);
+ $id=$input['cid']??null;if(!is_int($id)||$id<1||$id>9999999999)throw new InvalidArgumentException('Geçerli PubChem CID gerekli.');
  $db->exec('CREATE TABLE IF NOT EXISTS chemical_cache (cache_key VARCHAR(80) PRIMARY KEY,payload MEDIUMTEXT NOT NULL,updated_at BIGINT NOT NULL)');
- $q=$db->prepare('SELECT payload FROM chemical_cache WHERE cache_key=?');$q->execute(['comptox-v1:'.$id]);$raw=$q->fetchColumn();if(!$raw)throw new InvalidArgumentException('Önce kimyasal kaydını aç.');
+ $q=$db->prepare('SELECT payload FROM chemical_cache WHERE cache_key=?');$q->execute(['compound-v1:'.$id]);$raw=$q->fetchColumn();if(!$raw)throw new InvalidArgumentException('Önce kimyasal kaydını aç.');
  $record=json_decode($raw,true);$source=$record['sections'][$input['section']][$input['entry']]['text']??null;
  if(!is_string($source)||!is_string($input['source_hash']??null)||!hash_equals(hash('sha256',$source),$input['source_hash']))throw new InvalidArgumentException('Kaynak değişti. Kaydı yeniden aç.');
  if(!is_string($input['translated']??null))throw new InvalidArgumentException('Türkçe çeviri geçersiz.');chemicalLocalTranslationValidate($source,$input['translated']);chemicalLocalTable($db);

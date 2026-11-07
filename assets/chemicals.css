@@ -19,3 +19,5 @@
 @media(max-width:700px){.chemical-local-card{align-items:stretch;flex-direction:column}}
 
 #chemical-connection .chemical-local-card{margin-bottom:18px}#chemical-connection ol{padding-left:22px;line-height:1.7}#chemical-connection li+li{margin-top:10px}#chemical-connection li small{display:block;color:var(--muted);font-size:11px}#chemical-connection a{overflow-wrap:anywhere}
+
+.chemical-local-card strong{display:block;margin:7px 0;font-size:18px}.chemical-translation-actions{display:flex;gap:8px;flex-wrap:wrap}.chemical-language-switch,.chemical-entry-translate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}.chemical-language-switch [aria-pressed=true]{background:var(--accent);color:white}.chemical-entry-translate small{color:var(--muted)}

@@ -65,8 +65,8 @@ echo "PASS: chemical normalization, provenance, safe URLs, identity, missing dat
 $original='Limit: 35 ppm at -20 °C.';$native='Sınır: 35 ppm, -20 °C.';
 chemicalLocalTranslationValidate($original,$native);
 foreach(['Sınır: 350 ppm, -20 °C.','Sınır: 35 ppb, -20 °C.','Sınır: 35 ppm, 20 °C.',$original] as $bad){try{chemicalLocalTranslationValidate($original,$bad);throw new LogicException('invalid local translation accepted');}catch(InvalidArgumentException){}}
-$db->prepare('INSERT INTO chemical_cache VALUES(?,?,?)')->execute(['comptox-v1:DTXSID1020160',json_encode(['sections'=>[8=>[['text'=>$original]]]]),time()]);
-$save=['dtxsid'=>'DTXSID1020160','section'=>8,'entry'=>0,'source_hash'=>hash('sha256',$original),'translated'=>$native];
+$db->prepare('INSERT INTO chemical_cache VALUES(?,?,?)')->execute(['compound-v1:281',json_encode(['sections'=>[8=>[['text'=>$original]]]]),time()]);
+$save=['cid'=>281,'section'=>8,'entry'=>0,'source_hash'=>hash('sha256',$original),'translated'=>$native];
 check(chemicalLocalTranslationSave($db,$save)['ok'],'save source-bound local translation');
 $saved=chemicalLocalStored($db,['sections'=>[8=>[['text'=>$original]]]]);check($saved['sections'][8][0]['text_tr']===$native,'read saved translation on another device');
 foreach([array_replace($save,['source_hash'=>str_repeat('0',64)]),array_replace($save,['entry'=>999]),array_replace($save,['translated'=>'Wrong 350 ppm'])] as $bad){try{chemicalLocalTranslationSave($db,$bad);throw new LogicException('invalid save accepted');}catch(InvalidArgumentException){}}
@@ -92,5 +92,5 @@ $fetch=function($path)use($detail){if(str_contains($path,'/detail/'))return $det
 try{comptoxLoad($id,'test-key',$fetch);throw new LogicException('partial response accepted');}catch(RuntimeException $e){check($e->getCode()===503,'partial failures not cached as absent data');}
 $missing=function($path)use($detail){if(str_contains($path,'/detail/'))return $detail;throw new RuntimeException('absent',404);};
 check(count(comptoxLoad($id,'test-key',$missing)['sections'][11])===0,'confirmed absent endpoint stays absent');
-try{chemicalLocalTranslationSave($db,array_replace($save,['dtxsid'=>'DTXSID9020584']));throw new LogicException('source crossover');}catch(InvalidArgumentException){}
+try{chemicalLocalTranslationSave($db,array_replace($save,['cid'=>702]));throw new LogicException('source crossover');}catch(InvalidArgumentException){}
 echo "PASS: EPA identity boundaries, schema mapping, experimental/predicted distinction, source context, missing API key and partial failure handling.\n";

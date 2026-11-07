@@ -46,8 +46,7 @@ def run():
       assert a.status()['authenticated']
       for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x']:
         a.call(invalid,code=400)
-      assert a.call('chemical-status')['configured'] is False
-      a.call('chemical-search&q=ethanol',code=503)
+      assert a.call('chemical-status') == {'provider':'PubChem','configured':True,'key_required':False}
       a.call('chemical-translate',code=410)
       a.call('chemical',{},405)
       a.call('chemical-translate',{},405)
@@ -99,8 +98,7 @@ def run():
       assert a.status()['authenticated']
       for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x']:
         a.call(invalid,code=400)
-      assert a.call('chemical-status')['configured'] is False
-      a.call('chemical-search&q=ethanol',code=503)
+      assert a.call('chemical-status') == {'provider':'PubChem','configured':True,'key_required':False}
       a.call('chemical-translate',code=410)
       a.call('chemical',{},405)
       a.call('chemical-translate',{},405)
