@@ -14,6 +14,23 @@ foreach(['630-08-0','CO','Co','CO2','CuSO4','1,2-dichloroethane','unlisted chemi
 check(chemicalResolve('hidrojen peroksitt')['term']==='hidrojen peroksitt','do not silently guess unknown typos');
 check(in_array('Hidrojen peroksit',array_column(chemicalSuggestions('hidrojen peroksitt'),'label'),true),'offer nearby spelling');
 check(chemicalSuggestions('630-08-0')===[]&&chemicalSuggestions('CO')===[]&&chemicalSuggestions('unlisted chemical')===[],'no speculative identifier matches');
+check(chemicalTurkishName('Carbon Monoxide')==='Karbon monoksit','Turkish result name');
+check(chemicalTurkishName('Carbon Dioxide')==='Karbon dioksit','distinct Turkish result name');
+$long=str_repeat('Temperature 24 °C. This is a source paragraph. ',40)."\n\n".str_repeat('Birim ve değer: 3 µg/m³. ',30);
+$parts=chemicalTranslationParts($long);check(implode('',$parts)===$long,'lossless Unicode translation chunks');
+foreach($parts as $part)check(strlen($part)<=450&&mb_check_encoding($part,'UTF-8'),'provider byte bound and valid UTF-8');
+$translation=['responseStatus'=>200,'matches'=>[
+ ['segment'=>'Carbon monoxide is a gas.','translation'=>'Karbon monoksit bir gazdır.','target'=>'tr-TR'],
+ ['segment'=>'Carbon monoxide is odorless. ','translation'=>'Karbon monoksit kokusuzdur.','target'=>'tr-TR']
+]];
+check(chemicalTranslationResult($translation,'Carbon monoxide is odorless. ')==='Karbon monoksit kokusuzdur. ','exact segment only; preserve spacing');
+foreach([
+ [['responseStatus'=>200,'matches'=>[$translation['matches'][0]]],'Carbon monoxide is NOT a gas.'],
+ [['responseStatus'=>200,'matches'=>[['segment'=>'H220 at 24 °C','translation'=>'H220: 25 °C','target'=>'tr-TR']]],'H220 at 24 °C'],
+ [['responseStatus'=>200,'matches'=>[['segment'=>'24 °C','translation'=>'24 °F','target'=>'tr-TR']]],'24 °C'],
+ [['responseStatus'=>200,'quotaFinished'=>true],'Gas']
+] as [$data,$source]){try{chemicalTranslationResult($data,$source);throw new LogicException('unsafe translation accepted');}catch(RuntimeException){}}
+check(chemicalTranslationSource(['sections'=>[1=>[['heading'=>'CAS','text'=>'630-08-0']]]],1,0)==='','identifiers never translated');
 
 $info=fn($text,$ref=1)=>['ReferenceNumber'=>$ref,'Value'=>['StringWithMarkup'=>[['String'=>$text]]]];
 $record=['RecordType'=>'CID','RecordNumber'=>702,'RecordTitle'=>'Fixture','Reference'=>[['ReferenceNumber'=>1,'SourceName'=>'Source A','URL'=>'https://example.org/','LicenseNote'=>'Test license']],'Section'=>[

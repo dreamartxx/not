@@ -1,4 +1,4 @@
 export const fold=value=>String(value??'').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 export const topicText=t=>[t.title,t.subtitle,t.intro,t.body,t.document,t.chapter,t.pitfall,...(t.steps||[]).flat()].filter(Boolean).join(' ');
 export function searchTopics(topics,query,category='all') {const words=fold(query).trim().split(/\s+/).filter(Boolean);return topics.filter(t=>(category==='all'||t.category===category)&&words.every(w=>fold(topicText(t)).includes(w)));}
-export function snippet(t,query){const text=topicText(t);const word=fold(query).trim().split(/\s+/)[0];const index=word?fold(text).indexOf(word):-1;const start=Math.max(0,index-50);return (start?'…':'')+text.slice(start,start+180)+(text.length>start+180?'…':'');}
+export function snippet(t,query){const text=[t.intro,t.body,t.pitfall,...(t.steps||[]).flat()].filter(Boolean).join(' ')||topicText(t);const word=fold(query).trim().split(/\s+/)[0];const index=word?fold(text).indexOf(word):-1;const start=Math.max(0,index-50);return (start?'…':'')+text.slice(start,start+180)+(text.length>start+180?'…':'');}

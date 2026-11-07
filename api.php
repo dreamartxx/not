@@ -68,7 +68,7 @@ if ($action==='password' && $method==='POST') {
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
-if(in_array($action,['chemical-search','chemical'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method);}
+if(in_array($action,['chemical-search','chemical','chemical-translate'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method);}
 if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
 require __DIR__.'/lib/page-tree.php';
 require __DIR__.'/lib/mindmap.php';

@@ -191,39 +191,52 @@ Zihin haritasında merkez ve dal konuları fare/dokunma ile sürüklenir; odakl�
 Zihin haritası çalışma ekranının tamamını kullanır. Boş alanı sürükleyerek veya tekerlekle gezinebilir, + / − ya da Ctrl/⌘ + tekerlek ile yakınlaştırabilir, Tümünü göster ile konuları kadraja alabilirsin. Konular sayfa kutusuna sınırlanmaz. Konuya tıklayınca açılan not paneli otomatik kaydedilir; konu notları haritayla birlikte yedeklenir ve kopyalanır.
 
 
-## Kimyasal, ilk yardım / EKG ve İSG çalışma alanları
+## Kimyasal, Kalp & EKG ve İSG çalışma alanları
 
 Çalışma alanı seçicisinden açılır; doğrudan yollar `#chemicals`, `#firstaid`, `#isg`.
 Üçü de açık/koyu paletleri, mobil düzeni ve ayrı kapak fotoğraflarını destekler.
 
 **Kimyasal:** PubChem PUG-REST ad/CAS araması; CAS kontrol basamağı ve yaygın Türkçe
 ad eşlemeleri; sonuçtan CID seçimi; PUG-View güvenlik açıklamaları GBF'nin 16 başlığına
-dağıtılır. Kaynak değerleri çevrilmeden, birim, kaynak, atıf ve lisans bilgileriyle
-korunur. Molekül resmi, kaynak GHS işaretleri, kayıt içi Türkçe başlık/özgün metin
+dağıtılır. Türkçe adlar, bitişik yazım, Türkçe klavye farkları ve yaygın yazım hataları
+tanınır; bilinmeyen yakın yazımlar için öneri seçilir. Sonuç adları Türkçe gösterilir.
+Açılan kaynak açıklamaları MyMemory ile Türkçeye çevrilir; özgün metin, birim, kaynak,
+atıf ve lisans bilgileri korunur. Molekül resmi, kaynak GHS işaretleri, kayıt içi Türkçe başlık/özgün metin
 araması ve metin dökümü vardır. Eksik alanlar açıkça belirtilir. Bu bir üretici GBF'si
 değildir; ürün bileşimi, saflığı, tedarikçi veya Türkiye mevzuatına uygunluk varsayılmaz.
 
-Oturum sahibi API'si yalnızca sabit PubChem HTTPS hostuna istek yapar; yönlendirme
-izlenmez. Arama ve kayıtlar MySQL/SQLite önbelleğinde 24 saat tutulur; 30 günden eski
+Kimyasal veri API'si sabit PubChem HTTPS hostuna; çeviri API'si sabit
+`api.mymemory.translated.net` hostuna istek yapar. Yönlendirme izlenmez. Çeviriye yalnızca
+sunucuda önbelleklenmiş halka açık PubChem metni gönderilebilir; not veya serbest metin
+kabul edilmez. MyMemory anonim hizmetinin 5.000 karakter/gün kotası vardır; e-posta
+veya API anahtarı gönderilmez. Yalnızca tam kaynak cümlesi eşleşen çeviriler kullanılır;
+sayı, CAS ve H/P kodu değişiklikleri reddedilir. Çeviriler kalıcı veritabanı
+önbelleğinde saklanır, kota/bağlantı hatası Türkçe uyarıyla görünür. Resmî GBF çevirisi
+değildir. Kaynak metin dökümü özgün dilde kalır.
+
+ Arama ve kayıtlar MySQL/SQLite önbelleğinde 24 saat tutulur; 30 günden eski
 kayıtlar temizlenir. Bağlantı hatasında eski kayıt kullanılırsa tarihi ve eski olduğu
 gösterilir; 404 gizlenmez. Yanıt boyutu 12 MB, bağlantı 8 sn ve toplam süre 30 sn ile
 sınırlıdır. Anahtar gerektirmez; sunucuda PHP cURL gerekir. API cevapları PWA önbelleğine
 yazılmaz. Üretim veritabanı tabloları ilk yetkili sorguda oluşturulur.
 
-**İlk yardım / EKG:** 13 ilk yardım konusu, 4 EKG temel konusu, LITFL'den kaynak ve
-CC BY-NC-SA 4.0 atıflı 12 gerçek EKG örneği, 4 ayrı AHA 2025 yetişkin ileri ritim
-rehberi. Türkçe adım anlatımları, özgün şemalar, 25 mm/sn düzenli ritim hız öğreticisi
-ve tam kaynak bağlantıları içerir. İleri tedavi bölümü profesyonel olarak etiketlidir.
-Lisans ve kaynak ayrıntıları `licenses/medical-sources.txt` içinde bulunur.
+**Kalp & EKG:** Genel ilk yardım içeriği kaldırıldı. Dört yetişkin AHA 2025
+algoritması (arrest, nabızlı taşikardi, bradikardi, elektrik tedavisi), manuel karar
+dalları, geri dönüş/sıfırlama ve açılır doz/enerji referansları sunar. Hasta izlemez,
+otomatik tanı veya işlem kaydı üretmez. Dört EKG temel konusu ve 12 gerçek LITFL
+örneği ayrı sekmelerdedir; kaynak ve CC BY-NC-SA 4.0 atıfları korunur.
 
-**İSG:** 6331 Kanunu ve risk değerlendirmesi, acil durumlar, kurullar, çalışan eğitimi,
-kimyasal maddeler, İSG hizmetleri ve iş ekipmanları yönetmeliklerinin arşiv metinleri.
-Toplam 225 madde başlangıcı, ekler ve değişiklik metinleri 215 okuma başlığında aranır.
-Türkçe/ASCII sözcükler, çoklu sözcük arama, mevzuat filtresi ve sonuç bağlamı desteklenir.
-Kaynak mevzuat.wiki transkripsiyonudur: kanun nüshası 25.07.2026, yönetmelikler
-02.08.2026. Resmî sunuculara erişim sınırlı olduğundan 07.11.2026 itibarıyla yürürlük
-ve sonraki değişiklikler doğrulanmış sayılmaz; arayüz bunu açıkça gösterir. Bu seçilmiş
-7 temel yönetmelik külliyatıdır, bütün sektör mevzuatı olduğu iddia edilmez.
+**İSG:** 6331 ve 37 ilgili yönetmelik; madde, aranabilir ek metni ve ayrı kaynak
+dosyaları filtrelenebilir. İşyeri hekimi/DSP, uzmanlık, fiziksel/kimyasal/biyolojik
+etkenler, yapı, maden, çalışma koşulları ve sağlık gözetimi dahil genişletilmiş
+kapsamdır; tüm sektör mevzuatının eksiksiz ve güncel külliyatı olduğu iddia edilmez.
+Mevzuat.wiki arşivleri: kanun 25.07.2026, çoğu yönetmelik 02.08.2026. Yapı işleri
+metni Medipol'ün kamuya açık PDF nüshasından alınmıştır; kaynak sürümü doğrulanamadı.
+Resmî sunucuya erişilemediğinden sonraki değişiklikler doğrulanamadı. Her belge
+kaynak/sürüm bilgisi taşır. Ayrı Word/ZIP/PDF ekleri bağlantıyla erişilir ve henüz
+metin aramasına dahil olmadıkları açıkça belirtilir. Ek dosyası linki bulunmayan
+kaynaklarda arşiv sayfasına yönlendirme yapılır; dosya erişimi garanti edilmez.
+
 
 Doğrulama: `npm test`, `python3 tests/integration.py`; ek kimyasal testleri CAS,
 kimlik/URL doğrulaması, birim ve kaynakların korunması, eski önbellek ve hata yollarını;
