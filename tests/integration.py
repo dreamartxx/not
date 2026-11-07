@@ -34,12 +34,17 @@ def run():
       assert a.status()['setup']
       a.call('pages',code=401)
       a.call('football',code=401)
+      a.call('chemical-search&q=ethanol',code=401)
+      a.call('chemical&cid=702',code=401)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403,csrf='bad')
       a.call('setup',{'username':'Test','password':password,'setup_key':'wrong'},code=403)
       a.call('setup',{'username':'Test','password':'Abc12!','setup_key':key},code=400)
       a.call('setup',{'username':'Test','password':'şşşşşş','setup_key':key},code=400)
       result=a.call('setup',{'username':'Test','password':password,'setup_key':key});a.csrf=result['csrf']
       assert a.status()['authenticated']
+      for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x']:
+        a.call(invalid,code=400)
+      a.call('chemical',{},405)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403)
       b=Client(a.base);b.status();b.call('login',{'username':'Test','password':'incorrect'},code=401)
       b.csrf=b.call('login',{'username':'Test','password':password})['csrf']
@@ -83,6 +88,9 @@ def run():
           assert e.headers['Cache-Control']=='no-store'
         else: raise AssertionError('Retired education entry point is still available')
       assert a.status()['authenticated']
+      for invalid in ['chemical&cid=-1','chemical&cid=abc','chemical-search&q=64-17-6','chemical-search&q[]=x']:
+        a.call(invalid,code=400)
+      a.call('chemical',{},405)
       print('PASS: education and guest entry points retired; owner session preserved.')
       from rich_reminders_integration import run_rich_reminders
       run_rich_reminders(a)

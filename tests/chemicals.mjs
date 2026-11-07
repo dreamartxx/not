@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {sdsSections,validCAS,matchesEntry,safeURL,recordText} from '../assets/chemicals-model.js';
+assert.equal(sdsSections.length,16);
+for(const cas of ['64-17-5','67-64-1','1310-73-2','71-43-2'])assert.ok(validCAS(cas),cas);
+for(const cas of ['64-17-6','123','064-17-5','javascript:1','64-17-5\n'])assert.ok(!validCAS(cas),cas);
+assert.equal(safeURL('javascript:alert(1)'),'');assert.equal(safeURL('data:text/html,test'),'');
+const entry={heading:'Boiling Point',name:'',path:['Chemical and Physical Properties','Experimental Properties'],text:'78 °C at 760 mm Hg',source:{name:'NIOSH',url:'https://www.cdc.gov/niosh/'},icons:[],citations:[]};
+assert.ok(matchesEntry(entry,'KAYNAMA'));assert.ok(matchesEntry(entry,'78 NIOSH'));assert.ok(!matchesEntry(entry,'kaynama absent'));
+const text=recordText({cid:702,title:'Ethanol',cas:['64-17-5'],fetched_at:'2026-11-07',source:'https://pubchem.ncbi.nlm.nih.gov/compound/702',sections:{9:[entry]}});
+assert.match(text,/Resmî GBF değildir/);assert.match(text,/760 mm Hg/);assert.match(text,/NIOSH/);assert.match(text,/16\. DİĞER BİLGİLER/);assert.match(text,/verisi bulunamadı/);
+console.log('PASS: chemical CAS checksum, Turkish multiword search, safe links and 16-section export.');

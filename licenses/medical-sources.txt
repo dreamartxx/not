@@ -1,0 +1,37 @@
+ECG teaching summaries and images
+
+The ECG adaptations in assets/firstaid-data.js credit Life in the Fast Lane
+(LITFL), ECG Library, https://litfl.com/ecg-library/basics/.
+Each topic includes its exact article URL. The image URL is taken from that
+article; images are loaded from LITFL and are not republished as local copies.
+
+LITFL's stated license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+Changes: original Turkish educational summaries, reordered learning steps,
+and links to the source examples. These adaptations carry the same license.
+The application is a private personal workspace, not a commercial ECG library.
+
+Original SVG teaching diagrams in assets/knowledge-visuals.js are schematic,
+not patient records. They are offered under CC BY-NC-SA 4.0 as well.
+
+Other medical topics are short original summaries with per-topic links to
+AHA 2025 adult algorithms, Resuscitation Council UK 2025, NHS and St John
+Ambulance. The app does not reproduce their full documents or imply endorsement.
+Source review date: 7 November 2026. Not an official Turkish translation.
+
+Legislation
+
+assets/isg-data.js contains public-domain legislation transcriptions obtained
+from mevzuat.wiki. It excludes site editorial text. The law snapshot is dated
+25 July 2026 and the seven regulation snapshots 2 August 2026, as declared by
+the source. These are archival dates, not effective dates or verification of
+current force. Official binding texts must be checked via mevzuat.gov.tr and
+Resmi Gazete. Per-document source and snapshot metadata is retained in the UI.
+
+PubChem
+
+Chemical data is fetched dynamically from NCBI PubChem PUG-REST / PUG-View.
+Each annotation retains its contributing source, citation, license notice and
+license URL when provided. No blanket license is asserted over third-party
+annotations. The sixteen headings are an SDS-shaped research view, not an SDS
+issued by a manufacturer or an assertion of Turkish regulatory compliance.

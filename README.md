@@ -189,3 +189,42 @@ Açık notta **Ekle → Zihin haritası** aynı sayfaya bağlı bir harita açar
 Zihin haritasında merkez ve dal konuları fare/dokunma ile sürüklenir; odaklı konuda ok tuşları 5 px, Shift + ok 20 px taşır. Bağlantılar konuları izler. Ayarlar → Su dalgası → şiddet (%0–100) ve hız (%10–100) her haritaya özeldir; azaltılmış hareket tercihi animasyonu durdurur. Taşınan konumlar otomatik kaydedilir.
 
 Zihin haritası çalışma ekranının tamamını kullanır. Boş alanı sürükleyerek veya tekerlekle gezinebilir, + / − ya da Ctrl/⌘ + tekerlek ile yakınlaştırabilir, Tümünü göster ile konuları kadraja alabilirsin. Konular sayfa kutusuna sınırlanmaz. Konuya tıklayınca açılan not paneli otomatik kaydedilir; konu notları haritayla birlikte yedeklenir ve kopyalanır.
+
+
+## Kimyasal, ilk yardım / EKG ve İSG çalışma alanları
+
+Çalışma alanı seçicisinden açılır; doğrudan yollar `#chemicals`, `#firstaid`, `#isg`.
+Üçü de açık/koyu paletleri, mobil düzeni ve ayrı kapak fotoğraflarını destekler.
+
+**Kimyasal:** PubChem PUG-REST ad/CAS araması; CAS kontrol basamağı ve yaygın Türkçe
+ad eşlemeleri; sonuçtan CID seçimi; PUG-View güvenlik açıklamaları GBF'nin 16 başlığına
+dağıtılır. Kaynak değerleri çevrilmeden, birim, kaynak, atıf ve lisans bilgileriyle
+korunur. Molekül resmi, kaynak GHS işaretleri, kayıt içi Türkçe başlık/özgün metin
+araması ve metin dökümü vardır. Eksik alanlar açıkça belirtilir. Bu bir üretici GBF'si
+değildir; ürün bileşimi, saflığı, tedarikçi veya Türkiye mevzuatına uygunluk varsayılmaz.
+
+Oturum sahibi API'si yalnızca sabit PubChem HTTPS hostuna istek yapar; yönlendirme
+izlenmez. Arama ve kayıtlar MySQL/SQLite önbelleğinde 24 saat tutulur; 30 günden eski
+kayıtlar temizlenir. Bağlantı hatasında eski kayıt kullanılırsa tarihi ve eski olduğu
+gösterilir; 404 gizlenmez. Yanıt boyutu 12 MB, bağlantı 8 sn ve toplam süre 30 sn ile
+sınırlıdır. Anahtar gerektirmez; sunucuda PHP cURL gerekir. API cevapları PWA önbelleğine
+yazılmaz. Üretim veritabanı tabloları ilk yetkili sorguda oluşturulur.
+
+**İlk yardım / EKG:** 13 ilk yardım konusu, 4 EKG temel konusu, LITFL'den kaynak ve
+CC BY-NC-SA 4.0 atıflı 12 gerçek EKG örneği, 4 ayrı AHA 2025 yetişkin ileri ritim
+rehberi. Türkçe adım anlatımları, özgün şemalar, 25 mm/sn düzenli ritim hız öğreticisi
+ve tam kaynak bağlantıları içerir. İleri tedavi bölümü profesyonel olarak etiketlidir.
+Lisans ve kaynak ayrıntıları `licenses/medical-sources.txt` içinde bulunur.
+
+**İSG:** 6331 Kanunu ve risk değerlendirmesi, acil durumlar, kurullar, çalışan eğitimi,
+kimyasal maddeler, İSG hizmetleri ve iş ekipmanları yönetmeliklerinin arşiv metinleri.
+Toplam 225 madde başlangıcı, ekler ve değişiklik metinleri 215 okuma başlığında aranır.
+Türkçe/ASCII sözcükler, çoklu sözcük arama, mevzuat filtresi ve sonuç bağlamı desteklenir.
+Kaynak mevzuat.wiki transkripsiyonudur: kanun nüshası 25.07.2026, yönetmelikler
+02.08.2026. Resmî sunuculara erişim sınırlı olduğundan 07.11.2026 itibarıyla yürürlük
+ve sonraki değişiklikler doğrulanmış sayılmaz; arayüz bunu açıkça gösterir. Bu seçilmiş
+7 temel yönetmelik külliyatıdır, bütün sektör mevzuatı olduğu iddia edilmez.
+
+Doğrulama: `npm test`, `python3 tests/integration.py`; ek kimyasal testleri CAS,
+kimlik/URL doğrulaması, birim ve kaynakların korunması, eski önbellek ve hata yollarını;
+kütüphane testleri madde kapsamı, kaynaklar ve Türkçe aramayı denetler.

@@ -68,6 +68,7 @@ if ($action==='password' && $method==='POST') {
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
+if(in_array($action,['chemical-search','chemical'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method);}
 if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
 require __DIR__.'/lib/page-tree.php';
 require __DIR__.'/lib/mindmap.php';
@@ -104,8 +105,8 @@ if (in_array($action,['import','validate-import'],true)) {
         $seen=[$id=>true];$parent=$item['parent_id']??null;
         while($parent && isset($clean[$parent])) {if(isset($seen[$parent])) fail('Yedekte döngüsel sayfa ilişkisi var.');$seen[$parent]=true;$parent=$clean[$parent]['parent_id']??null;}
     }
-    $workspaceCovers=$input['covers']??[];if(!is_array($workspaceCovers)||count($workspaceCovers)>7)fail('Geçersiz alan kapakları.');
-    foreach($workspaceCovers as $scope=>$cover){if(!in_array($scope,['home','favorites','trash','dnd','football','reminders','education'],true))fail('Geçersiz çalışma alanı.');$workspaceCovers[$scope]=validCover($cover);}
+    $workspaceCovers=$input['covers']??[];if(!is_array($workspaceCovers)||count($workspaceCovers)>10)fail('Geçersiz alan kapakları.');
+    foreach($workspaceCovers as $scope=>$cover){if(!in_array($scope,['home','favorites','trash','dnd','football','reminders','education','chemicals','firstaid','isg'],true))fail('Geçersiz çalışma alanı.');$workspaceCovers[$scope]=validCover($cover);}
     if($action==='validate-import') respond(['ok'=>true]);
     foreach($clean as $item)if(isset($item['cover_photo']))coverImageExists($db,$item['cover_photo']);
     foreach($workspaceCovers as $cover)coverImageExists($db,$cover);

@@ -12,7 +12,7 @@ def run_covers(a, Client):
     ]: a.call('cover-save',data,400)
     a.call('cover-save',{'scope':'page:'+'f'*32,**photo},404)
     p=a.call('create',{'title':'Kapaklı sayfa'},201)['page']
-    for scope in ['dnd','home','favorites','trash','football','page:'+p['id']]:
+    for scope in ['dnd','home','favorites','trash','football','chemicals','firstaid','isg','page:'+p['id']]:
         a.call('cover-save',{'scope':scope,**photo})
         assert a.call('covers')['covers'][scope]==photo
     assert a.call('football')['cover']==photo
@@ -33,7 +33,7 @@ def run_covers(a, Client):
     a.call('remove-media',{'id':image},409)
     a.call('restore',{'id':p['id']})
     assert a.call('covers')['covers']['page:'+p['id']]==photo
-    for scope in ['dnd','home','favorites','trash','football']:
+    for scope in ['dnd','home','favorites','trash','football','chemicals','firstaid','isg']:
         a.call('cover-save',{'scope':scope,'media_id':'','position':50})
     for item in [p,copy]:
         a.call('trash',{'id':item['id']});a.call('purge',{'id':item['id']})
