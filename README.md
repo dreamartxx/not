@@ -185,3 +185,5 @@ Hatırlatıcı ekleme/düzenleme formundaki **Google Takvim’e ekle** düğmesi
 AES-256-GCM ve PBKDF2-SHA256 (600.000 tur, rastgele 16 bayt salt) tarayıcıda çalışır. Her yazmada yeni bir IV kullanılır. Kimliği doğrulanmış API, şifreli kasayı sürüm kontrolü ile saklar. Kod üretimi RFC 6238 uyumludur.
 
 Açık notta **Ekle → Zihin haritası** aynı sayfaya bağlı bir harita açar. Not / Zihin haritası düğmeleri görünümü değiştirir. Bir konu seçip dal ekleyebilir, adını değiştirebilir veya dalı alt konularıyla kaldırabilirsin. Ayarlar’daki çizgi kalınlığı, dal uzunluğu ve hareket yalnızca o haritayla saklanır. JSON yedeği haritaları içerir.
+
+Zihin haritasında merkez ve dal konuları fare/dokunma ile sürüklenir; odaklı konuda ok tuşları 5 px, Shift + ok 20 px taşır. Bağlantılar konuları izler. Ayarlar → Su dalgası → şiddet (%0–100) ve hız (%10–100) her haritaya özeldir; azaltılmış hareket tercihi animasyonu durdurur. Taşınan konumlar otomatik kaydedilir.

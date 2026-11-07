@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {newMindmap,layout,moveNode,waveOffset} from '../assets/mindmap.js';
+const map=newMindmap('Merkez');map.nodes.push({id:'a',parent:'root',label:'A'},{id:'b',parent:'root',label:'B'},{id:'c',parent:'a',label:'C'});
+const relative=m=>{const l=layout(m);return l.points.map(p=>({x:p.x-l.width/2,y:p.y-l.height/2}));};
+const before=relative(map);moveNode(map.nodes[0],50,-40);moveNode(map.nodes[1],-25,30);const after=relative(map);
+assert.deepEqual(after[0],{x:before[0].x+50,y:before[0].y-40});assert.deepEqual(after[1],{x:before[1].x-25,y:before[1].y+30});assert.deepEqual(after[2],before[2]);
+assert.deepEqual(relative(JSON.parse(JSON.stringify(map))),after);
+const n={x:30,y:55};
+assert.deepEqual(waveOffset({...map,motion:'still'},n,2),{x:0,y:0});
+assert.deepEqual(waveOffset(map,n,2,true),{x:0,y:0});
+assert.equal(Math.hypot(...Object.values(waveOffset({...map,strength:0},n,2))),0);
+const weak=waveOffset({...map,strength:20},n,2),strong=waveOffset({...map,strength:40},n,2);assert.equal(strong.x,weak.x*2);assert.equal(strong.y,weak.y*2);
+assert.notDeepEqual(waveOffset({...map,speed:10},n,2),waveOffset({...map,speed:100},n,2));
+moveNode(map.nodes[0],1e6,-1e6);assert.equal(map.nodes[0].dx,4000);assert.equal(map.nodes[0].dy,-4000);
+console.log('PASS: independent root/branch movement, persistence, wave amplitude/speed and reduced motion.');

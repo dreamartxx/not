@@ -385,6 +385,8 @@ dialog:has(.appearance-options) .modal-heading,dialog:has(.appearance-options) .
 .mm-root{width:154px;height:66px;color:white;font-weight:700;border:1px solid #b6a6fb;background:linear-gradient(150deg,#8971dd,#55449e 55%,#43337e);box-shadow:inset 0 2px 2px #fff5,0 5px 0 #3c2b72,0 11px 23px #46358652}
 .mm-tools{margin:12px 2px}.mm-tools>span{color:var(--muted);font-size:12px;margin-right:auto;overflow-wrap:anywhere}.mm-tools [hidden]{display:none}
 #mm-options label,#mm-form label{display:block;margin:14px 0}#mm-options output{color:var(--accent);float:right}#mm-options input,#mm-options select,#mm-name{display:block;width:100%;margin-top:6px}
-@keyframes mm-float{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}@keyframes mm-drift{0%,100%{transform:translate(-2px,-3px)}50%{transform:translate(3px,4px)}}@keyframes mm-flow{to{stroke-dashoffset:-40}}
-.mm-stage[data-motion=float] .mm-water{animation:mm-float 6s ease-in-out infinite}.mm-stage[data-motion=ripple] .mm-water{animation:mm-drift 5s ease-in-out infinite}.mm-stage[data-motion=ripple] path{stroke-dasharray:14 6;animation:mm-flow 4s linear infinite}
-@media(prefers-reduced-motion:reduce){.mm .mm-water,.mm .mm-lines path{animation:none!important}}
+
+.mm-hint{font-size:11px;color:var(--muted);margin:8px 4px}
+.mm-node{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.mm-dragging,.mm-dragging *{cursor:grabbing!important}.mm-dragging .mm-node[aria-pressed=true]{box-shadow:0 8px 24px #0003}
+.mm-canvas{overscroll-behavior:contain}.mm-node:focus-visible{outline:3px solid var(--accent);outline-offset:4px}

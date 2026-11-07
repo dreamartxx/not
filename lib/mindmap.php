@@ -10,9 +10,12 @@ function validMindmap(mixed $map): ?array {
   $id=$n['id']??null;$parent=$n['parent']??null;
   if(!is_string($id)||!preg_match('/^[a-zA-Z0-9_-]{1,60}$/D',$id)||isset($seen[$id])||($i===0?$parent!==null:!is_string($parent)||!isset($seen[$parent])))fail('Konu bağlantısı geçersiz.');
   $label=trim(shortText($n['label']??'',100));if($label==='')fail('Konu adı boş olamaz.');
-  $seen[$id]=true;$out[]=['id'=>$id,'parent'=>$parent,'label'=>$label];
+  $seen[$id]=true;$node=['id'=>$id,'parent'=>$parent,'label'=>$label];
+  foreach(['dx','dy'] as $axis)if(array_key_exists($axis,$n))$node[$axis]=number($n[$axis],-4000,4000);$out[]=$node;
  }
- return ['nodes'=>$out,'weight'=>number($map['weight']??3,1,9),'length'=>number($map['length']??90,40,220),'motion'=>choice($map['motion']??'still',['still','float','ripple'])];
+ $result=['nodes'=>$out,'weight'=>number($map['weight']??3,1,9),'length'=>number($map['length']??90,40,220),'motion'=>choice($map['motion']??'still',['still','float','ripple'])];
+ foreach(['strength'=>[0,100],'speed'=>[10,100]] as $key=>[$min,$max])if(array_key_exists($key,$map))$result[$key]=number($map[$key],$min,$max);
+ return $result;
 }
 function saveMindmap(PDO $db,string $id,?array $map): void{
  if(!$map){$db->prepare('DELETE FROM page_mindmaps WHERE page_id=?')->execute([$id]);return;}
