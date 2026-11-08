@@ -22,7 +22,7 @@ function saveCover(PDO $db,string $scope,array $cover): void {
 }
 function allCovers(PDO $db): array {
  $covers=[];
- foreach($db->query('SELECT * FROM workspace_covers')->fetchAll() as $r)$covers[$r['scope']]=['media_id'=>$r['media_id'],'position'=>(int)$r['position']];
+ foreach($db->query('SELECT * FROM workspace_covers')->fetchAll() as $r)if(!in_array($r['scope'],['chemicals','firstaid'],true))$covers[$r['scope']]=['media_id'=>$r['media_id'],'position'=>(int)$r['position']];
  $r=$db->query('SELECT media_id,position FROM football_settings WHERE id=1')->fetch();
  if($r)$covers['football']=['media_id'=>$r['media_id'],'position'=>(int)$r['position']];
  return $covers;
@@ -34,6 +34,6 @@ function coversAPI(PDO $db,string $action,string $method,array $input): void {
  if(!is_string($scope))fail('Geçersiz çalışma alanı.');
  if(preg_match('/^page:([a-f0-9]{32})$/D',$scope,$m)){
   $p=findPage($db,$m[1]);if($p['deleted_at'])fail('Bu sayfa çöp kutusunda.',409);
- }elseif(!in_array($scope,['home','favorites','trash','dnd','football','reminders','education','chemicals','firstaid','isg'],true))fail('Geçersiz çalışma alanı.');
+ }elseif(!in_array($scope,['home','favorites','trash','dnd','football','reminders','education','isg'],true))fail('Geçersiz çalışma alanı.');
  $cover=validCover($input);coverImageExists($db,$cover);saveCover($db,$scope,$cover);respond(['cover'=>$cover]);
 }

@@ -191,43 +191,9 @@ Zihin haritasında merkez ve dal konuları fare/dokunma ile sürüklenir; odakl�
 Zihin haritası çalışma ekranının tamamını kullanır. Boş alanı sürükleyerek veya tekerlekle gezinebilir, + / − ya da Ctrl/⌘ + tekerlek ile yakınlaştırabilir, Tümünü göster ile konuları kadraja alabilirsin. Konular sayfa kutusuna sınırlanmaz. Konuya tıklayınca açılan not paneli otomatik kaydedilir; konu notları haritayla birlikte yedeklenir ve kopyalanır.
 
 
-## Kimyasal, Kalp & EKG ve İSG çalışma alanları
+## İSG çalışma alanı
 
-Çalışma alanı seçicisinden açılır; doğrudan yollar `#chemicals`, `#firstaid`, `#isg`.
-Üçü de açık/koyu paletleri, mobil düzeni ve ayrı kapak fotoğraflarını destekler.
-
-**Kimyasal:** Etkin kaynak PubChem'dir; PUG REST / PUG View üzerinden anahtarsız
-ad/CAS araması yapılır. Tam veritabanı indirilmez, yalnızca seçilen madde alınır.
-Türkçe adlar ve yaygın yazım hataları desteklenir. Sonuç CID'si doğrulanır.
-Hazır Türkçe kaynak araması yapılmaz; ILO kartı veya ücretli çeviri API'si çağrılmaz.
-CompTox adaptörü kodda korunur ancak etkin değildir. PubChem için anahtar gerekmez.
-
-Kaynak metinler GBF'nin 16 bölümüne, hazır form ise 8 başlık / 23 alana ayrılır.
-Kaynakta bulunmayan bilgiler doldurulmaz; form resmî üretici GBF'si değildir.
-**Türkçeye çevir** düğmesi form alanlarının öne çıkan açıklamalarını destekleyen
-masaüstü Chrome'da yerel `Translator` (`en` → `tr`) ile çevirir. İlk tıklamada dil
-paketi indirilebilir. Durdur düğmesi yeni çevirileri durdurur; tamamlanan kayıtlar
-korunur. İlerleme ve başarısızlık nedeni gösterilir. Kaynak sekmesindeki metinler
-tek tek çevrilebilir, Türkçe / Özgün metin düğmeleriyle karşılaştırılabilir.
-Türkçe metinler kaynak aramasına da dahildir.
-
-Çeviri API anahtarı ve çeviri ücreti gerekmez. Mobil/Safari/Firefox desteği yoksa
-uygun açıklama gösterilir; önceden kaydedilen sonuçlar bu cihazlarda okunabilir.
-Tamamlanan çeviriler sahibi doğrulanmış, CSRF korumalı `chemical-local-save` ile
-kendi veritabanında saklanır. CID, kaynak hash'i, sayı/birimler doğrulanır; bu
-anlamsal/kimyasal doğruluk garantisi değildir. İngilizce metin Türkçe forma veya
-HTML/PDF çıktısına düşmez; kaynak sekmesinde çevrilmemiş olduğu belirtilir.
-
-PubChem sorguları sabit HTTPS hostu, yönlendirmesiz erişim ve boyut/zaman sınırıyla
-alınır. Arama ve kayıtlar 24 saat önbelleklenir; 30 günden eski veri temizlenir.
-Bağlantı hatasında eski veri gösterilirse belirtilir. API yanıtları PWA önbelleğine
-yazılmaz. Kaynaklar, tarihler ve deneysel / hesaplanan ayrımı korunur.
-
-**Kalp & EKG:** Genel ilk yardım içeriği kaldırıldı. Dört yetişkin AHA 2025
-algoritması (arrest, nabızlı taşikardi, bradikardi, elektrik tedavisi), manuel karar
-dalları, geri dönüş/sıfırlama ve açılır doz/enerji referansları sunar. Hasta izlemez,
-otomatik tanı veya işlem kaydı üretmez. Dört EKG temel konusu ve 12 gerçek LITFL
-örneği ayrı sekmelerdedir; kaynak ve CC BY-NC-SA 4.0 atıfları korunur.
+Çalışma alanı seçicisinden veya `#isg` yolundan açılır. Açık/koyu paletleri, mobil düzeni ve kapak fotoğrafını destekler.
 
 **İSG:** 6331 ve 37 ilgili yönetmelik; madde, aranabilir ek metni ve ayrı kaynak
 dosyaları filtrelenebilir. İşyeri hekimi/DSP, uzmanlık, fiziksel/kimyasal/biyolojik
@@ -241,6 +207,6 @@ metin aramasına dahil olmadıkları açıkça belirtilir. Ek dosyası linki bul
 kaynaklarda arşiv sayfasına yönlendirme yapılır; dosya erişimi garanti edilmez.
 
 
-Doğrulama: `npm test`, `python3 tests/integration.py`; ek kimyasal testleri CAS,
-kimlik/URL doğrulaması, birim ve kaynakların korunması, eski önbellek ve hata yollarını;
-kütüphane testleri madde kapsamı, kaynaklar ve Türkçe aramayı denetler.
+Doğrulama: `npm test`, `python3 tests/integration.py`. Kütüphane testleri madde kapsamı, kaynaklar ve Türkçe aramayı denetler.
+
+Kimyasal ve ilk yardım / Kalp & EKG modülleri kaldırıldı. Eski kimyasal API çağrıları 410 döner; eski çalışma alanı bağlantıları tüm sayfalara yönlenir. Eski yedeklerde bu modüllere ait kapaklar içe aktarılmaz. Mevcut notlar ve kişisel veriler silinmez.

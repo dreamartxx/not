@@ -8,6 +8,7 @@ function fail(string $message, int $status = 400): never { respond(['error' => $
 set_exception_handler(function(Throwable $e) { error_log('Not API: '.$e->getMessage()); fail('Sunucu işlemi tamamlayamadı. Bağlantını kontrol edip tekrar dene.', 500); });
 // Retired module: block old clients before starting a session or accessing the database.
 if (str_starts_with((string)($_GET['action'] ?? ''), 'education')) fail('Eğitim modülü kaldırıldı.',410);
+if (str_starts_with((string)($_GET['action'] ?? ''), 'chemical')) fail('Kimyasal modülü kaldırıldı.',410);
 $externalConfig = dirname(rtrim($_SERVER['DOCUMENT_ROOT'] ?? __DIR__, '/')).'/not-config.php';
 $configPath = getenv('NOT_CONFIG') ?: (is_file($externalConfig) ? $externalConfig : __DIR__.'/private/config.php');
 if (!is_file($configPath)) respond(['configured'=>false, 'error'=>'Sunucu ayarları henüz tamamlanmadı.'], 503);
@@ -68,8 +69,6 @@ if ($action==='password' && $method==='POST') {
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
-if($action==='chemical-local-save'){require __DIR__.'/lib/chemicals.php';if($method!=='POST')fail('Desteklenmeyen yöntem.',405);try{respond(chemicalLocalTranslationSave($db,$input??[]));}catch(InvalidArgumentException $e){fail($e->getMessage());}}
-if(in_array($action,['chemical-search','chemical','chemical-translate','chemical-status'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method,$config);}
 if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
 require __DIR__.'/lib/page-tree.php';
 require __DIR__.'/lib/mindmap.php';
@@ -107,7 +106,7 @@ if (in_array($action,['import','validate-import'],true)) {
         while($parent && isset($clean[$parent])) {if(isset($seen[$parent])) fail('Yedekte döngüsel sayfa ilişkisi var.');$seen[$parent]=true;$parent=$clean[$parent]['parent_id']??null;}
     }
     $workspaceCovers=$input['covers']??[];if(!is_array($workspaceCovers)||count($workspaceCovers)>10)fail('Geçersiz alan kapakları.');
-    foreach($workspaceCovers as $scope=>$cover){if(!in_array($scope,['home','favorites','trash','dnd','football','reminders','education','chemicals','firstaid','isg'],true))fail('Geçersiz çalışma alanı.');$workspaceCovers[$scope]=validCover($cover);}
+    foreach($workspaceCovers as $scope=>$cover){if(in_array($scope,['chemicals','firstaid'],true)){unset($workspaceCovers[$scope]);continue;}if(!in_array($scope,['home','favorites','trash','dnd','football','reminders','education','isg'],true))fail('Geçersiz çalışma alanı.');$workspaceCovers[$scope]=validCover($cover);}
     if($action==='validate-import') respond(['ok'=>true]);
     foreach($clean as $item)if(isset($item['cover_photo']))coverImageExists($db,$item['cover_photo']);
     foreach($workspaceCovers as $cover)coverImageExists($db,$cover);

@@ -6,8 +6,5 @@ return [
     'db_password' => 'VERITABANI_SIFRESI',
     // En az 32 karakterlik rastgele bir anahtar belirleyin. İlk hesap kurulumunda sorulur.
     'setup_key' => 'BURAYA_EN_AZ_32_KARAKTER_RASTGELE_ANAHTAR',
-    // EPA'dan ücretsiz kişisel anahtar: ccte_api@epa.gov. İstemciye gönderilmez.
-    // Alternatif: sunucuda COMPTOX_API_KEY ortam değişkeni.
-    'comptox_api_key' => '',
     'secure_cookie' => true, // Canlıda HTTPS zorunlu. Yalnızca localhost için false.
 ];
