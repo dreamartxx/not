@@ -209,4 +209,21 @@ kaynaklarda arşiv sayfasına yönlendirme yapılır; dosya erişimi garanti edi
 
 Doğrulama: `npm test`, `python3 tests/integration.py`. Kütüphane testleri madde kapsamı, kaynaklar ve Türkçe aramayı denetler.
 
-Kimyasal ve ilk yardım / Kalp & EKG modülleri kaldırıldı. Eski kimyasal API çağrıları 410 döner; eski çalışma alanı bağlantıları tüm sayfalara yönlenir. Eski yedeklerde bu modüllere ait kapaklar içe aktarılmaz. Mevcut notlar ve kişisel veriler silinmez.
+İlk yardım / Kalp & EKG modülü kaldırılmıştır; eski bağlantısı tüm sayfalara yönlenir. Eski yedeklerde bu modüle ait kapaklar içe aktarılmaz.
+
+## EPA CompTox kimyasal çalışma alanı
+
+`#chemicals` alanında ad veya CAS numarasıyla EPA CTX API üzerinden aranır.
+Türkçe adlar ve bilinen yazım hataları normalleştirilir; bilinmeyen kimlikler otomatik değiştirilmez.
+Seçili DTXSID için deneysel / hesaplanan özellikler, işlevsel kullanım, ürün kategorileri ve toksisite verileri alınır.
+Tam veritabanı indirilmez; açılan kayıtlar 24 saat önbelleklenir. Kaynak, birim, deney bağlamı ve tahmin bilgisi korunur.
+EPA'nın bu uçlarda sağlamadığı ilk yardım, KKD, karışım ve mesleki sınır değerler üretilmez. Form resmî GBF değildir.
+
+Anahtar sunucuda `COMPTOX_API_KEY` ortam değişkeninde veya özel veritabanı yapılandırmasının `comptox_api_key` alanında tutulur.
+Alternatif olarak aynı özel klasöre `comptox-config.php` konabilir: `<?php return ['api_key'=>'EPA_ANAHTARI'];`.
+Hostinger'da bu dosya `not-config.php` yanında, `public_html` dışında bulunur; Git'e veya istemciye gönderilmez.
+`chemical-status` yalnızca bağlantı yapılandırmasının varlığını bildirir. Anahtar ve upstream hata gövdeleri yanıtlara/loglara yazılmaz.
+
+Türkçeye çevir düğmesi destekleyen masaüstü Chrome'da cihaz içi çeviriyi kullanır. Metinler tek tek de çevrilebilir.
+Sayı/birim değişen çeviriler reddedilir; kabul edilen çeviriler DTXSID ve kaynak hash'i doğrulanarak kaydedilir.
+Türkçe / özgün metin karşılaştırması, kaynak içi arama ve HTML/PDF form çıktısı bulunur.

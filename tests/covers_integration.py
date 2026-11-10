@@ -11,11 +11,11 @@ def run_covers(a, Client):
         {'scope':'dnd',**photo,'position':'20'}, {'scope':'dnd',**photo,'position':True},
     ]: a.call('cover-save',data,400)
     a.call('cover-save',{'scope':'page:'+'f'*32,**photo},404)
-    for scope in ['chemicals','firstaid']:
+    for scope in ['firstaid']:
         a.call('cover-save',{'scope':scope,**photo},400)
     a.call('validate-import',{'pages':[],'covers':{'chemicals':photo,'firstaid':photo}})
     p=a.call('create',{'title':'Kapaklı sayfa'},201)['page']
-    for scope in ['dnd','home','favorites','trash','football','isg','page:'+p['id']]:
+    for scope in ['dnd','home','favorites','trash','football','chemicals','isg','page:'+p['id']]:
         a.call('cover-save',{'scope':scope,**photo})
         assert a.call('covers')['covers'][scope]==photo
     assert a.call('football')['cover']==photo
@@ -36,7 +36,7 @@ def run_covers(a, Client):
     a.call('remove-media',{'id':image},409)
     a.call('restore',{'id':p['id']})
     assert a.call('covers')['covers']['page:'+p['id']]==photo
-    for scope in ['dnd','home','favorites','trash','football','isg']:
+    for scope in ['dnd','home','favorites','trash','football','chemicals','isg']:
         a.call('cover-save',{'scope':scope,'media_id':'','position':50})
     for item in [p,copy]:
         a.call('trash',{'id':item['id']});a.call('purge',{'id':item['id']})

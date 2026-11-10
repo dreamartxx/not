@@ -40,10 +40,12 @@ def run():
       a.call('setup',{'username':'Test','password':'şşşşşş','setup_key':key},code=400)
       result=a.call('setup',{'username':'Test','password':password,'setup_key':key});a.csrf=result['csrf']
       assert a.status()['authenticated']
-      for client in [a,Client(a.base)]:
-        for action in ['chemical','chemical-search&q=ethanol','chemical-status','chemical-translate','chemical-local-save']:
-          client.call(action,code=410)
-          client.call(action,{},code=410)
+      a.call('chemical-search&q=ethanol',code=503)
+      assert a.call('chemical-status') == {'provider':'EPA CompTox','configured':False}
+      a.call('chemical&dtxsid=bad',code=400)
+      a.call('chemical-local-save',{},code=403,csrf='bad')
+      a.call('chemical-local-save',{},code=400)
+      Client(a.base).call('chemical-status',code=401)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403)
       b=Client(a.base);b.status();b.call('login',{'username':'Test','password':'incorrect'},code=401)
       b.csrf=b.call('login',{'username':'Test','password':password})['csrf']
