@@ -46,6 +46,13 @@ def run():
       a.call('chemical-local-save',{},code=403,csrf='bad')
       a.call('chemical-local-save',{},code=400)
       Client(a.base).call('chemical-status',code=401)
+      Client(a.base).call('chemical-google-status',code=401)
+      Client(a.base).call('chemical-google-translate',code=401)
+      google=a.call('chemical-google-status');assert not google['configured'] and google['limit']==450000 and google['used']==0
+      a.call('chemical-google-translate',code=405)
+      a.call('chemical-google-translate',{},code=403,csrf='bad')
+      a.call('chemical-google-translate',{},code=400)
+      a.call('chemical-google-status',{},code=405)
       a.call('setup',{'username':'Test','password':password,'setup_key':key},code=403)
       b=Client(a.base);b.status();b.call('login',{'username':'Test','password':'incorrect'},code=401)
       b.csrf=b.call('login',{'username':'Test','password':password})['csrf']

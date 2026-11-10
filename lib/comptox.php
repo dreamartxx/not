@@ -88,6 +88,7 @@ function comptoxAPI(PDO $db,string $action,string $method,array $config): never 
   }
   $id=comptoxId($_GET['dtxsid']??null);session_write_close();
   $record=chemicalCached($db,'comptox-v1:'.$id,fn()=>comptoxLoad($id,$key));
-  respond(chemicalLocalStored($db,$record));
+  require_once __DIR__.'/chemical-google.php';
+  respond(chemicalGoogleStored($db,chemicalLocalStored($db,$record)));
  }catch(InvalidArgumentException $e){fail($e->getMessage());}catch(Throwable $e){$code=in_array($e->getCode(),[404,410,429,502,503],true)?$e->getCode():502;fail($code===502&&$e->getCode()!==502?'CompTox verileri alınamadı.':$e->getMessage(),$code);}
 }

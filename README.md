@@ -224,6 +224,17 @@ Alternatif olarak aynı özel klasöre `comptox-config.php` konabilir: `<?php re
 Hostinger'da bu dosya `not-config.php` yanında, `public_html` dışında bulunur; Git'e veya istemciye gönderilmez.
 `chemical-status` yalnızca bağlantı yapılandırmasının varlığını bildirir. Anahtar ve upstream hata gövdeleri yanıtlara/loglara yazılmaz.
 
-Türkçeye çevir düğmesi destekleyen masaüstü Chrome'da cihaz içi çeviriyi kullanır. Metinler tek tek de çevrilebilir.
+Türkçeye çevir düğmesi sunucudaki Google Cloud Translation bağlantısını kullanır. Metinler tek tek de çevrilebilir; tarayıcıya özel dil paketi gerekmez.
 Sayı/birim değişen çeviriler reddedilir; kabul edilen çeviriler DTXSID ve kaynak hash'i doğrulanarak kaydedilir.
 Türkçe / özgün metin karşılaştırması, kaynak içi arama ve HTML/PDF form çıktısı bulunur.
+
+### Google Cloud Translation (kimyasal modülü)
+
+Kimyasal form ve tekil kaynak çevirileri Google Cloud Translation Basic v2 / NMT ile sunucuda yapılır. `google-translation-key.txt` dosyasına yalnızca API anahtarını yazıp `not-config.php` ile aynı **özel dizine, public_html dışına** koyun. Alternatif: `GOOGLE_TRANSLATION_API_KEY` ortam değişkeni veya özel PHP config içinde `google_translation_api_key`. Anahtarı GitHub'a ya da istemci koduna eklemeyin. Google projesinde faturalandırma ve Cloud Translation API etkin olmalı; anahtarı bu API ile kısıtlayın.
+
+- Çeviri POST + sahip oturumu + CSRF ister. İstemciden serbest metin kabul edilmez; kaynak önbelleğindeki DTXSID/bölüm/satır ve SHA-256 eşleştirilir.
+- Yalnızca kullanıcı düğmeye bastığında seçilen açıklamalar Google'a gönderilir. Google çevirileri ayrı, sürümlü kaynak karmasıyla saklanır; eski yerel çeviriler silinmez ve yeni Google sonucu varsa onunla gösterilir.
+- Sayısal alanlar, birimler, çalışma kimlikleri ve bilinen maruziyet yolları korunur. Kalan açıklamalar satır bazında çevrilir; sayı/birim değişirse sonuç kaydedilmez.
+- Aylık uygulama sınırı en fazla 450.000 karakterdir; `google_translation_monthly_limit` ile düşürülebilir. Ay America/Los_Angeles saat diliminde hesaplanır. Bu sınır Google projesinin diğer kullanımlarını kapsamaz ve Google fatura sayacı değildir.
+- Gönderilecek Unicode karakterleri atomik olarak gönderimden önce ayrılır. Zaman aşımı ve doğrulama hataları ihtiyatlı olarak sayaçta tutulur; otomatik tekrar yoktur. Aynı kaynağa eşzamanlı istekler kilitlenir. Tamamlanmış çevirinin okunması kota kullanmaz.
+- Gerçek API anahtarı yokken bağlantı kapalı görünür; arama ve kayıtlı çeviriler çalışmaya devam eder.

@@ -64,3 +64,10 @@ assert.match(structured,/5560\nBirim: mg\/kg\nMaruziyet yolu: Oral/);
 const epaRoute={dtxsid:'DTXSID9020584',sections:{11:[{heading:'Toxicity Data',text:'Exposure route: oral\nValue: 5560 mg/kg',text_tr:'Maruziyet yolu: Oral (ağız yoluyla)\nDeğer: 5560 mg/kg'}]}};
 assert.equal(buildChemicalForm(epaRoute).find(g=>g.id==='routes').fields[0].entries.length,1);
 console.log('PASS: EPA study route mapping and exact units/route terminology bypass machine translation.');
+
+const {chemicalGoogleJobs}=await import('../assets/chemical-form.js');
+const migrated={dtxsid:'DTXSID9020584',sections:{11:[{heading:'Toxicity Data',text:'Exposure route: oral',text_tr:'Sözlü',translation_provider:'Tarayıcı · yerel çeviri'}]}};
+assert.equal(chemicalGoogleJobs(migrated).length,1); // shared route/toxicity entry charged only once
+migrated.sections[11][0].translation_provider='Google Cloud Translation';
+assert.equal(chemicalGoogleJobs(migrated).length,0);
+console.log('PASS: legacy browser translations can be replaced by Google without repeating saved Google translations.');

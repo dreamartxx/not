@@ -15,6 +15,9 @@ $config = require $configPath;
 // Optional private EPA key stored beside the database config, outside the web root.
 $epaConfig=dirname($configPath).'/comptox-config.php';
 if(empty($config['comptox_api_key'])&&is_file($epaConfig))$config['comptox_api_key']=(require $epaConfig)['api_key']??'';
+// Plain key file is outside public_html; a missing/placeholder key leaves translation disabled.
+$googleKeyFile=dirname($configPath).'/google-translation-key.txt';
+if(empty($config['google_translation_api_key'])&&is_file($googleKeyFile)&&is_readable($googleKeyFile))$config['google_translation_api_key']=trim((string)file_get_contents($googleKeyFile,false,null,0,512));
 $secure = $config['secure_cookie'] ?? true;
 session_name('not_session');
 session_start(['cookie_httponly'=>true,'cookie_secure'=>$secure,'cookie_samesite'=>'Strict','use_strict_mode'=>true,'cookie_path'=>'/']);
@@ -71,6 +74,14 @@ if ($action==='password' && $method==='POST') {
     session_regenerate_id(true);$_SESSION['fingerprint']=hash('sha256',$hash);$_SESSION['csrf']=bin2hex(random_bytes(32));respond(['ok'=>true,'csrf'=>$_SESSION['csrf']]);
 }
 if ($action==='logout' && $method==='POST') { $_SESSION=[]; session_destroy(); respond(['ok'=>true]); }
+if(in_array($action,['chemical-google-status','chemical-google-translate'],true)){
+ require __DIR__.'/lib/chemical-google.php';
+ try{
+  if($action==='chemical-google-status'){if($method!=='GET')fail('Desteklenmeyen yöntem.',405);respond(chemicalGoogleStatus($db,$config));}
+  if($method!=='POST')fail('Desteklenmeyen yöntem.',405);
+  session_write_close();respond(chemicalGoogleTranslate($db,$config,$input??[]));
+ }catch(InvalidArgumentException $e){fail($e->getMessage());}catch(Throwable $e){$code=in_array($e->getCode(),[409,429,502,503],true)?$e->getCode():502;fail($code===502?'Google çevirisi tamamlanamadı veya doğrulanamadı. Yeniden denemeden önce bağlantıyı kontrol et.':$e->getMessage(),$code);}
+}
 if($action==='chemical-local-save'){require __DIR__.'/lib/chemicals.php';if($method!=='POST')fail('Desteklenmeyen yöntem.',405);try{respond(chemicalLocalTranslationSave($db,$input??[]));}catch(InvalidArgumentException $e){fail($e->getMessage());}}
 if(in_array($action,['chemical-search','chemical','chemical-translate','chemical-status'],true)){require __DIR__.'/lib/chemicals.php';chemicalsAPI($db,$action,$method,$config);}
 if ($action==='vault') {require __DIR__.'/lib/vault.php';vaultAPI($db,$method,$input??[]);}
