@@ -53,3 +53,11 @@ rejects(fn()=>chemicalGoogleTranslate($db,$config,[...$pub,'cid'=>281]),0);
 rejects(fn()=>chemicalGoogleTranslate($db,$config,[...$pub,'source_hash'=>hash('sha256','Different text.')]),0);
 verify(chemicalGoogleTranslate($db,[],$pub)['cached'],'PubChem saved translation independent of key');
 echo "PASS: PubChem Google translation, CID isolation, source hash and persistent cache.\n";
+
+$scientific='At -20 °C, the limit is 35 ppm; LD50 5560 mg/kg; H225. Less than <5%.';
+$html=chemicalGoogleHTML($scientific);
+verify(str_contains($html,'notranslate')&&str_contains($html,'&lt;'),'scientific spans and escaped markup');
+verify(chemicalGooglePlain($html)===$scientific,'exact protected quantity round trip');
+$plan=chemicalGooglePlan('Exposure at 35 ppm.');verify(str_contains($plan['queries'][0],'>35 ppm</span>'),'quantity and unit protected as one segment');
+verify($plan['characters']===mb_strlen($plan['queries'][0]),'HTML protection counted in application quota');
+echo "PASS: Google HTML scientific-value protection, escaped source markup and actual payload character accounting.\n";

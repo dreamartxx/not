@@ -82,3 +82,7 @@ const both={...pubchem,sections:{4:pubchem.sections[4].map((e,i)=>({...e,text_tr
 assert.equal(chemicalGoogleJobs(both,'all').length,0);
 const complete=chemicalReportDocument(both);assert.match(complete,/Türkçe ilk yardım 3/);assert.match(complete,/Türkçe ilk yardım 0/);
 console.log('PASS: expanded 16-topic form, whole dossier/topic/section translation scopes, CID keys and complete translated report.');
+const {chemicalEntryNeedsTranslation}=await import('../assets/chemical-form.js');
+assert.equal(chemicalEntryNeedsTranslation({heading:'NIOSH Recommendations',text:'TWA 1000 ppm (1900 mg/m3)'}),false);
+assert.equal(chemicalEntryNeedsTranslation({heading:'NIOSH Recommendations',text:'Do not exceed 1000 ppm.'}),true);
+console.log('PASS: numeric occupational limits display unchanged without needless translation.');

@@ -217,7 +217,7 @@ Doğrulama: `npm test`, `python3 tests/integration.py`. Kütüphane testleri mad
 
 PubChem üzerinden NIOSH, ILO/WHO ICSC, CAMEO, ECHA, OSHA ve diğer katkı sağlayıcıların mevcut açıklamaları kaynak, atıf ve lisanslarıyla alınır. HSDB arşiv etiketi taşır. Başlıca kimlik, kullanım, fiziksel özellik, güvenlik ve toksikoloji başlıkları 16 GBF bölümüne eşlenir; uzun metinler kayıpsız parçalara ayrılır. Eksik bilgiler uydurulmaz. Kaynak tarihi üretici GBF revizyon tarihi sayılmaz.
 
-Hazır form 16 konu grubunu kapsar. Her alandaki ek kaynaklar açılabilir; kaynak sağlayıcı ve sözcük filtreleriyle ayrıntılı okuma yapılabilir. Google çevirisi geniş özet, tek konu, GBF bölümü, tek açıklama veya tüm dosya kapsamıyla seçilir. Göndermeden önce karakter üst tahmini görünür. Türkçe HTML/PDF çıktısı kaydedilmiş tüm form kayıtlarını içerir; çevrilmemiş alanlar belirtilir.
+Hazır form 16 konu grubunu kapsar. Her alandaki ek kaynaklar açılabilir; kaynak sağlayıcı ve sözcük filtreleriyle ayrıntılı okuma yapılabilir. Google çevirisi geniş özet, tek konu, GBF bölümü, tek açıklama veya tüm dosya kapsamıyla seçilir. Göndermeden önce kaynak karakter sayısı görünür; Google’a gönderilen sayı/birim koruma işaretleri ayrıca sayılır. Türkçe HTML/PDF çıktısı kaydedilmiş tüm form kayıtlarını içerir; çevrilmemiş alanlar belirtilir.
 
 ### Google Cloud Translation (kimyasal modülü)
 
@@ -225,7 +225,7 @@ Kimyasal form ve tekil kaynak çevirileri Google Cloud Translation Basic v2 / NM
 
 - Çeviri POST + sahip oturumu + CSRF ister. İstemciden serbest metin kabul edilmez; kaynak önbelleğindeki CID/bölüm/satır ve SHA-256 eşleştirilir.
 - Yalnızca kullanıcı düğmeye bastığında seçilen açıklamalar Google'a gönderilir. Google çevirileri ayrı, sürümlü kaynak karmasıyla saklanır; eski yerel çeviriler silinmez ve yeni Google sonucu varsa onunla gösterilir.
-- Sayısal alanlar, birimler, çalışma kimlikleri ve bilinen maruziyet yolları korunur. Kalan açıklamalar satır bazında çevrilir; sayı/birim değişirse sonuç kaydedilmez.
+- Sayısal alanlar, birimler, çalışma kimlikleri ve bilinen maruziyet yolları korunur. Kalan açıklamalar HTML olarak satır bazında çevrilir; sayılar ve bilimsel birimler notranslate işaretleriyle korunur; sayı/birim değişirse sonuç kaydedilmez.
 - Aylık uygulama sınırı en fazla 450.000 karakterdir; `google_translation_monthly_limit` ile düşürülebilir. Ay America/Los_Angeles saat diliminde hesaplanır. Bu sınır Google projesinin diğer kullanımlarını kapsamaz ve Google fatura sayacı değildir.
 - Gönderilecek Unicode karakterleri atomik olarak gönderimden önce ayrılır. Zaman aşımı ve doğrulama hataları ihtiyatlı olarak sayaçta tutulur; otomatik tekrar yoktur. Aynı kaynağa eşzamanlı istekler kilitlenir. Tamamlanmış çevirinin okunması kota kullanmaz.
 - Gerçek API anahtarı yokken bağlantı kapalı görünür; arama ve kayıtlı çeviriler çalışmaya devam eder.

@@ -40,7 +40,10 @@ export function buildChemicalForm(record){
   return {...group,fields,count:fields.reduce((sum,f)=>sum+f.entries.length,0)};
  });
 }
-export function chemicalEntryNeedsTranslation(e){return e.lang!=='tr'&&!!e.text&&/[a-z]{3}/i.test(e.text)&&!['CAS','Molecular Formula','Molecular Weight','IUPAC Name','InChI','InChI Key','SMILES','Canonical SMILES','Isomeric SMILES','Synonyms','Depositor-Supplied Synonyms'].includes(e.heading);}
+export function chemicalEntryNeedsTranslation(e){
+ const prose=String(e.text||'').replace(/\b(?:TWA|STEL|REL|PEL|IDLH|LEL|UEL|TLV|NIOSH|OSHA|ppm|ppb|mg|ug|µg|kg|mol|mmHg|kPa|mPa|LD50|LC50|EC50|H\d{3}|P\d{3})\b/g,'');
+ return e.lang!=='tr'&&/[a-z]{3}/i.test(prose)&&!['CAS','Molecular Formula','Molecular Weight','IUPAC Name','InChI','InChI Key','SMILES','Canonical SMILES','Isomeric SMILES','Synonyms','Depositor-Supplied Synonyms'].includes(e.heading);
+}
 export function chemicalLocalJobs(record){return [...new Map(buildChemicalForm(record).flatMap(g=>g.fields.filter(f=>f.untranslated).flatMap(f=>f.candidates.slice(0,1))).map(r=>[r.key,r])).values()];}
 export function chemicalGoogleJobs(record,scope='overview'){
  const groups=buildChemicalForm(record);

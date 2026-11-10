@@ -33,6 +33,15 @@ function chemicalGoogleSource(PDO $db,array $input): string {
  if($source===''||mb_strlen($source)>25000)throw new InvalidArgumentException('Bu kaynak metni tek çeviri için çok uzun veya boş.');
  return $source;
 }
+function chemicalGoogleHTML(string $text): string {
+ // Keep quantities and scientific unit symbols intact inside Google's HTML no-translate spans.
+ $pattern='~(\b(?:EUH|H|P)\d{3}\b|\b(?:LD|LC|EC|ED)\d+\b|[+−-]?\d+(?:[.,]\d+)*(?:[eE][+−-]?\d+)?(?:\s*(?:°\s*[CFK]|(?:mg|µg|ug|ng|kg|g|mol|mmol|mL|ml|L|m|cm|mm|s|h)(?:[³²]|\^?[23])?(?:/(?:kg|mol|cu\s?m|m[3³]|cm[3³]|L|ml|mL|day|d|h|s))?|ppm|ppb|mm\s?Hg|kPa|mPa|Pa|atm|%)(?![a-zA-Z]))?|°\s*[CFK]|\b(?:ppm|ppb|mg/m[3³]|g/mol|mm\s?Hg|kPa|mPa|pH|TWA|STEL|IDLH)\b)~u';
+ $parts=preg_split($pattern,$text,-1,PREG_SPLIT_DELIM_CAPTURE);$out='';
+ foreach($parts as $i=>$part){$safe=htmlspecialchars($part,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');$out.=$i%2?'<span class="notranslate" translate="no">'.$safe.'</span>':$safe;}return $out;
+}
+function chemicalGooglePlain(string $html): string {
+ return html_entity_decode(strip_tags($html),ENT_QUOTES|ENT_HTML5,'UTF-8');
+}
 function chemicalGooglePlan(string $source): array {
  // Preserve scientific notation, identifiers and routes; translate each remaining line separately.
  $labels=['Property'=>'Özellik','Value'=>'Değer','Unit'=>'Birim','Original value'=>'Özgün değer','Original unit'=>'Özgün birim','Value text'=>'Değer açıklaması','Dataset'=>'Veri kümesi','Temperature (°C)'=>'Sıcaklık (°C)','Pressure (mmHg)'=>'Basınç (mmHg)','pH'=>'pH','Model'=>'Model','Prediction error'=>'Tahmin hatası','Reported functional use'=>'Bildirilen işlevsel kullanım','Definition'=>'Tanım','Product use category'=>'Ürün kullanım kategorisi','Category kind'=>'Kategori türü','General category'=>'Genel kategori','Product family'=>'Ürün ailesi','Product type'=>'Ürün türü','Product count'=>'Ürün sayısı','Value type'=>'Değer türü','Subtype'=>'Alt tür','Category'=>'Kategori','Qualifier'=>'Karşılaştırma işareti','Assessment class'=>'Değerlendirme sınıfı','Human or ecology'=>'İnsan sağlığı veya ekoloji','Study type'=>'Çalışma türü','Duration class'=>'Süre sınıfı','Duration'=>'Süre','Duration unit'=>'Süre birimi','Species'=>'Tür','Species common name'=>'Türün yaygın adı','Species Latin name'=>'Türün Latince adı','Species category'=>'Tür kategorisi','Strain'=>'Suş','Sex'=>'Cinsiyet','Generation'=>'Nesil','Life stage'=>'Yaşam evresi','Exposure route'=>'Maruziyet yolu','Exposure method'=>'Maruziyet yöntemi','Exposure form'=>'Maruziyet biçimi','Medium'=>'Ortam','Effect'=>'Etki','Experimental record'=>'Deney kaydı','Study group'=>'Çalışma grubu','Source'=>'Kaynak','Subsource'=>'Alt kaynak','Original value type'=>'Özgün değer türü','Original subtype'=>'Özgün alt tür','Original study type'=>'Özgün çalışma türü','Original duration class'=>'Özgün süre sınıfı','Original duration'=>'Özgün süre','Original duration unit'=>'Özgün süre birimi','Original species'=>'Özgün tür','Original strain'=>'Özgün suş','Original sex'=>'Özgün cinsiyet','Original generation'=>'Özgün nesil','Original life stage'=>'Özgün yaşam evresi','Original route'=>'Özgün maruziyet yolu','Original method'=>'Özgün yöntem','Original form'=>'Özgün biçim','Original medium'=>'Özgün ortam','Original effect'=>'Özgün etki','Monoisotopic mass'=>'Monoizotopik kütle','Response site'=>'Yanıt bölgesi','Applicability method'=>'Uygulanabilirlik yöntemi','Applicability value'=>'Uygulanabilirlik değeri','Applicability conclusion'=>'Uygulanabilirlik sonucu','Applicability reasoning'=>'Uygulanabilirlik gerekçesi','Global applicability method'=>'Genel uygulanabilirlik yöntemi','Global applicability value'=>'Genel uygulanabilirlik değeri','Global applicability conclusion'=>'Genel uygulanabilirlik sonucu','Global applicability reasoning'=>'Genel uygulanabilirlik gerekçesi'];
@@ -44,14 +53,14 @@ function chemicalGooglePlan(string $source): array {
   if(preg_match('/^([^:]+): (.*)$/u',$line,$m)&&isset($labels[$m[1]])){$label=$m[1];$prefix=$labels[$label].': ';$value=$m[2];}
   if(in_array($label,['Exposure route','Original route'],true)){$lines[]=['fixed'=>$prefix.($routes[strtolower($value)]??$value.' (özgün kaynak terimi)')];continue;}
   if($value===''||!preg_match('/[a-z]{3}/i',$value)||in_array($label,['Unit','Original unit','Dataset','Model','Species Latin name','Qualifier','Value','Original value','Duration','Original duration','Temperature (°C)','Pressure (mmHg)','pH','Prediction error','Study group','Source','Subsource','Value type','Original value type','Monoisotopic mass'],true)){$lines[]=['fixed'=>$prefix.$value];continue;}
-  $lines[]=['prefix'=>$prefix,'query'=>count($queries)];$queries[]=$value;
+  $lines[]=['prefix'=>$prefix,'query'=>count($queries)];$queries[]=chemicalGoogleHTML($value);
  }
  if(count($queries)>128)throw new InvalidArgumentException('Bu kaynak metni çok fazla ayrı satır içeriyor.');
  return ['lines'=>$lines,'queries'=>$queries,'characters'=>array_sum(array_map(fn($v)=>mb_strlen($v,'UTF-8'),$queries))];
 }
 function chemicalGoogleFetch(array $queries,string $key): array {
  $ch=curl_init('https://translation.googleapis.com/language/translate/v2');$body='';$large=false;
- curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_CONNECTTIMEOUT=>6,CURLOPT_TIMEOUT=>25,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_HTTPHEADER=>['Content-Type: application/json','Accept: application/json','X-Goog-Api-Key: '.$key],CURLOPT_POSTFIELDS=>json_encode(['q'=>$queries,'source'=>'en','target'=>'tr','format'=>'text','model'=>'nmt'],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),CURLOPT_WRITEFUNCTION=>function($ch,$chunk)use(&$body,&$large){if(strlen($body)+strlen($chunk)>1000000){$large=true;return 0;}$body.=$chunk;return strlen($chunk);}]);
+ curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_CONNECTTIMEOUT=>6,CURLOPT_TIMEOUT=>25,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_HTTPHEADER=>['Content-Type: application/json','Accept: application/json','X-Goog-Api-Key: '.$key],CURLOPT_POSTFIELDS=>json_encode(['q'=>$queries,'source'=>'en','target'=>'tr','format'=>'html','model'=>'nmt'],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),CURLOPT_WRITEFUNCTION=>function($ch,$chunk)use(&$body,&$large){if(strlen($body)+strlen($chunk)>1000000){$large=true;return 0;}$body.=$chunk;return strlen($chunk);}]);
  $ok=curl_exec($ch);$status=(int)curl_getinfo($ch,CURLINFO_RESPONSE_CODE);unset($ch);
  // Never expose the key or upstream error body to the browser/logs.
  if(in_array($status,[400,401,403],true))throw new RuntimeException('Google çeviri isteğini kabul etmedi. API anahtarı, Cloud Translation API kısıtlaması ve faturalandırmayı kontrol et.',503);
@@ -59,7 +68,7 @@ function chemicalGoogleFetch(array $queries,string $key): array {
  if(!$ok||$large||$status!==200)throw new RuntimeException('Google çevirisinden yanıt alınamadı. Otomatik tekrar yapılmadı.',502);
  $data=json_decode($body,true);$rows=$data['data']['translations']??null;
  if(!is_array($rows)||count($rows)!==count($queries))throw new RuntimeException('Google eksik çeviri döndürdü; forma işlenmedi.',502);
- $out=[];foreach($rows as $row){if(!is_string($row['translatedText']??null)||trim($row['translatedText'])==='')throw new RuntimeException('Google boş çeviri döndürdü; forma işlenmedi.',502);$out[]=html_entity_decode($row['translatedText'],ENT_QUOTES|ENT_HTML5,'UTF-8');}return $out;
+ $out=[];foreach($rows as $row){if(!is_string($row['translatedText']??null)||trim($row['translatedText'])==='')throw new RuntimeException('Google boş çeviri döndürdü; forma işlenmedi.',502);$out[]=chemicalGooglePlain($row['translatedText']);}return $out;
 }
 function chemicalGoogleTranslate(PDO $db,array $config,array $input,?callable $fetch=null): array {
  $source=chemicalGoogleSource($db,$input);$hash=chemicalGoogleHash($source);$usage=chemicalGoogleStatus($db,$config);
