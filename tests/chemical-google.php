@@ -44,3 +44,12 @@ verify(chemicalGoogleStatus($db,$config)['month']===$month&&chemicalGoogleStatus
 verify(chemicalGoogleStatus($db,['google_translation_monthly_limit'=>999999])['limit']===450000,'Limit cannot exceed safe default');
 $unicode=chemicalGooglePlan('Definition: Cafés and vapours.');verify($unicode['characters']===mb_strlen('Cafés and vapours.'),'Unicode code points');
 echo "PASS: Google translation source binding, cache, provider, concurrent duplicate lock, atomic quota, failure reservation, Unicode billing and number/route preservation.\n";
+
+$db->prepare('INSERT INTO chemical_cache VALUES(?,?,?)')->execute(['pubchem-v2:702',json_encode(['sections'=>[4=>[['text'=>'Fresh air and rest.']]]]),time()]);
+$pub=['cid'=>702,'section'=>4,'entry'=>0,'source_hash'=>hash('sha256','Fresh air and rest.')];
+$tr=chemicalGoogleTranslate($db,$config,$pub,fn()=>['Temiz hava ve dinlenme.']);
+verify($tr['translated']==='Temiz hava ve dinlenme.','PubChem translation');
+rejects(fn()=>chemicalGoogleTranslate($db,$config,[...$pub,'cid'=>281]),0);
+rejects(fn()=>chemicalGoogleTranslate($db,$config,[...$pub,'source_hash'=>hash('sha256','Different text.')]),0);
+verify(chemicalGoogleTranslate($db,[],$pub)['cached'],'PubChem saved translation independent of key');
+echo "PASS: PubChem Google translation, CID isolation, source hash and persistent cache.\n";

@@ -211,28 +211,19 @@ Doğrulama: `npm test`, `python3 tests/integration.py`. Kütüphane testleri mad
 
 İlk yardım / Kalp & EKG modülü kaldırılmıştır; eski bağlantısı tüm sayfalara yönlenir. Eski yedeklerde bu modüle ait kapaklar içe aktarılmaz.
 
-## EPA CompTox kimyasal çalışma alanı
+## PubChem kimyasal çalışma alanı
 
-`#chemicals` alanında ad veya CAS numarasıyla EPA CTX API üzerinden aranır.
-Türkçe adlar ve bilinen yazım hataları normalleştirilir; bilinmeyen kimlikler otomatik değiştirilmez.
-Seçili DTXSID için deneysel / hesaplanan özellikler, işlevsel kullanım, ürün kategorileri ve toksisite verileri alınır.
-Tam veritabanı indirilmez; açılan kayıtlar 24 saat önbelleklenir. Kaynak, birim, deney bağlamı ve tahmin bilgisi korunur.
-EPA'nın bu uçlarda sağlamadığı ilk yardım, KKD, karışım ve mesleki sınır değerler üretilmez. Form resmî GBF değildir.
+`#chemicals` ad / CAS aramasında anahtarsız PUG REST, ayrıntılarda PUG View kullanır. Türkçe adlar ve bilinen yazım hataları korunur. Tam veritabanı indirilmez; seçilen CID 24 saat önbelleklenir (`pubchem-v2`). EPA anahtarı kullanılmaz; mevcut özel dosyası ve geçmiş çeviriler silinmez.
 
-Anahtar sunucuda `COMPTOX_API_KEY` ortam değişkeninde veya özel veritabanı yapılandırmasının `comptox_api_key` alanında tutulur.
-Alternatif olarak aynı özel klasöre `comptox-config.php` konabilir: `<?php return ['api_key'=>'EPA_ANAHTARI'];`.
-Hostinger'da bu dosya `not-config.php` yanında, `public_html` dışında bulunur; Git'e veya istemciye gönderilmez.
-`chemical-status` yalnızca bağlantı yapılandırmasının varlığını bildirir. Anahtar ve upstream hata gövdeleri yanıtlara/loglara yazılmaz.
+PubChem üzerinden NIOSH, ILO/WHO ICSC, CAMEO, ECHA, OSHA ve diğer katkı sağlayıcıların mevcut açıklamaları kaynak, atıf ve lisanslarıyla alınır. HSDB arşiv etiketi taşır. Başlıca kimlik, kullanım, fiziksel özellik, güvenlik ve toksikoloji başlıkları 16 GBF bölümüne eşlenir; uzun metinler kayıpsız parçalara ayrılır. Eksik bilgiler uydurulmaz. Kaynak tarihi üretici GBF revizyon tarihi sayılmaz.
 
-Türkçeye çevir düğmesi sunucudaki Google Cloud Translation bağlantısını kullanır. Metinler tek tek de çevrilebilir; tarayıcıya özel dil paketi gerekmez.
-Sayı/birim değişen çeviriler reddedilir; kabul edilen çeviriler DTXSID ve kaynak hash'i doğrulanarak kaydedilir.
-Türkçe / özgün metin karşılaştırması, kaynak içi arama ve HTML/PDF form çıktısı bulunur.
+Hazır form 16 konu grubunu kapsar. Her alandaki ek kaynaklar açılabilir; kaynak sağlayıcı ve sözcük filtreleriyle ayrıntılı okuma yapılabilir. Google çevirisi geniş özet, tek konu, GBF bölümü, tek açıklama veya tüm dosya kapsamıyla seçilir. Göndermeden önce karakter üst tahmini görünür. Türkçe HTML/PDF çıktısı kaydedilmiş tüm form kayıtlarını içerir; çevrilmemiş alanlar belirtilir.
 
 ### Google Cloud Translation (kimyasal modülü)
 
 Kimyasal form ve tekil kaynak çevirileri Google Cloud Translation Basic v2 / NMT ile sunucuda yapılır. `google-translation-key.txt` dosyasına yalnızca API anahtarını yazıp `not-config.php` ile aynı **özel dizine, public_html dışına** koyun. Alternatif: `GOOGLE_TRANSLATION_API_KEY` ortam değişkeni veya özel PHP config içinde `google_translation_api_key`. Anahtarı GitHub'a ya da istemci koduna eklemeyin. Google projesinde faturalandırma ve Cloud Translation API etkin olmalı; anahtarı bu API ile kısıtlayın.
 
-- Çeviri POST + sahip oturumu + CSRF ister. İstemciden serbest metin kabul edilmez; kaynak önbelleğindeki DTXSID/bölüm/satır ve SHA-256 eşleştirilir.
+- Çeviri POST + sahip oturumu + CSRF ister. İstemciden serbest metin kabul edilmez; kaynak önbelleğindeki CID/bölüm/satır ve SHA-256 eşleştirilir.
 - Yalnızca kullanıcı düğmeye bastığında seçilen açıklamalar Google'a gönderilir. Google çevirileri ayrı, sürümlü kaynak karmasıyla saklanır; eski yerel çeviriler silinmez ve yeni Google sonucu varsa onunla gösterilir.
 - Sayısal alanlar, birimler, çalışma kimlikleri ve bilinen maruziyet yolları korunur. Kalan açıklamalar satır bazında çevrilir; sayı/birim değişirse sonuç kaydedilmez.
 - Aylık uygulama sınırı en fazla 450.000 karakterdir; `google_translation_monthly_limit` ile düşürülebilir. Ay America/Los_Angeles saat diliminde hesaplanır. Bu sınır Google projesinin diğer kullanımlarını kapsamaz ve Google fatura sayacı değildir.

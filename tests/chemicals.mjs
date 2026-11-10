@@ -20,7 +20,7 @@ const sample={dtxsid:'DTXSID1020160',title:'Carbon Monoxide',title_tr:'Karbon mo
  11:[make('Exposure Routes','Inhalation'),make('Toxicity Data','LC50: species, route, dose and duration')]
 }};
 const groups=buildChemicalForm(sample),get=id=>groups.flatMap(g=>g.fields).find(f=>f.id===id);
-assert.equal(groups.length,8);
+assert.equal(groups.length,16);
 assert.equal(get('uses').entries.length,1);assert.equal(get('uses').entries[0].index,1);
 assert.equal(get('ppe').entries.length,1,'Exposure Control parent must not turn limits into PPE');
 assert.equal(get('limits').entries.length,1);assert.equal(get('limits').entries[0].entry.text,'REL: TWA 35 ppm; ceiling 200 ppm');
@@ -36,7 +36,7 @@ assert.match(exportText,/Hesaplanan değer/);assert.match(exportText,/türkiye/i
 assert.match(exportText,/alan için veri bulunamadı/);assert.ok(!exportText.includes('%100'));
 const unsafe=chemicalReportDocument({...sample,title_tr:'<script>alert(1)</script>',sections:{1:[make('Uses','<img src=x onerror=alert(1)>')]}});
 assert.ok(!unsafe.includes('<script>'));assert.match(unsafe,/&lt;img/);
-const empty=buildChemicalForm({dtxsid:'DTXSID0000099',sections:{}});assert.equal(empty.length,8);assert.ok(empty.every(g=>g.count===0));
+const empty=buildChemicalForm({dtxsid:'DTXSID0000099',sections:{}});assert.equal(empty.length,16);assert.ok(empty.every(g=>g.count===0));
 const englishOnly={...sample,sections:{1:[{...make('Uses','Untranslated English source'),lang:'en'}]}};
 const untranslated=buildChemicalForm(englishOnly)[0].fields[0];assert.equal(untranslated.entries.length,0);assert.equal(untranslated.untranslated,true);
 const noEnglishReport=chemicalReportDocument(englishOnly);assert.ok(!noEnglishReport.includes('Untranslated English source'));assert.match(noEnglishReport,/Türkçe çevirisi henüz hazırlanmadı/);
@@ -71,3 +71,14 @@ assert.equal(chemicalGoogleJobs(migrated).length,1); // shared route/toxicity en
 migrated.sections[11][0].translation_provider='Google Cloud Translation';
 assert.equal(chemicalGoogleJobs(migrated).length,0);
 console.log('PASS: legacy browser translations can be replaced by Google without repeating saved Google translations.');
+
+const pubchem={cid:702,sections:{4:[{...make('First Aid','Fresh air.',['Safety and Hazards','First Aid Measures']),name:'Inhalation First Aid',lang:'en'},...Array.from({length:4},(_,i)=>({...make('First Aid','General advice '+i),lang:'en'}))],5:[{...make('Fire Fighting','Use extinguishing media.'),lang:'en'}]}};
+assert.equal(chemicalGoogleJobs(pubchem,'aid').length,5);
+assert.equal(chemicalGoogleJobs(pubchem,4).length,5);
+assert.equal(chemicalGoogleJobs(pubchem,'all').length,6);
+assert.ok(chemicalGoogleJobs(pubchem).length<6,'overview smaller than full dossier');
+assert.equal(buildChemicalForm(pubchem).find(g=>g.id==='aid').fields[0].candidates[0].key,'702:4:0');
+const both={...pubchem,sections:{4:pubchem.sections[4].map((e,i)=>({...e,text_tr:'Türkçe ilk yardım '+i,translation_provider:'Google Cloud Translation'}))}};
+assert.equal(chemicalGoogleJobs(both,'all').length,0);
+const complete=chemicalReportDocument(both);assert.match(complete,/Türkçe ilk yardım 3/);assert.match(complete,/Türkçe ilk yardım 0/);
+console.log('PASS: expanded 16-topic form, whole dossier/topic/section translation scopes, CID keys and complete translated report.');

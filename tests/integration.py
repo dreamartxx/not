@@ -40,8 +40,8 @@ def run():
       a.call('setup',{'username':'Test','password':'şşşşşş','setup_key':key},code=400)
       result=a.call('setup',{'username':'Test','password':password,'setup_key':key});a.csrf=result['csrf']
       assert a.status()['authenticated']
-      a.call('chemical-search&q=ethanol',code=503)
-      assert a.call('chemical-status') == {'provider':'EPA CompTox','configured':False}
+      a.call('chemical-search&q=64-17-6',code=400)
+      assert a.call('chemical-status') == {'provider':'PubChem','configured':True,'key_required':False}
       a.call('chemical&dtxsid=bad',code=400)
       a.call('chemical-local-save',{},code=403,csrf='bad')
       a.call('chemical-local-save',{},code=400)

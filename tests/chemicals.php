@@ -57,3 +57,28 @@ $missing=function($path)use($detail){if(str_contains($path,'/detail/'))return $d
 check(count(comptoxLoad($id,'test-key',$missing)['sections'][11])===0,'confirmed absent endpoint stays absent');
 try{chemicalLocalTranslationSave($db,array_replace($save,['dtxsid'=>'DTXSID9020584']));throw new LogicException('source crossover');}catch(InvalidArgumentException){}
 echo "PASS: EPA identity boundaries, schema mapping, experimental/predicted distinction, source context, missing API key and partial failure handling.\n";
+
+// PubChem annotations retain source boundaries and safety headings, including direct parent annotations.
+$info=fn($text,$name='')=>['Name'=>$name,'ReferenceNumber'=>7,'Value'=>['StringWithMarkup'=>[['String'=>$text]]]];
+$raw=['RecordType'=>'CID','RecordNumber'=>702,'RecordTitle'=>'Ethanol','Reference'=>[['ReferenceNumber'=>7,'SourceName'=>'The National Institute for Occupational Safety and Health (NIOSH)','URL'=>'https://www.cdc.gov/niosh/','LicenseNote'=>'Source attribution']], 'Section'=>[
+ ['TOCHeading'=>'Names and Identifiers','Section'=>[['TOCHeading'=>'CAS','Information'=>[$info('64-17-5')]]]],
+ ['TOCHeading'=>'Chemical and Physical Properties','Section'=>[['TOCHeading'=>'Computed Properties','Section'=>[['TOCHeading'=>'Molecular Weight','Information'=>[$info('46.07')]]]]]],
+ ['TOCHeading'=>'Use and Manufacturing','Section'=>[['TOCHeading'=>'Methods of Manufacturing','Information'=>[$info('Manufacturing process.')]]]],
+ ['TOCHeading'=>'Safety and Hazards','Section'=>[
+  ['TOCHeading'=>'First Aid Measures','Information'=>[$info('Fresh air, rest.','Inhalation First Aid')]],
+  ['TOCHeading'=>'Safety and Hazard Properties','Section'=>[['TOCHeading'=>'NIOSH Recommendations','Information'=>[$info('TWA 1000 ppm')]]]],
+  ['TOCHeading'=>'Exposure Control and Personal Protection','Section'=>[['TOCHeading'=>'Personal Protective Equipment (PPE)','Information'=>[$info('Eye protection.')]],['TOCHeading'=>'Effects of Short Term Exposure','Information'=>[$info('Irritation.')]]]],
+  ['TOCHeading'=>'Accidental Release Measures','Section'=>[['TOCHeading'=>'Disposal Methods','Information'=>[$info('Disposal source.')]]]]
+ ]]
+]];
+$pc=chemicalNormalize($raw,702);
+check($pc['cas']===['64-17-5']&&$pc['mass']==='46.07','PubChem identity and mass');
+check(count($pc['sections'][4])===1&&$pc['sections'][4][0]['name']==='Inhalation First Aid','parent first aid retained');
+check($pc['sections'][4][0]['source']['name']===$raw['Reference'][0]['SourceName'],'original provider retained');
+check(count($pc['sections'][8])===2&&count($pc['sections'][11])===1&&count($pc['sections'][13])===1,'limits, PPE, effects and disposal mapping');
+check(count($pc['sections'][1])===2,'manufacturing retained');
+$raw['Reference'][0]['SourceName']='Hazardous Substances Data Bank (HSDB)';check(chemicalNormalize($raw,702)['sections'][4][0]['source']['archived'],'HSDB archive label');
+try{chemicalNormalize($raw,281);throw new LogicException('wrong CID accepted');}catch(RuntimeException){}
+foreach([null,[],0,-1,'702/../x','999999999999'] as $bad){try{chemicalCID($bad);throw new LogicException('bad CID');}catch(InvalidArgumentException){}}
+$long=str_repeat('Text 35 ppm.\n',3000);$parts=chemicalTextParts($long);check(implode('',$parts)===$long&&max(array_map('mb_strlen',$parts))<=12000,'long annotations split without loss');
+echo "PASS: PubChem CID binding, parent annotations, original NIOSH provenance, HSDB archive, full safety mapping and lossless long text.\n";

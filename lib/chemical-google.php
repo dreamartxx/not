@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-// Google Translation Basic v2; only source-bound EPA entries may reach the fixed upstream.
+// Google Translation Basic v2; only source-bound chemical entries may reach the fixed upstream.
 require_once __DIR__.'/chemical-turkish.php';
 function chemicalGoogleKey(array $config): string {
  $key=trim((string)(getenv('GOOGLE_TRANSLATION_API_KEY')?:($config['google_translation_api_key']??'')));
@@ -23,10 +23,11 @@ function chemicalGoogleStored(PDO $db,array $record): array {
  foreach($record['sections'] as &$entries)foreach($entries as &$e){$text=$found[chemicalGoogleHash($e['text']??'')]??null;if($text!==null){$e['text_tr']=$text;$e['translation_provider']='Google Cloud Translation';}}unset($e,$entries);return $record;
 }
 function chemicalGoogleSource(PDO $db,array $input): string {
- require_once __DIR__.'/comptox.php';$id=comptoxId($input['dtxsid']??null);
+ require_once __DIR__.'/chemicals.php';
+ if(isset($input['cid'])){$cacheKey='pubchem-v2:'.chemicalCID($input['cid']);}else{require_once __DIR__.'/comptox.php';$cacheKey='comptox-v1:'.comptoxId($input['dtxsid']??null);}
  if(!is_int($input['section']??null)||$input['section']<1||$input['section']>16||!is_int($input['entry']??null)||$input['entry']<0)throw new InvalidArgumentException('Kaynak kimliği geçersiz.');
  $db->exec('CREATE TABLE IF NOT EXISTS chemical_cache (cache_key VARCHAR(80) PRIMARY KEY,payload MEDIUMTEXT NOT NULL,updated_at BIGINT NOT NULL)');
- $q=$db->prepare('SELECT payload FROM chemical_cache WHERE cache_key=?');$q->execute(['comptox-v1:'.$id]);$record=json_decode($q->fetchColumn()?:'null',true);
+ $q=$db->prepare('SELECT payload FROM chemical_cache WHERE cache_key=?');$q->execute([$cacheKey]);$record=json_decode($q->fetchColumn()?:'null',true);
  $source=$record['sections'][$input['section']][$input['entry']]['text']??null;
  if(!is_string($source)||!is_string($input['source_hash']??null)||!hash_equals(hash('sha256',$source),$input['source_hash']))throw new InvalidArgumentException('Kaynak değişti veya bulunamadı. Kimyasal kaydını yeniden aç.');
  if($source===''||mb_strlen($source)>25000)throw new InvalidArgumentException('Bu kaynak metni tek çeviri için çok uzun veya boş.');
